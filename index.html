@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.7.8/vue.min.js"></script>
+	<script src="https://cdn.tailwindcss.com"></script>
+
+	<style>
+
+	</style>
+
+</head>
+
+<body>
+	<div id="app">
+		<div id="allprojects">
+			<!-- {{ message }} -->
+			<!-- tailwind product component -->
+			<div v-for="project in projects" :key="project.id">
+				<div class="flex flex-col justify-center my-8">
+					<div class="relative flex flex-col md:flex-row md:space-x-5 space-y-3 md:space-y-0 rounded-xl shadow-xl p-3 max-w-xs md:max-w-3xl mx-auto border border-gray-100 bg-white">
+						<div class="w-full md:w-1/3 bg-white grid place-items-center rounded-lg border border-0 border-gray-100 border-solid">
+							<a :href=`https://${project.url}` class="">
+								<img :src="`${project.logo}`" :alt="`${project.name}` + ' logo'" class="rounded-xl w-50 h-50 hover:opacity-50" />
+							</a>
+						</div>
+						<div class="w-full md:w-2/3 bg-white flex flex-col space-y-2 p-3">
+							<div class="flex justify-between item-center">
+								<p class="text-gray-500 font-medium hidden md:block">{{project.type}}</p>
+								<div class="flex items-center">
+									<!-- <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
+								<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+							</svg> -->
+									<p class="text-gray-600 font-bold text-sm ml-1">
+										{{project.year}}
+										<span class="text-gray-500 font-normal">{{yearsSinceFn(project.year)}}</span>
+									</p>
+								</div>
+								<!-- <div class="">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-pink-500" viewBox="0 0 20 20" fill="currentColor">
+								<path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+							</svg>
+						</div> -->
+								<div v-if="`${project.status}` == 'Active'" class="bg-green-200 px-3 py-1 rounded-full text-xs font-medium text-gray-800 hidden md:block">
+									{{project.status}}
+								</div>
+								<div v-else-if="`${project.status}` == 'Paused'" class="bg-yellow-200 px-3 py-1 rounded-full text-xs font-medium text-gray-800 hidden md:block">
+									{{project.status}}
+								</div>
+								<div v-else-if="`${project.status}` == 'Closed'" class="bg-red-200 px-3 py-1 rounded-full text-xs font-medium text-gray-800 hidden md:block">
+									{{project.status}}
+								</div>
+								<div v-else class="bg-gray-200 px-3 py-1 rounded-full text-xs font-medium text-gray-800 hidden md:block">
+									{{project.status}}
+								</div>
+							</div>
+							<h3 class="font-black text-gray-700 md:text-3xl text-xl py-3">{{project.name}}</h3>
+							<p class="md:text-lg text-gray-500 text-base py-2">{{project.description}}</p>
+							<div class="w-full md:w-3/3 bg-white flex flex-col space-y-2">
+								<div class="flex justify-between item-center">
+									<a :href=`https://${project.url}` class="text-gray-600 font-normal text-sm ml-1 hover:text-gray-300">
+										{{project.url}}
+									</a>
+									<div class="hover:opacity-50" @click="hideAllProjects(project)" style="cursor: pointer;"><img width="20" height="20" src="https://img.icons8.com/777777/material-rounded/96/log.png" alt="log" /> </div>
+									<!-- <a  href="https://icons8.com/icon/112085/log">LOG</a> icon by <a href="https://icons8.com">Icons8</a> -->
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 📖📖📖📖📖📖📖📖📖📖📖📖📖📖📖📖📖📖📖📖📖📖📖📖📖📖📖📖📖📖 -->
+
+		<div id="projectPage" style="display: none;">
+			
+		</div>
+	</div>
+</body>
+
+<script>
+	var app = new Vue({
+		el: '#app',
+		data: {
+			message: 'Hello, World!',
+			isActive: '',
+			projects: [{
+					id: 1,
+					hashtag: "pluginsforcarrd",
+					name: "Jason's Plugins For Carrd",
+					description: "Plugins, widgets, components, & scripts to power up your Carrd sites.",
+					url: "plugins.carrd.co",
+					logo: "https://navbar.carrd.co/assets/images/image01.jpg",
+					type: "Software",
+					status: "Active",
+					year: "2020",
+					revenue: "$1000/m",
+					filters: ["ALL", "Software", "Active", "One-time", "pluginsforcarrd"]
+				},
+				{
+					id: 2,
+					hashtag: "lifelog",
+					name: "Lifelog",
+					description: "Write 100 words a day, every day. A writing community for creators to develop a daily writing habit.",
+					url: "golifelog.com",
+					logo: "https://i.ibb.co/pZRTs9z/Group-141-Copy.jpg",
+					type: "SaaS",
+					status: "Active",
+					year: "2020",
+					revenue: "$100/m",
+					filters: ["ALL", "Software", "Active", "Recurring", "lifelog"]
+				},
+				{
+					id: 3,
+					hashtag: "outsprint",
+					name: "Outsprint Design",
+					description: "The fastest way to innovate public policy & social services.",
+					url: "outsprint.io",
+					logo: "https://i.ibb.co/TYx3v9v/outsprint-400x400.jpg",
+					type: "Service",
+					status: "Active",
+					year: "2015",
+					revenue: "$50,000/y",
+					filters: ["ALL", "Service", "Active", "Fee-based", "outsprint"]
+				},
+				{
+					id: 4,
+					hashtag: "sheet2bio",
+					name: "Sheet2Bio",
+					description: "Create a link-in-bio using Google Sheets. For creators and indie hackers.",
+					url: "sheet2bio.com",
+					logo: "https://i.ibb.co/sygHyT3/sheet2bio-square-thumbnail.png",
+					type: "SaaS",
+					status: "Paused",
+					year: "2022",
+					revenue: "$100",
+					filters: ["ALL", "SaaS", "Paused", "One-time", "sheet2bio"]
+				},
+				{
+					id: 5,
+					hashtag: "indiejourney",
+					name: "Jason's indie solopreneur journey",
+					description: "Sharing my indie solopreneur journey and growing an audience on Substack and Twitter.",
+					url: "jasonleow.substack.com",
+					logo: "https://i.ibb.co/xSNVh5J/linkedin-profile-pic.jpg",
+					type: "Newsletter",
+					status: "Active",
+					year: "2023",
+					revenue: "$0/y",
+					filters: ["ALL", "Newsletter", "Active", "None", "substack"]
+				},
+				{
+					id: 6,
+					hashtag: "ketolistsg",
+					name: "Keto List Singapore",
+					description: "Singapore's local directory of LCHF, keto-friendly bakeries, restaurants, cafes, supermarkets and online retail outlets.",
+					url: "ketolistsingapore.com",
+					logo: "https://i.ibb.co/yNVjpXy/ketolistsg-logo-new-greensquare.png",
+					type: "Info product",
+					status: "Paused",
+					year: "2019",
+					revenue: "$0/y",
+					filters: ["ALL", "Info product", "Paused", "One-time", "ketolistsg"]
+				},
+				{
+					id: 7,
+					hashtag: "granthunt",
+					name: "Grant Hunt",
+					description: "Easiest way to hunt down that grant for your social impact project, using a chat bot.",
+					url: "gogranthunt.com",
+					logo: "https://i.ibb.co/wKSWW8Q/granthuntlogo.png",
+					type: "Info product",
+					status: "Active",
+					year: "2018",
+					revenue: "$0",
+					filters: ["ALL", "Info product", "Paused", "One-time", "granthunt"]
+				},
+				{
+					id: 8,
+					hashtag: "safedistancingsg",
+					name: "Safe Distancing SG 🇸🇬",
+					description: "The latest COVID-19 safe distancing rules for Singapore all in one place.",
+					url: "safedistancing.sg",
+					logo: "https://i.ibb.co/7zF13xJ/safedistancingsg-logo.png",
+					type: "Info product",
+					status: "Closed",
+					year: "2021",
+					revenue: "$1000+",
+					filters: ["ALL", "Info product", "Closed", "One-time", "safedistancingsg"]
+				},
+			],
+			tasks: [{
+					id: "1",
+					title: "Day 979 - What's your magic number? - https://golifelog.com/posts/whats-your-magic-number-1693956037798",
+					description: null,
+					icon: "https://i.ibb.co/pZRTs9z/Group-141-Copy.jpg",
+					attachment: null,
+					published_at: "2023-09-06T07:55:09Z",
+					updated_at: "2023-09-06T07:55:09Z",
+					project: [{
+						id: 2,
+						hashtag: "lifelog"
+					}],
+					accent: "#00f0ac",
+					filters: ["ALL", "Software", "Active", "One-time", "pluginsforcarrd"]
+				},
+				{
+					id: "2",
+					title: "Updated LinkedIn bio to reflect more recent work and skills",
+					description: null,
+					icon: "https://i.ibb.co/TYx3v9v/outsprint-400x400.jpg",
+					attachment: null,
+					published_at: "2023-09-06T07:55:09Z",
+					updated_at: "2023-09-06T07:55:09Z",
+					project: [{
+						id: 3,
+						hashtag: "outsprint"
+					}],
+					accent: "#ff4000",
+					filters: ["ALL", "Software", "Active", "One-time", "pluginsforcarrd"]
+				},
+			]
+		},
+		computed: {},
+		mounted: {},
+		methods: {
+			yearsSinceFn(startYear) {
+				const d = new Date()
+				let year = d.getFullYear() - startYear
+				if (year == 0) {
+					return ''
+				} else if (year == 1) {
+					return '(' + year + ' year)'
+				} else {
+					return '(' + year + ' years)'
+				}
+			},
+			hideAllProjects(e) {
+				const el = document.getElementById('allprojects')
+				el.style.display = 'none'
+				this.showProject(e)
+			},
+			showProject(e) {
+				const para = document.createElement("p")
+				para.innerHTML = "Task logs coming soon!"
+				// para.innerHTML = e.name
+				document.getElementById("projectPage").appendChild(para)
+				document.getElementById("projectPage").style.display = 'block'
+			},
+		},
+	})
+</script>
+
+</html>
