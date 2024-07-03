@@ -61,7 +61,7 @@
 									<a :href=`https://${project.url}` class="text-gray-600 font-normal text-sm ml-1 hover:text-gray-300">
 										{{project.url}}
 									</a>
-									<div class="hover:opacity-50" @click="hideAllProjects(project)" style="cursor: pointer;"><img width="20" height="20" src="https://img.icons8.com/777777/material-rounded/96/log.png" alt="log" /> </div>
+									<!-- <div class="hover:opacity-50" @click="hideAllProjects(project)" style="cursor: pointer;"><img width="20" height="20" src="https://img.icons8.com/777777/material-rounded/96/log.png" alt="log" /> </div> -->
 									<!-- <a  href="https://icons8.com/icon/112085/log">LOG</a> icon by <a href="https://icons8.com">Icons8</a> -->
 								</div>
 							</div>
@@ -87,58 +87,6 @@
 			isActive: '',
 			projects: [{
 					id: 1,
-					hashtag: "pluginsforcarrd",
-					name: "Jason's Plugins For Carrd",
-					description: "Plugins, widgets, components, & scripts to power up your Carrd sites.",
-					url: "plugins.carrd.co",
-					logo: "https://navbar.carrd.co/assets/images/image01.jpg",
-					type: "Software",
-					status: "Active",
-					year: "2020",
-					revenue: "$1000/m",
-					filters: ["ALL", "Software", "Active", "One-time", "pluginsforcarrd"]
-				},
-				{
-					id: 2,
-					hashtag: "lifelog",
-					name: "Lifelog",
-					description: "Write 100 words a day, every day. A writing community for creators to develop a daily writing habit.",
-					url: "golifelog.com",
-					logo: "https://i.ibb.co/pZRTs9z/Group-141-Copy.jpg",
-					type: "SaaS",
-					status: "Active",
-					year: "2020",
-					revenue: "$100/m",
-					filters: ["ALL", "Software", "Active", "Recurring", "lifelog"]
-				},
-				{
-					id: 3,
-					hashtag: "outsprint",
-					name: "Outsprint Design",
-					description: "The fastest way to innovate public policy & social services.",
-					url: "outsprint.io",
-					logo: "https://i.ibb.co/TYx3v9v/outsprint-400x400.jpg",
-					type: "Service",
-					status: "Active",
-					year: "2015",
-					revenue: "$50,000/y",
-					filters: ["ALL", "Service", "Active", "Fee-based", "outsprint"]
-				},
-				{
-					id: 4,
-					hashtag: "sheet2bio",
-					name: "Sheet2Bio",
-					description: "Create a link-in-bio using Google Sheets. For creators and indie hackers.",
-					url: "sheet2bio.com",
-					logo: "https://i.ibb.co/sygHyT3/sheet2bio-square-thumbnail.png",
-					type: "SaaS",
-					status: "Paused",
-					year: "2022",
-					revenue: "$100",
-					filters: ["ALL", "SaaS", "Paused", "One-time", "sheet2bio"]
-				},
-				{
-					id: 5,
 					hashtag: "indiejourney",
 					name: "Jason's indie solopreneur journey",
 					description: "Sharing my indie solopreneur journey and growing an audience on Substack and Twitter.",
@@ -151,20 +99,85 @@
 					filters: ["ALL", "Newsletter", "Active", "None", "substack"]
 				},
 				{
+					id: 2,
+					hashtag: "pluginsforcarrd",
+					name: "Jason's Plugins For Carrd",
+					description: "Plugins, widgets, components, & scripts to power up your Carrd sites.",
+					url: "plugins.carrd.co",
+					logo: "https://navbar.carrd.co/assets/images/image01.jpg",
+					type: "Software",
+					status: "Active",
+					year: "2020",
+					revenue: "$1000/m",
+					filters: ["ALL", "Software", "Active", "One-time", "pluginsforcarrd"]
+				},
+				{
+					id: 3,
+					hashtag: "lifelog",
+					name: "Lifelog",
+					description: "Write 100 words a day, every day. A writing community for creators to develop a daily writing habit.",
+					url: "golifelog.com",
+					logo: "https://i.ibb.co/pZRTs9z/Group-141-Copy.jpg",
+					type: "SaaS",
+					status: "Active",
+					year: "2020",
+					revenue: "$100/m",
+					filters: ["ALL", "Software", "Active", "Recurring", "lifelog"]
+				},
+				{
+					id: 4,
+					hashtag: "listskit",
+					name: "Lists Kit",
+					description: "A simple HTML template for business directories.",
+					url: "listskit.com",
+					logo: "https://i.postimg.cc/bNXXp1ZL/listskit-icon-transparent.png",
+					type: "Software",
+					status: "Active",
+					year: "2024",
+					revenue: "$500/y",
+					filters: ["ALL", "Software", "Active", "One-time", "listskit"]
+				},
+				{
+					id: 5,
+					hashtag: "outsprint",
+					name: "Outsprint Design",
+					description: "The fastest way to innovate public policy & social services.",
+					url: "outsprint.io",
+					logo: "https://i.ibb.co/TYx3v9v/outsprint-400x400.jpg",
+					type: "Service",
+					status: "Active",
+					year: "2015",
+					revenue: "$50,000/y",
+					filters: ["ALL", "Service", "Active", "Fee-based", "outsprint"]
+				},
+				{
 					id: 6,
+					hashtag: "sheet2bio",
+					name: "Sheet2Bio",
+					description: "Create a link-in-bio using Google Sheets. For creators and indie hackers.",
+					url: "sheet2bio.com",
+					logo: "https://i.ibb.co/sygHyT3/sheet2bio-square-thumbnail.png",
+					type: "SaaS",
+					status: "Paused",
+					year: "2022",
+					revenue: "$100",
+					filters: ["ALL", "SaaS", "Paused", "One-time", "sheet2bio"]
+				},
+				{
+					id: 7,
 					hashtag: "ketolistsg",
 					name: "Keto List Singapore",
 					description: "Singapore's local directory of LCHF, keto-friendly bakeries, restaurants, cafes, supermarkets and online retail outlets.",
 					url: "ketolistsingapore.com",
 					logo: "https://i.ibb.co/yNVjpXy/ketolistsg-logo-new-greensquare.png",
 					type: "Info product",
-					status: "Paused",
+					status: "Active",
 					year: "2019",
 					revenue: "$0/y",
-					filters: ["ALL", "Info product", "Paused", "One-time", "ketolistsg"]
+					filters: ["ALL", "Info product", "Active", "One-time", "ketolistsg"]
 				},
 				{
-					id: 7,
+					id: 8,
 					hashtag: "granthunt",
 					name: "Grant Hunt",
 					description: "Easiest way to hunt down that grant for your social impact project, using a chat bot.",
@@ -177,7 +190,7 @@
 					filters: ["ALL", "Info product", "Paused", "One-time", "granthunt"]
 				},
 				{
-					id: 8,
+					id: 9,
 					hashtag: "safedistancingsg",
 					name: "Safe Distancing SG 🇸🇬",
 					description: "The latest COVID-19 safe distancing rules for Singapore all in one place.",
@@ -188,6 +201,32 @@
 					year: "2021",
 					revenue: "$1000+",
 					filters: ["ALL", "Info product", "Closed", "One-time", "safedistancingsg"]
+				},
+				{
+					id: 10,
+					hashtag: "psisg",
+					name: "PSI.SG 🇸🇬",
+					description: "Quick updates at a glance on PSI and PM2.5 readings for the haze situation in Singapore.",
+					url: "psi.sg",
+					logo: "https://i.ibb.co/xzzPv49/psisg-logo2-7-180px.png",
+					type: "Single page app",
+					status: "Active",
+					year: "2023",
+					revenue: "$0",
+					filters: ["ALL", "Single page app", "Active", "Free", "psisg"]
+				},
+				{
+					id: 11,
+					hashtag: "uvindexsg",
+					name: "UVIndex.SG 🇸🇬",
+					description: "Quick updates at a glance on UV Index readings for sunny Singapore.",
+					url: "uvindex.sg",
+					logo: "https://i.postimg.cc/nr4KgP5W/uvindexsg-touchicon.png",
+					type: "Single page app",
+					status: "Active",
+					year: "2024",
+					revenue: "$0",
+					filters: ["ALL", "Single page app", "Active", "Free", "uvindexsg"]
 				},
 			],
 			tasks: [{
