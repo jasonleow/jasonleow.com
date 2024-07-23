@@ -92,8 +92,8 @@
         h1 {
           width: 60%;
         }
-        }
-        
+      }
+
       @media (min-width: 1280px) {
         h1 {
           width: 50%;
@@ -109,7 +109,7 @@
       Your PC ran into a problem and needs to restart. We're just collecting some error info, and then we'll restart for you.
     </h1>
     <h2>
-      99% complete.
+      <span id="counter">0</span>% complete.
     </h2><br>
     <div>
       <span><img id="qrcode" width="60" src="https://i.postimg.cc/BQ4dD5K0/frame.png" /></span>
@@ -120,6 +120,38 @@
       <br><br>
       A satirical, meme project brought to you by <a href="https://jasonleow.com" target="_blank">Jason Leow</a> <a href="https://x.com/jasonleowsg" target="_blank">@jasonleowsg</a>
     </div>
+
+    <script>
+      let counter = 0;
+      let intervalId = null;
+
+      function startCounter() {
+        intervalId = setInterval(() => {
+          if (counter < 90) {
+            counter++;
+            document.getElementById("counter").innerHTML = counter;
+          } else if (counter < 99) {
+            clearInterval(intervalId);
+            setTimeout(() => {
+              intervalId = setInterval(() => {
+                counter++;
+                document.getElementById("counter").innerHTML = counter;
+                if (counter === 99) {
+                  clearInterval(intervalId);
+                  setTimeout(() => {
+                    // do nothing, just wait for 60 seconds
+                  }, 60000);
+                }
+              }, 3000);
+            }, 3000);
+          }
+        }, 50); // increment every 30ms to reach 90 in 3 seconds
+      }
+
+      startCounter();
+
+    </script>
+
   </body>
 
 </html>
