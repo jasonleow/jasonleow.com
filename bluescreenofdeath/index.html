@@ -109,7 +109,7 @@
       Your PC ran into a problem and needs to restart. We're just collecting some error info, and then we'll restart for you.
     </h1>
     <h2>
-      <span id="counter">0</span>% complete.
+      <span id="counter">0</span>% complete<span id="periods">.</span>
     </h2><br>
     <div>
       <span><img id="qrcode" width="60" src="https://i.postimg.cc/BQ4dD5K0/frame.png" /></span>
@@ -149,6 +149,28 @@
       }
 
       startCounter();
+
+    </script>
+
+    <script>
+      let periods = 1;
+      let intervalPeriodId = null;
+
+      function addPeriod() {
+        document.getElementById("periods").innerHTML += ".";
+        periods++;
+
+        if (periods >= 3) {
+          clearInterval(intervalPeriodId);
+          setTimeout(() => {
+            document.getElementById("periods").innerHTML = ".";
+            periods = 1;
+            intervalPeriodId = setInterval(addPeriod, 500);
+          }, 500);
+        }
+      }
+
+      intervalPeriodId = setInterval(addPeriod, 500);
 
     </script>
 
