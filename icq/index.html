@@ -26,8 +26,13 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="32x32" href="https://i.postimg.cc/44QkDf21/icq-32px-icon.png">
     <link rel="icon" type="image/png" sizes="16x16" href="https://i.postimg.cc/44QkDf21/icq-32px-icon.png">
-    
+
     <style>
+      body {
+        font-family: sans-serif;
+      }
+
+
       #audio {
         display: none;
       }
@@ -129,7 +134,6 @@
       }
 
       #tooltip {
-        font-family: sans-serif;
         position: absolute;
         color: #fff;
         background-color: #3B3B3F;
@@ -146,6 +150,11 @@
 
       #tooltip.visible {
         opacity: 1;
+      }
+
+      .footer {
+        margin: 70rem 0 5rem 0;
+        font-size: 1rem;
       }
 
     </style>
@@ -182,6 +191,10 @@
         </svg>
         <div id="tooltip" class="tooltip">Click me!</div>
       </div>
+    </div>
+
+    <div class="footer">
+      A nostalgic, meme project by <a href="https://jasonleow.com" target="_blank">Jason Leow</a> <a href="https://x.com/jasonleowsg" target="_blank">@jasonleowsg</a>
     </div>
 
     <script>
