@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile Photo Editor</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+        background-color: #f0f0f0;
+      }
+      h1 {
+        color: #333;
+      }
+      #profile-container {
+        position: relative;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-bottom: 20px;
+      }
+      #profile-preview {
+        display: none;
+        border-radius: 50%;
+        width: 300px;
+        height: 300px;
+      }
+      #download-btn {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      #download-btn:disabled {
+        background-color: grey;
+      }
+      input[type="file"] {
+        margin-bottom: 20px;
+      }
+      input[type="color"] {
+        margin-bottom: 20px;
+      }
+      input[type="text"] {
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <!-- <body>
+    <h1>Profile Photo Editor</h1>
+    <label for="image-upload">Upload Image:</label>
+    <input type="file" accept="image/*" id="image-upload" />
+
+    <label for="arc-color">Arc Color:</label>
+    <input type="color" id="arc-color" value="#BA65D1" />
+
+    <label for="banner-text">Banner Text:</label>
+    <input type="text" id="banner-text" value="#DESPERATE" />
+
+    <label for="letter-spacing">Letter Spacing:</label>
+    <input type="number" id="letter-spacing" value="0.6" step="0.01" />
+
+    <label for="word-shift">Word Shift:</label>
+    <input type="number" id="word-shift" value="0" step="0.01" />
+    
+    <canvas id="canvas" style="display: none"></canvas>
+    <img id="profile-preview" alt="Profile Preview" />
+    <button id="download-btn" disabled>Download Image</button>
+    -->
+    <body class="flex flex-col justify-center items-center bg-gray-100 m-10">
+      <h1 class="text-3xl font-bold mb-4 p-4">Profile Photo Editor</h1>
+      <div class="space-y-4">
+        <div class="flex flex-col space-y-2">
+          <label for="image-upload" class="text-lg font-medium">Upload Image:</label>
+          <input type="file" accept="image/*" id="image-upload" class="py-2 text-sm text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent" />
+        </div>
+        <div class="flex flex-col space-y-2">
+          <label for="arc-color" class="text-lg font-medium">Arc Color:</label>
+          <div class="flex items-center">
+            <input type="color" id="arc-color" value="#BA65D1" class="border-none rounded-l-lg w-12 h-8" />
+            <span id="color-code" class="mb-4 ml-2 text-sm"></span>
+          </div>
+        </div>
+        <div class="flex flex-col space-y-2">
+          <label for="banner-text" class="text-lg font-medium">Banner Text:</label>
+          <input type="text" id="banner-text" value="#DESPERATE" class="py-2 pl-4 text-sm text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent" />
+        </div>
+        <div class="flex flex-col space-y-2">
+          <label for="letter-spacing" class="text-lg font-medium">Letter Spacing:</label>
+          <input type="number" id="letter-spacing" value="0.6" step="0.01" class="py-2 pl-4 text-sm text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent" />
+        </div>
+        <div class="flex flex-col space-y-2">
+          <label for="word-shift" class="text-lg font-medium">Word Centering:</label>
+          <input type="number" id="word-shift" value="0" step="0.01" class="py-2 pl-4 text-sm text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent" />
+        </div>
+        <canvas id="canvas" style="display: none"></canvas>
+        <div class="flex flex-col space-y-2">
+          <label for="profile-preview" class="text-lg font-medium">Preview:</label>
+          <img id="profile-preview" alt="Profile Preview" class="rounded-full" src="https://i.postimg.cc/BQnRbg9s/profile-pic-placeholder-copy.png" />
+        </div>
+        <button id="download-btn" disabled class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Download Image</button>
+      </div>
+    </body>
+
+    <script>
+      const imageUpload = document.getElementById("image-upload")
+      const downloadBtn = document.getElementById("download-btn")
+      const canvas = document.getElementById("canvas")
+      const ctx = canvas.getContext("2d")
+      const profilePreview = document.getElementById("profile-preview")
+      const arcColorInput = document.getElementById("arc-color")
+      const bannerTextInput = document.getElementById("banner-text")
+      const letterSpacingInput = document.getElementById("letter-spacing");
+      const wordShiftInput = document.getElementById("word-shift");    
+
+      let image;
+
+      imageUpload.addEventListener("change", function (event) {
+        const file = event.target.files[0]
+        if (file) {
+          const reader = new FileReader()
+          reader.onload = function (e) {
+            image = new Image()
+            image.src = e.target.result
+            image.onload = function () {
+              const size = 300
+              const radius = size / 2
+
+              // Set canvas size to the image size
+              canvas.width = size
+              canvas.height = size
+
+              updatePreview();
+            }
+          }
+          reader.readAsDataURL(file)
+        }
+      })
+
+      arcColorInput.addEventListener("input", function () {
+        updatePreview();
+      });
+
+      bannerTextInput.addEventListener("input", function () {
+        updatePreview();
+      });
+      
+      letterSpacingInput.addEventListener("input", function () {
+        updatePreview();
+      });
+      
+      wordShiftInput.addEventListener("input", function () {
+        updatePreview();
+      });
+      
+      // Set default image
+      const defaultImage = new Image();
+      defaultImage.src = 'https://i.postimg.cc/qvDrpvmJ/profile-image-11.jpg'; // Replace with your default image URL
+      defaultImage.onload = function() {
+        profilePreview.src = defaultImage.src;
+        profilePreview.style.display = "block";
+        image = defaultImage; // Set the image variable to the default image
+		    setTimeout(updatePreview, 100); // Run updatePreview() after a 100ms delay
+      };
+
+      function updatePreview() {
+        // Clear canvas and create a circular clipping path
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 2, 0, Math.PI * 2, true);
+        ctx.closePath();
+        ctx.clip();
+
+        // Draw the profile image within the circular clipping path
+        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+        ctx.restore();
+
+        // Create the banner arc (bottom-left quadrant outline with gradient)
+        const arcWidth = canvas.width / 2 * 0.3; // Adjust this value to change the thickness of the arc
+        const startArcAngle = Math.PI * 6.5 / 6; // 9 o'clock position
+        const endArcAngle = Math.PI * 1.7 / 6; // 4 o'clock position
+        const totalArcAngle = startArcAngle - endArcAngle;
+        const steps = 300; // Number of segments to create the gradient effect
+
+        ctx.lineWidth = arcWidth;
+
+        for (let i = 0; i <= steps; i++) {
+          const t = i / steps;
+          const angle = startArcAngle - t * totalArcAngle;
+
+          // Calculate opacity for solid middle 80% and quick fade at ends
+          let opacity;
+          if (t < 0.2) {
+            opacity = t * 7; // Quick fade in
+          } else if (t > 0.7) {
+            opacity = (1 - t) * 7; // Quick fade out
+          } else {
+            opacity = 1; // Solid middle
+          }
+
+          ctx.beginPath();
+          ctx.arc(
+            canvas.width / 2,
+            canvas.height / 2,
+            canvas.width / 2 - arcWidth / 2,
+            angle,
+            angle - totalArcAngle / steps,
+            true
+          );
+          ctx.strokeStyle = `rgba(${hexToRgb(arcColorInput.value).r}, ${hexToRgb(arcColorInput.value).g}, ${hexToRgb(arcColorInput.value).b}, ${opacity})`;
+          ctx.stroke();
+        }
+
+        // Add curved text along the arc
+        const text = bannerTextInput.value;
+        const textLength = text.length;
+        const minTextLength = 5;
+        const maxTextLength = 15;
+        const textRadius = canvas.width / 2 - arcWidth / 2;
+        let anglePerChar;
+        let totalAngle;
+
+        /*
+        if (textLength < minTextLength) {
+          anglePerChar = (Math.PI * 0.62) / minTextLength;
+        } else if (textLength > maxTextLength) {
+          anglePerChar = (Math.PI * 0.62) / maxTextLength;
+        } else {
+          anglePerChar = (Math.PI * 0.62) / textLength;
+        }
+        */
+        
+        if (textLength < minTextLength) {
+          anglePerChar = (Math.PI * parseFloat(letterSpacingInput.value)) / minTextLength;
+        } else if (textLength > maxTextLength) {
+          anglePerChar = (Math.PI * parseFloat(letterSpacingInput.value)) / maxTextLength;
+        } else {
+          anglePerChar = (Math.PI * parseFloat(letterSpacingInput.value)) / textLength;
+        }
+        
+        totalAngle = anglePerChar * textLength;
+
+        ctx.font = "bolder 26px Arial";
+        ctx.fillStyle = "white";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        // Calculate the angle for the text arc
+        // const startAngle = Math.PI * 1.47; // Start from 9 o'clock
+        const startAngle = Math.PI * 1.61 - (totalAngle / 2) + (Math.PI * 0.9 - totalAngle) / 2; // Center the text
+        const endAngle = Math.PI * 0.95; // End at 6 o'clock
+        const arcAngle = endAngle - startAngle;
+
+        ctx.save();
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+
+				/*
+        for (let i = 0; i < text.length; i++) {
+          const angle = startAngle - i * anglePerChar;
+          ctx.save();
+          ctx.rotate(angle);
+          ctx.translate(0, -textRadius);
+          ctx.rotate(Math.PI / 1); // Rotate each character to face outward
+          ctx.fillText(text[i], 0, 0);
+          ctx.restore();
+          */
+          
+          for (let i = 0; i < text.length; i++) {
+          const angle = startAngle - i * anglePerChar + parseFloat(wordShiftInput.value);
+          ctx.save();
+          ctx.rotate(angle);
+          ctx.translate(0, -textRadius);
+          ctx.rotate(Math.PI / 1); // Rotate each character to face outward
+          ctx.fillText(text[i], 0, 0);
+          ctx.restore();
+        }
+        ctx.restore();
+
+        // Show preview of the image
+        // profilePreview.src = canvas.toDataURL("image/png");
+        // profilePreview.style.display = "block";
+        
+        // Show preview of the image
+        if (image) {
+          profilePreview.src = canvas.toDataURL("image/png");
+        } else {
+          profilePreview.src = defaultImage.src;
+          
+        }
+        profilePreview.style.display = "block";
+
+        // Enable download button
+        downloadBtn.disabled = false;
+      }
+
+      downloadBtn.addEventListener("click", function () {
+        // Trigger download
+        const link = document.createElement("a");
+        link.href = canvas.toDataURL("image/png");
+        link.download = "profile-image.png";
+        link.click();
+      })
+
+      function hexToRgb(hex) {
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16)
+        } : null;
+      }
+      
+      const colorInput = document.getElementById('arc-color');
+      const colorCodeSpan = document.getElementById('color-code');
+      const colorSwatchSpan = document.getElementById('color-swatch');
+
+      colorInput.addEventListener('input', () => {
+        colorCodeSpan.textContent = colorInput.value;
+        colorSwatchSpan.style.backgroundColor = colorInput.value;
+      });
+
+      // Initialize the color code span and color swatch span with the initial value
+      colorCodeSpan.textContent = colorInput.value;
+      colorSwatchSpan.style.backgroundColor = colorInput.value;
+      
+    </script>
+  </body>
+</html>
