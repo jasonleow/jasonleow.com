@@ -80,7 +80,10 @@
     </style>
   </head>
     <body class="flex flex-col justify-center items-center bg-gray-100 m-10">
-      <h1 class="text-3xl font-bold mb-4 p-4">Profile Photo Editor</h1>
+      <h1 class="text-3xl font-bold p-4">Profile Photo Editor</h1>
+      <div class="text-md font-medium mb-10 w-80">
+      Please upload an image first before you start editing. For best results, please use a square photo (for now, while I fix it).
+      </div>
       <div class="space-y-4">
         <div class="flex flex-col space-y-2">
           <label for="image-upload" class="text-lg font-medium">Upload Image:</label>
@@ -91,6 +94,13 @@
           <div class="flex items-center">
             <input type="color" id="arc-color" value="#BA65D1" class="border-none rounded-l-lg w-12 h-8" />
             <span id="color-code" class="mb-4 ml-2 text-sm"></span>
+          </div>
+        </div>
+        <div class="flex flex-col space-y-2">
+          <label for="text-color" class="text-lg font-medium">Text Color:</label>
+          <div class="flex items-center">
+            <input type="color" id="text-color" value="#FFFFFF" class="border-none rounded-l-lg w-12 h-8" />
+            <span id="text-color-code" class="mb-4 ml-2 text-sm"></span>
           </div>
         </div>
         <div class="flex flex-col space-y-2">
@@ -121,9 +131,10 @@
       const ctx = canvas.getContext("2d")
       const profilePreview = document.getElementById("profile-preview")
       const arcColorInput = document.getElementById("arc-color")
+      const textColorInput = document.getElementById("text-color")
       const bannerTextInput = document.getElementById("banner-text")
-      const letterSpacingInput = document.getElementById("letter-spacing");
-      const wordShiftInput = document.getElementById("word-shift");    
+      const letterSpacingInput = document.getElementById("letter-spacing")
+      const wordShiftInput = document.getElementById("word-shift")
 
       let image;
 
@@ -135,7 +146,7 @@
             image = new Image()
             image.src = e.target.result
             image.onload = function () {
-              const size = 300
+              const size = 600
               const radius = size / 2
 
               // Set canvas size to the image size
@@ -150,6 +161,10 @@
       })
 
       arcColorInput.addEventListener("input", function () {
+        updatePreview();
+      });
+      
+      textColorInput.addEventListener("input", function () {
         updatePreview();
       });
 
@@ -167,7 +182,7 @@
       
       // Set default image
       const defaultImage = new Image();
-      defaultImage.src = 'https://i.postimg.cc/qvDrpvmJ/profile-image-11.jpg'; // Replace with your default image URL
+      defaultImage.src = 'https://i.postimg.cc/qvDrpvmJ/profile-image-11.jpg'; // Replace with your default image URL https://i.postimg.cc/2y5WYnjF/profile-pic-placeholder-copy.png
       defaultImage.onload = function() {
         profilePreview.src = defaultImage.src;
         profilePreview.style.display = "block";
@@ -232,16 +247,6 @@
         const textRadius = canvas.width / 2 - arcWidth / 2;
         let anglePerChar;
         let totalAngle;
-
-        /*
-        if (textLength < minTextLength) {
-          anglePerChar = (Math.PI * 0.62) / minTextLength;
-        } else if (textLength > maxTextLength) {
-          anglePerChar = (Math.PI * 0.62) / maxTextLength;
-        } else {
-          anglePerChar = (Math.PI * 0.62) / textLength;
-        }
-        */
         
         if (textLength < minTextLength) {
           anglePerChar = (Math.PI * parseFloat(letterSpacingInput.value)) / minTextLength;
@@ -253,8 +258,8 @@
         
         totalAngle = anglePerChar * textLength;
 
-        ctx.font = "bolder 26px Arial";
-        ctx.fillStyle = "white";
+        ctx.font = "bolder 56px Arial";
+        ctx.fillStyle = textColorInput.value;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
 
@@ -267,23 +272,13 @@
         ctx.save();
         ctx.translate(canvas.width / 2, canvas.height / 2);
 
-				/*
-        for (let i = 0; i < text.length; i++) {
-          const angle = startAngle - i * anglePerChar;
-          ctx.save();
-          ctx.rotate(angle);
-          ctx.translate(0, -textRadius);
-          ctx.rotate(Math.PI / 1); // Rotate each character to face outward
-          ctx.fillText(text[i], 0, 0);
-          ctx.restore();
-          */
-          
           for (let i = 0; i < text.length; i++) {
           const angle = startAngle - i * anglePerChar + parseFloat(wordShiftInput.value);
           ctx.save();
           ctx.rotate(angle);
           ctx.translate(0, -textRadius);
           ctx.rotate(Math.PI / 1); // Rotate each character to face outward
+
           ctx.fillText(text[i], 0, 0);
           ctx.restore();
         }
@@ -325,16 +320,26 @@
       
       const colorInput = document.getElementById('arc-color');
       const colorCodeSpan = document.getElementById('color-code');
-      const colorSwatchSpan = document.getElementById('color-swatch');
+      // const colorSwatchSpan = document.getElementById('color-swatch');
 
       colorInput.addEventListener('input', () => {
         colorCodeSpan.textContent = colorInput.value;
-        colorSwatchSpan.style.backgroundColor = colorInput.value;
+        // colorSwatchSpan.style.backgroundColor = colorInput.value;
       });
 
       // Initialize the color code span and color swatch span with the initial value
       colorCodeSpan.textContent = colorInput.value;
-      colorSwatchSpan.style.backgroundColor = colorInput.value;
+      // colorSwatchSpan.style.backgroundColor = colorInput.value;
+      
+      const colorInputText = document.getElementById('text-color');
+      const colorCodeSpanText = document.getElementById('text-color-code');
+
+      colorInputText.addEventListener('input', () => {
+      colorCodeSpanText.textContent = colorInputText.value;
+      });
+
+      // Initialize the color code span and color swatch span with the initial value
+      colorCodeSpanText.textContent = colorInputText.value;
       
     </script>
   </body>
