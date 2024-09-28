@@ -46,6 +46,14 @@
               <input type="file" accept="image/*" id="image-upload" class="py-2 text-sm text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent" />
             </div>
             <div class="flex flex-col space-y-2">
+              <label for="image-x-shift" class="text-lg font-medium">Image X Shift:</label>
+              <input type="number" id="image-x-shift" value="0" step="1" class="py-2 pl-4 text-sm text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent" />
+            </div>
+            <div class="flex flex-col space-y-2">
+              <label for="image-y-shift" class="text-lg font-medium">Image Y Shift:</label>
+              <input type="number" id="image-y-shift" value="0" step="1" class="py-2 pl-4 text-sm text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent" />
+            </div>
+            <div class="flex flex-col space-y-2">
               <label for="arc-color" class="text-lg font-medium">Arc Color:</label>
               <div class="flex items-center">
                 <input type="color" id="arc-color" value="#BA65D1" class="border-none rounded-l-lg w-12 h-8" />
@@ -101,6 +109,8 @@
 
     <script>
       const imageUpload = document.getElementById("image-upload")
+      const imageXShiftInput = document.getElementById("image-x-shift")
+			const imageYShiftInput = document.getElementById("image-y-shift")
       const downloadBtn = document.getElementById("download-btn")
       const canvas = document.getElementById("canvas")
       const ctx = canvas.getContext("2d")
@@ -137,6 +147,14 @@
           reader.readAsDataURL(file)
         }
       })
+      
+      imageXShiftInput.addEventListener("input", function () {
+        updatePreview();
+      });
+
+      imageYShiftInput.addEventListener("input", function () {
+        updatePreview();
+      });
 
       arcColorInput.addEventListener("input", function () {
         updatePreview();
@@ -196,7 +214,9 @@
 
         // Draw the profile image within the circular clipping path
         // ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-        ctx.drawImage(image, x, y, squareSize, squareSize, 0, 0, canvas.width, canvas.height);
+        // ctx.drawImage(image, x, y, squareSize, squareSize, 0, 0, canvas.width, canvas.height);
+        // Draw the profile image within the circular clipping path
+				ctx.drawImage(image, x + parseFloat(imageXShiftInput.value), y + parseFloat(imageYShiftInput.value), squareSize, squareSize, 0, 0, canvas.width, canvas.height);
         ctx.restore();
 
         // Create the banner arc (bottom-left quadrant outline with gradient)
