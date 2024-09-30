@@ -198,7 +198,12 @@
         profilePreview.src = defaultImage.src;
         profilePreview.style.display = "block";
         image = defaultImage; // Set the image variable to the default image
-		    setTimeout(updatePreview, 100); // Run updatePreview() after a 100ms delay
+	// setTimeout(updatePreview, 100); // Run updatePreview() after a 100ms delay
+	if (canvas.width > 0 && canvas.height > 0) {
+    	updatePreview(); // Call updatePreview() directly
+	} else {
+	setTimeout(updatePreview, 100); // Run updatePreview() after a 100ms delay if canvas is not ready
+	}
       };
 
       function updatePreview() {
