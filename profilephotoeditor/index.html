@@ -113,7 +113,7 @@
     <script>
       const imageUpload = document.getElementById("image-upload")
       const imageXShiftInput = document.getElementById("image-x-shift")
-			const imageYShiftInput = document.getElementById("image-y-shift")
+      const imageYShiftInput = document.getElementById("image-y-shift")
       const downloadBtn = document.getElementById("download-btn")
       const canvas = document.getElementById("canvas")
       const ctx = canvas.getContext("2d")
@@ -123,7 +123,7 @@
       const arcStartInput = document.getElementById("arc-start")
       const arcEndInput = document.getElementById("arc-end")
       const textColorInput = document.getElementById("text-color")
-			const textColorHexCodeInput = document.getElementById('text-color-code');
+      const textColorHexCodeInput = document.getElementById('text-color-code');
       const bannerTextInput = document.getElementById("banner-text")
       const fontSizeInput = document.getElementById("font-size")
       const letterSpacingInput = document.getElementById("letter-spacing")
@@ -214,14 +214,14 @@
       
       // Set default image
       const defaultImage = new Image();
-      // const defaultImageDataUrl = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAi3SURBVHgB7d1NbBTnGcDx/3vGxq6AXLUOicogEOFAPa4KFzYmELXlgBzXVUioTWKc9lSQmg+lrUqFaI6wE0JPiU1CpXCI7UpUKhcOXRupVpAASwblg8MKsZQPOzG213v7zuyOzYex8c7H7szO/H/SwkJ4vTP7+t33meedd5YIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK8ZQi6wvmVJ2WYEjz/PvyZa3Q05vl3+rOo/OvpBNTAQoARcBswDTDHtmqPbVKeZ5fVo5V8tT7Zdc1ckX+qWQiZOXoQXKQO0TIGGkPGGpPP6Iay0o7X1U1G5QKX3pNeztCyAECIASMNIcNT6UrwC/5qq5eK+MqVZLx1CpRXlwJgAAIiXRzuHtAP7NNe+rLWpUZ5PntWj+71vmm0hQA/hEAAZROp4+G9x3WygyWVGfLGS6VaEWrZE/rvSUXQ9zEqkEABES6OdxxVyuzQyvv6yKXpVWqR3vhsxQBPxIAvks3hzv+prX6dRUX9XfZqTx1rvXe4osValOoEQA+Siebwx1KmYOlVlwXQ5Tpbd3XOtDyQCAoCIAfphv2XRhSYo5X00hB5ZjD2vefJg/8gBFAlaWTkQN3tKeeKdUmOXNEz2vPdNTvm+ipciNxnwColnTD3o5/a6V/W+2NeGpUe2a7U8S0nnlyqMrNxD0EQDUox3yRVt5/xP/R/VJpZY60fjpEElAMY6gCNdwV7lZPvVTCzK7z1bzvgP6/XqbjuEyWARcZhzVs25Jk8uDUSOgYBWCz9NrI67J0/OOydlcRD04qz/yy9d6SMwQB5jEFsJWeO9uovJknzlP9Kkoo7/YzL1L3aPaJBsHACMAmy7z3TrWeJ6CyHcU1mpU5kEo1XqKJXB4jAAvduLYwlN8ksNonCOVP6B9HwusHa/HtBgsjAIvUP/PEoP/XvHPm1Vxyoi28bqAm32pQMQKwyPuPf/CkH9O8fMp5QhGeG+gLFABbZNZG/JnmuZTynjKj4fWDVX+PwT0EgC30bIkH+BTn3IPu0fD6QT/eY3APAWAL5Z/uNkc/u3v3BaJjjABscMdT9e6LfM67owQdIwAbeEuXub/1ZcrTZoRRQGExArDBw3fJ/bXjYbXm1d1eC99lNFAMIwBrTCx2mwdTOidumALYZHqN64F5ymyJPMHFQIvACMAmz34x7r53Dn2tMnrfVLtJtYwRgE30g68+c9uAO1qZPZGe/lp8m4FCANgmmw65TOLVDyL9/ZwcVByjABt5t0fDbg9XSiU8ZZ6lCBTHCMBGmczo2+O54ynAC5HUaa7kVBwBYKvp7NhXHlOBYsxX4Z7+SLWaEjgEgM3uTy+FU2PX+xK3rr++uIDowjTgXvH7Q4ARgO3M/ehf9miV+8bNoP3CsM9Nqj2MAGzneepM9K8/2jLTu9pjfDEEz2n4ZKDTMVH1SRiKIQACQHt6X+u9q39INo2NzJoiLEIrmTbPvJ/5wg/2lfwYGZN0HuefrnZTgo4ACIp0OhOe7JkqZTgvP0oPv9zTXdK7jrfUnewWQw4yB6iC0E+eGDZG3yx1IWzJ5+vLqVN+NCvoCIAqCa0bGNbK/KbY/Zx5e+RA61/2+dWmoCMAqkSvGXgurfVIvvnvs/+9eXb82vqrVWha4PEdgCqaXDlgc/jF4Z96nv5zrr8/mvt/WtnpnE3ofHHJhyYDqBZx8vqZmR3Db9y3LQ+C4MnVAxfvh1e8r03u7T4l25rILDxVp1et0TrzUPgHDwuzLfLEV5XLYQKKALDcVKrxuHNWn9bFbzwieJ3DQ5IkEDwCoAak1wyccZ7tL3KX+8pTe53l/kWEgOUIgBqRXjvQqT3vXP5Xb3Ifr8yWSE8/S4QtRwDUEGeprzLqZe2ZP8z9/Ujv1b/48b6CeSgAfHL5fGKHZNVlP1/TOdcv3NM3GM4E8lRgcwgAn1y5vPa1hG7I0Px3nNN9wxuGdkuSEZhLBIBPnJN2ZHzVgBd5kYHDPIwB6g8B4JPJz/5r2iLhjhFZkTMi+/8Iy/0tRAD4ZPvzLy0d/yLU4lzoE969Qkf4DkAVjbfUf5pVq0+KNqdEPlwjr78mwpuhlhEAVRJtfOkLT2efkwpt1PLjDZEXl/PdFmEEgCqJPjO4z1OZg1r5e8JvaPWQNvohwnJ/yxEAVRJaO9CjlDlYjbJx3i9Xdi66SChYjmnAzTOdxZvZNpWVrDPSP9RKrXD2SXvFbyhU5JyB0KJQ58q7V4k0ixEAPnJG8ieUzr6lsmahVupnM3f0VcXu9h8tl21PEwI2IwB8pO9cuz+VCb+rjfkwlTXJqSktq6Zk9dqQLHhURAkF2xEAPnJG+qZu5/WTWjbeMub9VO74VNbIwcwvV6+UZx8l9G3HgSAAakBqcO8R7cme2X+bGjt9QTLhHgLAcgRAbUi/eexd8dTxwm2uq5N3jkxNh25X4lWRHwFgOZYC14jUpd+Niu48b94udO+dCXVckj20n7AcAVAj9NrowdyFQrM0Hxm/vvH4rQ9fnqx2u3BvmALUCH15y4Xrm9dfMEa9k+uxd42nui4f77g38WVDQhRXCrYcAVBDUpeO/cM5y3fnu9+Yf4qn3hl/8PR48cchKAiAGuJcEai+d3Xj6YJnED6U0eZj5/TgUk8XCgoCwCfOnv2JN4+uLuf5yatHzytl9hd+RElGZb3PxsIn/TynwHYEgE/S68bqb0+m/yb5PoF3Yz7zrv5gZGx4z1Qpzz91ZcONaZMJFX6AXq2Nfn7r46Nfld96VBIB4JOrg+t6pfDOPn1fqz+Nf/zM+VKfP3nlWI8Y75TW5oXc9zMm61wA9ASHAbUdAWCRiasnhm5/uPeUGDOmtHdsausqzgEIUWH7cT2AO87fZnx4+NunizpWUgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAh/8D0xmJMDGKimYAAAAASUVORK5CYII=';
-
-      defaultImage.src = 'https://i.postimg.cc/ZnJWXDms/profile-image-opacity06.png'; // Replace with your default image URL https://i.postimg.cc/2y5WYnjF/profile-pic-placeholder-copy.png https://i.postimg.cc/qvDrpvmJ/profile-image-11.jpg
+      defaultImage.src = 'placeholder-image.png';
       defaultImage.onload = function() {
         profilePreview.src = defaultImage.src;
         profilePreview.style.display = "block";
         image = defaultImage; // Set the image variable to the default image
-		    setTimeout(updatePreview, 100); // Run updatePreview() after a 100ms delay
+	canvas.width = 600
+        canvas.height = 600
+	setTimeout(updatePreview, 100); // Run updatePreview() after a 100ms delay
       };
 
       function updatePreview() {
