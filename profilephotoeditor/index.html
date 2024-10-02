@@ -37,7 +37,7 @@
       <div class="flex flex-col justify-center items-center bg-gray-100 rounded-lg m-10 py-12 px-12">
         <h1 class="text-3xl md:text-4xl text-center uppercase font-bold text-gray-700 mb-2">Profile Photo Editor</h1>
         <div class="text-md text-center font-medium text-gray-500 mb-10 w-3/4">
-          Please upload an image first before you start editing.<br>For best results, please use a square photo (for now, while I fix it).
+          Add a LinkedIn-inspired banner/badge to your profile photo. You can add anything you want now, not just #opentowork. Any text, color, issue, topic or cause important to you.
         </div>
         <div class="flex md:space-x-20 flex-wrap justify-center md:flex-nowrap">
           <div class="space-y-4 md:w-1/2">
@@ -221,7 +221,12 @@
         image = defaultImage; // Set the image variable to the default image
 	canvas.width = 600
         canvas.height = 600
-	setTimeout(updatePreview, 100); // Run updatePreview() after a 100ms delay
+	// setTimeout(updatePreview, 100); // Run updatePreview() after a 100ms delay
+	if (canvas.width > 0 && canvas.height > 0) {
+    	updatePreview(); // Call updatePreview() directly
+	} else {
+	setTimeout(updatePreview, 100); // Run updatePreview() after a 100ms delay if canvas is not ready
+	}
       };
 
       function updatePreview() {
