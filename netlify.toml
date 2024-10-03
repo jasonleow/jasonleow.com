@@ -1,0 +1,5 @@
+[[redirects]]
+  from = "/profilephotoeditor"
+  to = "https://profilepicture.app"
+  status = 301
+  force = true
