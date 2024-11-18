@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GitHub Contributions Visualizer 2024</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .contribution-cell {
+        width: 10px;
+        height: 10px;
+        margin: 1px;
+        border-radius: 2px;
+      }
+      .month-label {
+        width: 53px;
+        min-width: 53px;
+      }
+      .contribution-graph-container {
+        min-width: max-content;
+        margin-left: 0;
+        width: fit-content;
+      }
+      .graph-wrapper {
+        display: flex;
+        justify-content: flex-start;
+        width: 100%;
+        overflow-x: auto;
+      }
+      .range-inputs {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+      .range-input {
+        width: 3rem;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body class="flex bg-[#ffffff] p-8 justify-center items-center h-screen">
+    <div class="flex flex-shrink-0 flex-grow-0 max-w-5xl mx-auto">
+      <div class="bg-white rounded-lg p-6">
+        <div class="mb-6">
+          <h1 class="text-xl font-semibold mb-4">Contribution settings</h1>
+          <div class="flex gap-4 mb-4">
+            <input
+              type="text"
+              id="username"
+              placeholder="GitHub username"
+              class="border rounded px-3 py-2 min-w-48"
+            />
+            <div class="relative flex-grow">
+              <input
+                type="text"
+                id="token"
+                placeholder="GitHub Personal Access Token"
+                class="border rounded px-3 py-2 w-full"
+              />
+              <div
+                class="absolute inset-y-0 right-0 flex items-center pr-3 group"
+              >
+                <svg
+                  fill="#777777"
+                  version="1.1"
+                  id="Capa_1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  xmlns:xlink="http://www.w3.org/1999/xlink"
+                  viewBox="0 0 416.979 416.979"
+                  xml:space="preserve"
+                  stroke="#777777"
+                  class="w-4 h-4 group-hover:fill-gray-900 group-hover:stroke-gray-900"
+                >
+                  <g stroke-width="0"></g>
+                  <g stroke-linecap="round" stroke-linejoin="round"></g>
+                  <g>
+                    <g>
+                      <path
+                        d="M356.004,61.156c-81.37-81.47-213.377-81.551-294.848-0.182c-81.47,81.371-81.552,213.379-0.181,294.85 c81.369,81.47,213.378,81.551,294.849,0.181C437.293,274.636,437.375,142.626,356.004,61.156z M237.6,340.786 c0,3.217-2.607,5.822-5.822,5.822h-46.576c-3.215,0-5.822-2.605-5.822-5.822V167.885c0-3.217,2.607-5.822,5.822-5.822h46.576 c3.215,0,5.822,2.604,5.822,5.822V340.786z M208.49,137.901c-18.618,0-33.766-15.146-33.766-33.765 c0-18.617,15.147-33.766,33.766-33.766c18.619,0,33.766,15.148,33.766,33.766C242.256,122.755,227.107,137.901,208.49,137.901z"
+                      ></path>
+                    </g>
+                  </g>
+                </svg>
+                <span
+                  class="absolute z-10 w-[22rem] py-2 px-3 text-sm font-medium text-white bg-gray-700 rounded-lg shadow-sm opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300 -top-20 -right-24"
+                >
+                  Create a Personal Access Token in Github, set to just
+                  `read:user` permission scope. Paste the token here.
+                </span>
+              </div>
+            </div>
+            <button
+              onclick="fetchData()"
+              class="bg-[#2da44e] text-white px-4 py-2 rounded-md hover:bg-[#2c974b]"
+            >
+              Load Data
+            </button>
+          </div>
+
+          <div class="grid grid-cols-5 gap-4 mb-6">
+            <div>
+              <label class="block text-sm font-medium mb-1">No commits</label>
+              <input
+                type="color"
+                id="color0"
+                value="#EBEDF0"
+                class="w-24 h-8 rounded cursor-pointer"
+              />
+              <div class="text-sm text-gray-500">0 commits</div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">Level 1</label>
+              <input
+                type="color"
+                id="color1"
+                value="#9BE9A8"
+                class="w-24 h-8 rounded cursor-pointer"
+              />
+              <div class="range-inputs text-sm">
+                <input
+                  type="number"
+                  id="level1-min"
+                  value="1"
+                  min="0"
+                  class="border rounded range-input"
+                />
+                -
+                <input
+                  type="number"
+                  id="level1-max"
+                  value="2"
+                  min="0"
+                  class="border rounded range-input"
+                />
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">Level 2</label>
+              <input
+                type="color"
+                id="color2"
+                value="#40C463"
+                class="w-24 h-8 rounded cursor-pointer"
+              />
+              <div class="range-inputs text-sm">
+                <input
+                  type="number"
+                  id="level2-min"
+                  value="3"
+                  min="0"
+                  class="border rounded range-input"
+                />
+                -
+                <input
+                  type="number"
+                  id="level2-max"
+                  value="5"
+                  min="0"
+                  class="border rounded range-input"
+                />
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">Level 3</label>
+              <input
+                type="color"
+                id="color3"
+                value="#30A14D"
+                class="w-24 h-8 rounded cursor-pointer"
+              />
+              <div class="range-inputs text-sm">
+                <input
+                  type="number"
+                  id="level3-min"
+                  value="6"
+                  min="0"
+                  class="border rounded range-input"
+                />
+                -
+                <input
+                  type="number"
+                  id="level3-max"
+                  value="8"
+                  min="0"
+                  class="border rounded range-input"
+                />
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">Level 4</label>
+              <input
+                type="color"
+                id="color4"
+                value="#216E39"
+                class="w-24 h-8 rounded cursor-pointer"
+              />
+              <div class="range-inputs text-sm">
+                <input
+                  type="number"
+                  id="level4-min"
+                  value="9"
+                  min="0"
+                  class="border rounded range-input"
+                />
+                +
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="error" class="text-red-500 mb-4 hidden"></div>
+
+        <div class="border rounded-lg p-4 bg-white">
+          <h2 class="text-base font-semibold mb-4">
+            <span id="total-commits">0</span> contributions in 2024
+          </h2>
+          <div class="graph-wrapper">
+            <div
+              id="contribution-graph"
+              class="contribution-graph-container"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let contributionData = []
+
+      async function fetchData() {
+        const username = document.getElementById("username").value
+        const token = document.getElementById("token").value
+
+        if (!username || !token) {
+          showError(
+            "Please enter both GitHub username and personal access token",
+          )
+          return
+        }
+
+        const query = `query {
+          user(login: "${username}") {
+            contributionsCollection(from: "2023-12-31T00:00:00Z", to: "2024-12-31T23:59:59Z") {
+              contributionCalendar {
+                totalContributions
+                weeks {
+                  contributionDays {
+                    contributionCount
+                    date
+                    weekday
+                  }
+                }
+              }
+            }
+          }
+        }`
+
+        try {
+          showError("")
+          const response = await fetch("https://api.github.com/graphql", {
+            method: "POST",
+            headers: {
+              Authorization: `bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ query }),
+          })
+
+          if (!response.ok) {
+            throw new Error("Failed to fetch GitHub data")
+          }
+
+          const data = await response.json()
+          if (data.errors) {
+            throw new Error(data.errors[0].message)
+          }
+
+          processGraphQLData(data.data)
+        } catch (error) {
+          showError(error.message)
+        }
+      }
+
+      fetchData()
+
+      function processGraphQLData(data) {
+        const calendar = data.user.contributionsCollection.contributionCalendar
+        contributionData = []
+        let totalContributions = 0
+
+        calendar.weeks.forEach((week) => {
+          week.contributionDays.forEach((day) => {
+            if (day.date.startsWith("2024")) {
+              totalContributions += day.contributionCount
+            }
+            contributionData.push({
+              date: day.date,
+              count: day.contributionCount,
+              weekday: day.weekday,
+            })
+          })
+        })
+
+        document.getElementById("total-commits").textContent =
+          totalContributions
+        renderGraph()
+      }
+
+      function getColorForCount(count) {
+        if (count === 0) return document.getElementById("color0").value
+
+        const level1Min = parseInt(document.getElementById("level1-min").value)
+        const level1Max = parseInt(document.getElementById("level1-max").value)
+        const level2Min = parseInt(document.getElementById("level2-min").value)
+        const level2Max = parseInt(document.getElementById("level2-max").value)
+        const level3Min = parseInt(document.getElementById("level3-min").value)
+        const level3Max = parseInt(document.getElementById("level3-max").value)
+        const level4Min = parseInt(document.getElementById("level4-min").value)
+
+        if (count >= level1Min && count <= level1Max)
+          return document.getElementById("color1").value
+        if (count >= level2Min && count <= level2Max)
+          return document.getElementById("color2").value
+        if (count >= level3Min && count <= level3Max)
+          return document.getElementById("color3").value
+        if (count >= level4Min) return document.getElementById("color4").value
+
+        return document.getElementById("color0").value
+      }
+
+      function renderGraph() {
+        const container = document.getElementById("contribution-graph")
+        container.innerHTML = ""
+
+        const monthLabels = [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ]
+
+        const monthsRow = document.createElement("div")
+        monthsRow.className = "flex ml-[35px] mb-2 text-xs text-gray-500"
+        monthsRow.innerHTML =
+          '<div class="day-label-column"></div>' +
+          monthLabels
+            .map((month) => `<div class="month-label">${month}</div>`)
+            .join("")
+        container.appendChild(monthsRow)
+
+        const graphWrapper = document.createElement("div")
+        graphWrapper.className = "flex"
+
+        const dayLabels = document.createElement("div")
+        dayLabels.className =
+          "flex flex-col gap-[4px] mr-2 text-xs text-gray-500 day-label-column"
+        ;["", "Mon", "", "Wed", "", "Fri", ""].forEach((day) => {
+          const dayLabel = document.createElement("div")
+          dayLabel.className = "h-[10px] leading-[10px]"
+          dayLabel.textContent = day
+          dayLabels.appendChild(dayLabel)
+        })
+        graphWrapper.appendChild(dayLabels)
+
+        const weeks = []
+        let currentWeek = []
+        contributionData.forEach((day, index) => {
+          currentWeek.push(day)
+          if (
+            currentWeek.length === 7 ||
+            index === contributionData.length - 1
+          ) {
+            weeks.push([...currentWeek])
+            currentWeek = []
+          }
+        })
+
+        weeks.forEach((week) => {
+          const weekEl = document.createElement("div")
+          weekEl.className = "flex flex-col gap-[2px]"
+
+          week.forEach((day) => {
+            const dayEl = document.createElement("div")
+            dayEl.className = "contribution-cell"
+            if (day.date === "2023-12-31") {
+              dayEl.style.backgroundColor = "#FFFFFF"
+            } else {
+              dayEl.style.backgroundColor = getColorForCount(day.count)
+              if (day.date.startsWith("2024")) {
+                dayEl.title = `${day.count} contributions on ${day.date}`
+              } else {
+                dayEl.title = "No contributions"
+              }
+            }
+            weekEl.appendChild(dayEl)
+          })
+
+          graphWrapper.appendChild(weekEl)
+        })
+
+        container.appendChild(graphWrapper)
+      }
+
+      function showError(message) {
+        const errorEl = document.getElementById("error")
+        if (message) {
+          errorEl.textContent = message
+          errorEl.classList.remove("hidden")
+        } else {
+          errorEl.classList.add("hidden")
+        }
+      }
+
+      // Update graph when colors or ranges change
+      document
+        .querySelectorAll('input[type="color"], input[type="number"]')
+        .forEach((input) => {
+          input.addEventListener("change", () => {
+            if (contributionData.length > 0) {
+              renderGraph()
+            }
+          })
+        })
+    </script>
+  </body>
+</html>
