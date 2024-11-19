@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GitHub Contributions Visualizer 2024</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dom-to-image@2.6.0/dist/dom-to-image.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
       .contribution-cell {
@@ -12,6 +13,8 @@
         height: 10px;
         margin: 1px;
         border-radius: 2px;
+        outline-offset: -1px;
+        outline: 1px solid rgb(27, 31, 35, 0.06);
       }
       .month-label {
         width: 53px;
@@ -39,7 +42,7 @@
       }
     </style>
   </head>
-  <body class="flex bg-[#ffffff] p-8 justify-center items-center h-screen">
+  <body class="flex bg-white p-8 justify-center items-center h-screen">
     <div class="flex flex-shrink-0 flex-grow-0 max-w-5xl mx-auto">
       <div class="bg-white rounded-lg p-6">
         <div class="mb-6">
@@ -49,17 +52,24 @@
               type="text"
               id="username"
               placeholder="GitHub username"
-              class="border rounded px-3 py-2 min-w-48"
+              value="jasonleow"
+              class="border rounded px-3 py-2 w-40"
             />
+            <!-- <input
+              type="text"
+              id="token"
+              placeholder="GitHub Personal Access Token"
+              class="border rounded px-3 py-2 flex-grow"
+            /> -->
             <div class="relative flex-grow">
               <input
                 type="text"
                 id="token"
                 placeholder="GitHub Personal Access Token"
-                class="border rounded px-3 py-2 w-full"
+                class="border rounded pl-3 pr-8 py-2 w-full"
               />
               <div
-                class="absolute inset-y-0 right-0 flex items-center pr-3 group"
+                class="absolute inset-y-0 right-0 flex items-center pr-3 group z-10"
               >
                 <svg
                   fill="#777777"
@@ -79,6 +89,10 @@
                       <path
                         d="M356.004,61.156c-81.37-81.47-213.377-81.551-294.848-0.182c-81.47,81.371-81.552,213.379-0.181,294.85 c81.369,81.47,213.378,81.551,294.849,0.181C437.293,274.636,437.375,142.626,356.004,61.156z M237.6,340.786 c0,3.217-2.607,5.822-5.822,5.822h-46.576c-3.215,0-5.822-2.605-5.822-5.822V167.885c0-3.217,2.607-5.822,5.822-5.822h46.576 c3.215,0,5.822,2.604,5.822,5.822V340.786z M208.49,137.901c-18.618,0-33.766-15.146-33.766-33.765 c0-18.617,15.147-33.766,33.766-33.766c18.619,0,33.766,15.148,33.766,33.766C242.256,122.755,227.107,137.901,208.49,137.901z"
                       ></path>
+                      <path
+                        d="M237.6,340.786 c0,3.217-2.607,5.822-5.822,5.822h-46.576c-3.215,0-5.822-2.605-5.822-5.822V167.885c0-3.217,2.607-5.822,5.822-5.822h46.576 c3.215,0,5.822,2.604,5.822,5.822V340.786z"
+                        fill="#FFFFFF"
+                      ></path>
                     </g>
                   </g>
                 </svg>
@@ -94,7 +108,13 @@
               onclick="fetchData()"
               class="bg-[#2da44e] text-white px-4 py-2 rounded-md hover:bg-[#2c974b]"
             >
-              Load Data
+              Load data
+            </button>
+            <button
+              onclick="downloadChart()"
+              class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md flex items-center gap-2"
+            >
+              Download chart
             </button>
           </div>
 
@@ -105,7 +125,7 @@
                 type="color"
                 id="color0"
                 value="#EBEDF0"
-                class="w-24 h-8 rounded cursor-pointer"
+                class="w-[118px] h-8 rounded cursor-pointer"
               />
               <div class="text-sm text-gray-500">0 commits</div>
             </div>
@@ -115,7 +135,7 @@
                 type="color"
                 id="color1"
                 value="#9BE9A8"
-                class="w-24 h-8 rounded cursor-pointer"
+                class="w-[118px] h-8 rounded cursor-pointer"
               />
               <div class="range-inputs text-sm">
                 <input
@@ -141,7 +161,7 @@
                 type="color"
                 id="color2"
                 value="#40C463"
-                class="w-24 h-8 rounded cursor-pointer"
+                class="w-[118px] h-8 rounded cursor-pointer"
               />
               <div class="range-inputs text-sm">
                 <input
@@ -167,7 +187,7 @@
                 type="color"
                 id="color3"
                 value="#30A14D"
-                class="w-24 h-8 rounded cursor-pointer"
+                class="w-[118px] h-8 rounded cursor-pointer"
               />
               <div class="range-inputs text-sm">
                 <input
@@ -193,7 +213,7 @@
                 type="color"
                 id="color4"
                 value="#216E39"
-                class="w-24 h-8 rounded cursor-pointer"
+                class="w-[118px] h-8 rounded cursor-pointer"
               />
               <div class="range-inputs text-sm">
                 <input
@@ -211,8 +231,8 @@
 
         <div id="error" class="text-red-500 mb-4 hidden"></div>
 
-        <div class="border rounded-lg p-4 bg-white">
-          <h2 class="text-base font-semibold mb-4">
+        <div id="chart-container" class="border rounded-lg p-4 bg-white">
+          <h2 class="text-base mb-4">
             <span id="total-commits">0</span> contributions in 2024
           </h2>
           <div class="graph-wrapper">
@@ -220,6 +240,30 @@
               id="contribution-graph"
               class="contribution-graph-container"
             ></div>
+          </div>
+          <div class="flex items-center mt-3 text-xs space-x-1 text-gray-500">
+            <div>Less</div>
+            <div
+              class="contribution-cell"
+              style="background-color: rgb(235, 237, 240)"
+            ></div>
+            <div
+              class="contribution-cell"
+              style="background-color: rgb(155, 233, 168)"
+            ></div>
+            <div
+              class="contribution-cell"
+              style="background-color: rgb(64, 196, 99)"
+            ></div>
+            <div
+              class="contribution-cell"
+              style="background-color: rgb(48, 161, 77)"
+            ></div>
+            <div
+              class="contribution-cell"
+              style="background-color: rgb(33, 110, 57)"
+            ></div>
+            <div>More</div>
           </div>
         </div>
       </div>
@@ -349,7 +393,7 @@
         ]
 
         const monthsRow = document.createElement("div")
-        monthsRow.className = "flex ml-[35px] mb-2 text-xs text-gray-500"
+        monthsRow.className = "flex ml-[35px] text-xs text-gray-500"
         monthsRow.innerHTML =
           '<div class="day-label-column"></div>' +
           monthLabels
@@ -393,6 +437,7 @@
             dayEl.className = "contribution-cell"
             if (day.date === "2023-12-31") {
               dayEl.style.backgroundColor = "#FFFFFF"
+              dayEl.style.outline = "none"
             } else {
               dayEl.style.backgroundColor = getColorForCount(day.count)
               if (day.date.startsWith("2024")) {
@@ -430,6 +475,102 @@
             }
           })
         })
+
+      /*async function downloadChart() {
+        const chartContainer = document.getElementById("chart-container")
+
+        try {
+          // Add loading state to button
+          const downloadButton = document.querySelector(
+            'button[onclick="downloadChart()"]',
+          )
+          const originalContent = downloadButton.innerHTML
+          downloadButton.innerHTML = `
+            <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Generating...
+          `
+          downloadButton.disabled = true
+
+          // Create canvas from the chart container
+          const canvas = await html2canvas(chartContainer, {
+            backgroundColor: "#ffffff",
+            scale: 2, // Higher quality
+            logging: false,
+            useCORS: true,
+          })
+
+          // Create download link
+          const link = document.createElement("a")
+          link.download = `github-contributions-${new Date().toISOString().split("T")[0]}.png`
+          link.href = canvas.toDataURL("image/png")
+          link.click()
+
+          // Restore button state
+          downloadButton.innerHTML = originalContent
+          downloadButton.disabled = false
+        } catch (error) {
+          console.error("Error generating image:", error)
+          showError("Failed to generate image. Please try again.")
+        }
+      } */
+
+      async function downloadChart() {
+        const chartContainer = document.getElementById("chart-container")
+
+        try {
+          // Add loading state to button
+          const downloadButton = document.querySelector(
+            'button[onclick="downloadChart()"]',
+          )
+          const originalContent = downloadButton.innerHTML
+          downloadButton.innerHTML = `
+          <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Generating...
+        `
+          downloadButton.disabled = true
+
+          const width = 1024
+          const height = 322
+          const scaleFactor = Math.max(
+            width / chartContainer.offsetWidth,
+            height / chartContainer.offsetHeight,
+          )
+
+          // Create canvas from the chart container
+          const canvas = await domtoimage.toPng(chartContainer, {
+            quality: 1,
+            /* width: 1024,
+						height: 322,
+            style: {
+              transform: 'scale(1.4)',
+              transformOrigin: '0 0',
+            }, */
+            /* style: {
+              transform: `scale(${scaleFactor})`,
+              transformOrigin: "0 0",
+            }, */
+          })
+
+          // Create download link
+          const link = document.createElement("a")
+          link.download = `github-contributions-${new Date().toISOString().split("T")[0]}.png`
+          link.href = canvas
+          link.click()
+
+          // Restore button state
+          downloadButton.innerHTML = originalContent
+          downloadButton.disabled = false
+        } catch (error) {
+          console.error("Error generating image:", error)
+          showError("Failed to generate image. Please try again.")
+        }
+      }
     </script>
   </body>
 </html>
