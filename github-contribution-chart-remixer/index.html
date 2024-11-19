@@ -244,22 +244,27 @@
             <div>Less</div>
             <div
               class="contribution-cell"
+              data-color-id="color0"
               style="background-color: rgb(235, 237, 240)"
             ></div>
             <div
               class="contribution-cell"
+              data-color-id="color1"
               style="background-color: rgb(155, 233, 168)"
             ></div>
             <div
               class="contribution-cell"
+              data-color-id="color2"
               style="background-color: rgb(64, 196, 99)"
             ></div>
             <div
               class="contribution-cell"
+              data-color-id="color3"              
               style="background-color: rgb(48, 161, 77)"
             ></div>
             <div
               class="contribution-cell"
+              data-color-id="color4"
               style="background-color: rgb(33, 110, 57)"
             ></div>
             <div>More</div>
@@ -570,6 +575,17 @@
           showError("Failed to generate image. Please try again.")
         }
       }
+      
+      document.querySelectorAll('input[type="color"]').forEach((input) => {
+        input.addEventListener("change", (e) => {
+          const colorValue = e.target.value;
+          const colorId = e.target.id;
+          const contributionCell = document.querySelector(`.contribution-cell[data-color-id="${colorId}"]`);
+          if (contributionCell) {
+            contributionCell.style.backgroundColor = colorValue;
+          }
+        });
+      });
     </script>
   </body>
 </html>
