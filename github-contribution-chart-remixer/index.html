@@ -36,7 +36,10 @@
       property="twitter:description"
       content="GitHub Chart Remixer - Set your own contribution levels & colors to your Github commits contribution chart. Made by Jason Leow @jasonleowsg"
     />
-    <meta property="twitter:image" content="/github-chart-remixer-ogimage.png" />
+    <meta
+      property="twitter:image"
+      content="/github-chart-remixer-ogimage.png"
+    />
 
     <!-- <link rel="canonical" href="https://jasonleow.com/github-contribution-chart-remixer/"> -->
 
@@ -95,6 +98,33 @@
   </head>
 
   <body>
+    <div
+      id="save-palette-modal"
+      class="hidden fixed inset-0 bg-gray-200 bg-opacity-75 flex items-center justify-center z-10"
+    >
+      <div class="bg-white rounded-lg p-4 w-96">
+        <h2 class="text-base font-bold mb-2">Save Current Palette</h2>
+        <input
+          id="palette-name"
+          type="text"
+          class="w-full p-2 mb-2 border border-gray-300 rounded"
+          placeholder="Enter palette name"
+        />
+        <button
+          id="save-palette-button"
+          class="bg-[#2da44e] hover:bg-[#2c974b] text-white font-bold py-2 px-4 rounded-md"
+        >
+          Save
+        </button>
+        <button
+          id="cancel-save-palette-button"
+          class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-md"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+
     <div class="flex bg-white p-8 justify-center items-center h-screen">
       <div class="flex flex-shrink-0 flex-grow-0 max-w-5xl mx-auto">
         <div class="bg-white rounded-lg p-6">
@@ -121,7 +151,7 @@
                   class="border rounded pl-3 pr-8 py-2 w-full"
                 />
                 <div
-                  class="absolute inset-y-0 right-0 flex items-center pr-3 group z-10"
+                  class="absolute inset-y-0 right-0 flex items-center pr-3 group"
                 >
                   <svg
                     fill="#777777"
@@ -279,6 +309,113 @@
                 </div>
               </div>
             </div>
+            <div class="flex items-center flex-wrap max-w-[720px] gap-2">
+              <button
+                onclick="quickColorSwitch(this)"
+                data-palette="Spring"
+                class="border border-gray-300 text-xs text-gray-800 h-9 px-3 py-2 rounded-md flex items-center gap-1"
+              >
+                <div class="flex flex-col gap-[1px] justify-center">
+                  <div class="flex gap-[1px] justify-center">
+                    <span class="w-2 h-2 rounded-sm bg-[#EDEBF0]"></span>
+                    <span class="w-2 h-2 rounded-sm bg-[#F6D6D6]"></span>
+                  </div>
+                  <div class="flex gap-[1px] justify-center">
+                    <span class="w-2 h-2 rounded-sm bg-[#F6F7C4]"></span>
+                    <span class="w-2 h-2 rounded-sm bg-[#A1EEBD]"></span>
+                    <span class="w-2 h-2 rounded-sm bg-[#7BD3EA]"></span>
+                  </div>
+                </div>
+                <div class="ml-2">Spring</div>
+              </button>
+
+              <button
+                onclick="quickColorSwitch(this)"
+                data-palette="Summer"
+                class="border border-gray-300 text-xs text-gray-800 h-9 px-3 py-2 rounded-md flex items-center gap-1"
+              >
+                <div class="flex flex-col gap-[1px] justify-center">
+                  <div class="flex gap-[1px] justify-center">
+                    <span class="w-2 h-2 rounded-sm bg-[#FFFBD1]"></span>
+                    <span class="w-2 h-2 rounded-sm bg-[#FCF596]"></span>
+                  </div>
+                  <div class="flex gap-[1px] justify-center">
+                    <span class="w-2 h-2 rounded-sm bg-[#FBD288]"></span>
+                    <span class="w-2 h-2 rounded-sm bg-[#FF9C73]"></span>
+                    <span class="w-2 h-2 rounded-sm bg-[#FF4545]"></span>
+                  </div>
+                </div>
+                <div class="ml-2">Summer</div>
+              </button>
+
+              <button
+                onclick="quickColorSwitch(this)"
+                data-palette="Autumn"
+                class="border border-gray-300 text-xs text-gray-800 h-9 px-3 py-2 rounded-md flex items-center gap-1"
+              >
+                <div class="flex flex-col gap-[1px] justify-center">
+                  <div class="flex gap-[1px] justify-center">
+                    <span class="w-2 h-2 rounded-sm bg-[#FFEFCF]"></span>
+                    <span class="w-2 h-2 rounded-sm bg-[#FF7A00]"></span>
+                  </div>
+                  <div class="flex gap-[1px] justify-center">
+                    <span class="w-2 h-2 rounded-sm bg-[#D44000]"></span>
+                    <span class="w-2 h-2 rounded-sm bg-[#864000]"></span>
+                    <span class="w-2 h-2 rounded-sm bg-[#310B0B]"></span>
+                  </div>
+                </div>
+                <div class="ml-2">Autumn</div>
+              </button>
+
+              <button
+                onclick="quickColorSwitch(this)"
+                data-palette="Winter"
+                class="border border-gray-300 text-xs text-gray-800 h-9 px-3 py-2 rounded-md flex items-center gap-1"
+              >
+                <div class="flex flex-col gap-[1px] justify-center">
+                  <div class="flex gap-[1px] justify-center">
+                    <span class="w-2 h-2 rounded-sm bg-[#66CCCC]"></span>
+                    <span class="w-2 h-2 rounded-sm bg-[#87CEEB]"></span>
+                  </div>
+                  <div class="flex gap-[1px] justify-center">
+                    <span class="w-2 h-2 rounded-sm bg-[#4682B4]"></span>
+                    <span class="w-2 h-2 rounded-sm bg-[#6495ED]"></span>
+                    <span class="w-2 h-2 rounded-sm bg-[#4169E1]"></span>
+                  </div>
+                </div>
+                <div class="ml-2">Winter</div>
+              </button>
+
+              <div
+                id="saved-palettes-container"
+                class="hidden flex flex-wrap"
+              ></div>
+
+              <button
+                id="save-current-palette-button"
+                class="border border-gray-300 text-xs text-gray-800 h-9 px-3 py-2 rounded-md flex items-center gap-1"
+              >
+                <div
+                  class="flex items-center justify-center w-4 h-4 bg-gray-200 rounded-full cursor-pointer hover:bg-green-400"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 text-gray-500 hover:text-white"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    />
+                  </svg>
+                </div>
+                Save current palette
+              </button>
+            </div>
           </div>
 
           <div id="error" class="text-red-500 mb-4 hidden"></div>
@@ -347,7 +484,7 @@
       <div>
         More random fun tools:
         <a
-          href="https://jasonleow.com"
+          href="https://profilepicture.app/"
           target="_blank"
           class="text-blue-600 hover:text-blue-800"
           >Profile picture editor</a
@@ -686,6 +823,217 @@
           }
         })
       })
+
+      // DEFAULT COLOR PALETTES HERE
+      const colorPalettes = {
+        Spring: ["#EDEBF0", "#F6D6D6", "#F6F7C4", "#A1EEBD", "#7BD3EA"],
+        Summer: ["#FFFBD1", "#FCF596", "#FBD288", "#FF9C73", "#FF4545"],
+        Autumn: ["#FDF1D6", "#F2A154", "#BECA5C", "#FB743E", "#314E52"],
+        Winter: ["#66CCCC", "#87CEEB", "#4682B4", "#6495ED", "#4169E1"],
+      }
+
+      function quickColorSwitch(button) {
+        const paletteName = button.getAttribute("data-palette")
+        const color0 = document.getElementById("color0")
+        const color1 = document.getElementById("color1")
+        const color2 = document.getElementById("color2")
+        const color3 = document.getElementById("color3")
+        const color4 = document.getElementById("color4")
+
+        const palette = colorPalettes[paletteName]
+        if (palette) {
+          color0.value = palette[0]
+          color1.value = palette[1]
+          color2.value = palette[2]
+          color3.value = palette[3]
+          color4.value = palette[4]
+
+          const legendCells = document.querySelectorAll("[data-color-id]")
+          legendCells.forEach((cell) => {
+            const colorId = cell.getAttribute("data-color-id")
+            const colorValue = document.getElementById(colorId).value
+            cell.style.backgroundColor = colorValue
+          })
+        }
+
+        renderGraph()
+      }
+
+      // ------------------------------ ------------ //
+      // --- Functions for saving color palettes --- //
+      // ------------------------------ ------------ //
+
+      // Add an event listener to the save current palette button
+      document
+        .getElementById("save-current-palette-button")
+        .addEventListener("click", () => {
+          document.getElementById("palette-name").value = ""
+          document
+            .getElementById("save-palette-modal")
+            .classList.remove("hidden")
+        })
+
+      // Add an event listener to the save palette button
+      document
+        .getElementById("save-palette-button")
+        .addEventListener("click", () => {
+          const paletteName = document.getElementById("palette-name").value
+          const color0 = document.getElementById("color0").value
+          const color1 = document.getElementById("color1").value
+          const color2 = document.getElementById("color2").value
+          const color3 = document.getElementById("color3").value
+          const color4 = document.getElementById("color4").value
+
+          const palettes = JSON.parse(localStorage.getItem("palettes")) || {}
+
+          if (palettes[paletteName]) {
+            alert(
+              "A palette with this name already exists. Please choose a different name.",
+            )
+            return
+          }
+
+          // Save the palette to local storage
+          palettes[paletteName] = [color0, color1, color2, color3, color4]
+          localStorage.setItem("palettes", JSON.stringify(palettes))
+
+          // Display the saved palettes
+          displaySavedPalettes()
+
+          // Close the modal
+          document.getElementById("save-palette-modal").classList.add("hidden")
+        })
+
+      // Add an event listener to the cancel save palette button
+      document
+        .getElementById("cancel-save-palette-button")
+        .addEventListener("click", () => {
+          document.getElementById("save-palette-modal").classList.add("hidden")
+        })
+
+      function displaySavedPalettes() {
+        const palettes = JSON.parse(localStorage.getItem("palettes")) || {}
+        const savedPalettesContainer = document.getElementById(
+          "saved-palettes-container",
+        )
+
+        savedPalettesContainer.innerHTML = ""
+
+        Object.keys(palettes).forEach((paletteName) => {
+          const palette = palettes[paletteName]
+          const paletteButton = document.createElement("button")
+
+          // Unhide the saved-palettes-container element and add gap-2 to it
+          savedPalettesContainer.classList.remove("hidden")
+          savedPalettesContainer.classList.add("gap-2")
+
+          paletteButton.className =
+            "border border-gray-300 text-xs text-gray-800 px-3 py-2 rounded-md flex items-center gap-1 relative"
+
+          const colorContainer = document.createElement("div")
+          colorContainer.className = "flex flex-col gap-[1px] justify-center"
+
+          const topColors = document.createElement("div")
+          topColors.className = "flex gap-[1px] justify-center"
+          const color0 = document.createElement("span")
+          color0.className = "w-2 h-2 rounded-sm"
+          color0.style.backgroundColor = palette[0]
+          const color1 = document.createElement("span")
+          color1.className = "w-2 h-2 rounded-sm"
+          color1.style.backgroundColor = palette[1]
+          topColors.appendChild(color0)
+          topColors.appendChild(color1)
+
+          const bottomColors = document.createElement("div")
+          bottomColors.className = "flex gap-[1px] justify-center"
+          const color2 = document.createElement("span")
+          color2.className = "w-2 h-2 rounded-sm"
+          color2.style.backgroundColor = palette[2]
+          const color3 = document.createElement("span")
+          color3.className = "w-2 h-2 rounded-sm"
+          color3.style.backgroundColor = palette[3]
+          const color4 = document.createElement("span")
+          color4.className = "w-2 h-2 rounded-sm"
+          color4.style.backgroundColor = palette[4]
+          bottomColors.appendChild(color2)
+          bottomColors.appendChild(color3)
+          bottomColors.appendChild(color4)
+
+          colorContainer.appendChild(topColors)
+          colorContainer.appendChild(bottomColors)
+
+          const paletteNameContainer = document.createElement("div")
+          paletteNameContainer.className = "ml-2 pr-3"
+          paletteNameContainer.textContent = paletteName
+
+          const deleteButton = document.createElement("div")
+          deleteButton.className =
+            "flex items-center justify-center w-4 h-4 bg-gray-200 rounded-full cursor-pointer hover:bg-red-400 hover:text-white"
+          const deleteIcon = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "svg",
+          )
+          deleteIcon.className = "h-4 w-4 text-gray-500"
+          deleteIcon.setAttribute("viewBox", "0 0 24 24")
+          deleteIcon.setAttribute("fill", "none")
+          deleteIcon.setAttribute("stroke", "currentColor")
+          deleteIcon.setAttribute("stroke-width", "2")
+          const deletePath = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "path",
+          )
+          deletePath.setAttribute("stroke-linecap", "round")
+          deletePath.setAttribute("stroke-linejoin", "round")
+          deletePath.setAttribute("d", "M12 6v6m0 0v6m0-6h6m-6 0H6")
+          deletePath.setAttribute("transform", "rotate(45 12 12)")
+          deleteIcon.appendChild(deletePath)
+          deleteButton.appendChild(deleteIcon)
+
+          paletteButton.appendChild(colorContainer)
+          paletteButton.appendChild(paletteNameContainer)
+          paletteButton.appendChild(deleteButton)
+
+          paletteButton.addEventListener("click", (e) => {
+            if (e.target.tagName === "svg") {
+              // Remove the palette from local storage
+              const palettes =
+                JSON.parse(localStorage.getItem("palettes")) || {}
+              delete palettes[paletteName]
+              localStorage.setItem("palettes", JSON.stringify(palettes))
+
+              // Remove the button from the view
+              paletteButton.remove()
+
+              return
+            }
+
+            const color0 = document.getElementById("color0")
+            const color1 = document.getElementById("color1")
+            const color2 = document.getElementById("color2")
+            const color3 = document.getElementById("color3")
+            const color4 = document.getElementById("color4")
+
+            color0.value = palette[0]
+            color1.value = palette[1]
+            color2.value = palette[2]
+            color3.value = palette[3]
+            color4.value = palette[4]
+
+            const legendCells = document.querySelectorAll("[data-color-id]")
+            legendCells.forEach((cell) => {
+              const colorId = cell.getAttribute("data-color-id")
+              const colorValue = document.getElementById(colorId).value
+              cell.style.backgroundColor = colorValue
+            })
+
+            renderGraph()
+          })
+
+          savedPalettesContainer.appendChild(paletteButton)
+        })
+      }
+
+      displaySavedPalettes()
     </script>
   </body>
 </html>
