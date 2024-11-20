@@ -3,10 +3,61 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GitHub Contributions Visualizer 2024</title>
+    <title>GitHub Chart Remixer</title>
+
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="GitHub Chart Remixer" />
+    <meta
+      name="description"
+      content="GitHub Chart Remixer - Set your own contribution levels & colors to your Github commits contribution chart. Made by Jason Leow @jasonleowsg"
+    />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:url"
+      content="https://jasonleow.com/github-contribution-chart-remixer/"
+    />
+    <meta property="og:title" content="GitHub Chart Remixer" />
+    <meta
+      property="og:description"
+      content="GitHub Chart Remixer - Set your own contribution levels & colors to your Github commits contribution chart. Made by Jason Leow @jasonleowsg"
+    />
+    <meta property="og:image" content="/profilepictureapp-ogimage.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta
+      property="twitter:url"
+      content="https://jasonleow.com/github-contribution-chart-remixer/"
+    />
+    <meta property="twitter:title" content="GitHub Chart Remixer" />
+    <meta
+      property="twitter:description"
+      content="GitHub Chart Remixer - Set your own contribution levels & colors to your Github commits contribution chart. Made by Jason Leow @jasonleowsg"
+    />
+    <meta property="twitter:image" content="/profilepictureapp-ogimage.png" />
+
+    <!-- <link rel="canonical" href="https://profilepicture.app"> -->
+
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/profilepictureapp-icon-v2-64px.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/profilepictureapp-icon-v2-64px.png"
+    />
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dom-to-image@2.6.0/dist/dom-to-image.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+
     <style>
       .contribution-cell {
         width: 10px;
@@ -42,234 +93,281 @@
       }
     </style>
   </head>
-  <body class="flex bg-white p-8 justify-center items-center h-screen">
-    <div class="flex flex-shrink-0 flex-grow-0 max-w-5xl mx-auto">
-      <div class="bg-white rounded-lg p-6">
-        <div class="mb-6">
-          <h1 class="text-xl font-semibold mb-4">Contribution settings</h1>
-          <div class="flex gap-4 mb-4">
-            <input
-              type="text"
-              id="username"
-              placeholder="GitHub username"
-              class="border rounded px-3 py-2 w-40"
-            />
-            <!-- <input
+
+  <body>
+    <div class="flex bg-white p-8 justify-center items-center h-screen">
+      <div class="flex flex-shrink-0 flex-grow-0 max-w-5xl mx-auto">
+        <div class="bg-white rounded-lg p-6">
+          <div class="mb-6">
+            <h1 class="text-xl font-semibold mb-4">Contribution settings</h1>
+            <div class="flex gap-4 mb-4">
+              <input
+                type="text"
+                id="username"
+                placeholder="GitHub username"
+                class="border rounded px-3 py-2 w-40"
+              />
+              <!-- <input
               type="text"
               id="token"
               placeholder="GitHub Personal Access Token"
               class="border rounded px-3 py-2 flex-grow"
             /> -->
-            <div class="relative flex-grow">
-              <input
-                type="text"
-                id="token"
-                placeholder="GitHub Personal Access Token"
-                class="border rounded pl-3 pr-8 py-2 w-full"
-              />
-              <div
-                class="absolute inset-y-0 right-0 flex items-center pr-3 group z-10"
-              >
-                <svg
-                  fill="#777777"
-                  version="1.1"
-                  id="Capa_1"
-                  xmlns="http://www.w3.org/2000/svg"
-                  xmlns:xlink="http://www.w3.org/1999/xlink"
-                  viewBox="0 0 416.979 416.979"
-                  xml:space="preserve"
-                  stroke="#777777"
-                  class="w-4 h-4 group-hover:fill-gray-900 group-hover:stroke-gray-900"
+              <div class="relative flex-grow">
+                <input
+                  type="text"
+                  id="token"
+                  placeholder="GitHub Personal Access Token"
+                  class="border rounded pl-3 pr-8 py-2 w-full"
+                />
+                <div
+                  class="absolute inset-y-0 right-0 flex items-center pr-3 group z-10"
                 >
-                  <g stroke-width="0"></g>
-                  <g stroke-linecap="round" stroke-linejoin="round"></g>
-                  <g>
+                  <svg
+                    fill="#777777"
+                    version="1.1"
+                    id="Capa_1"
+                    xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink"
+                    viewBox="0 0 416.979 416.979"
+                    xml:space="preserve"
+                    stroke="#777777"
+                    class="w-4 h-4 group-hover:fill-gray-900 group-hover:stroke-gray-900"
+                  >
+                    <g stroke-width="0"></g>
+                    <g stroke-linecap="round" stroke-linejoin="round"></g>
                     <g>
-                      <path
-                        d="M356.004,61.156c-81.37-81.47-213.377-81.551-294.848-0.182c-81.47,81.371-81.552,213.379-0.181,294.85 c81.369,81.47,213.378,81.551,294.849,0.181C437.293,274.636,437.375,142.626,356.004,61.156z M237.6,340.786 c0,3.217-2.607,5.822-5.822,5.822h-46.576c-3.215,0-5.822-2.605-5.822-5.822V167.885c0-3.217,2.607-5.822,5.822-5.822h46.576 c3.215,0,5.822,2.604,5.822,5.822V340.786z M208.49,137.901c-18.618,0-33.766-15.146-33.766-33.765 c0-18.617,15.147-33.766,33.766-33.766c18.619,0,33.766,15.148,33.766,33.766C242.256,122.755,227.107,137.901,208.49,137.901z"
-                      ></path>
-                      <path
-                        d="M237.6,340.786 c0,3.217-2.607,5.822-5.822,5.822h-46.576c-3.215,0-5.822-2.605-5.822-5.822V167.885c0-3.217,2.607-5.822,5.822-5.822h46.576 c3.215,0,5.822,2.604,5.822,5.822V340.786z"
-                        fill="#FFFFFF"
-                      ></path>
+                      <g>
+                        <path
+                          d="M356.004,61.156c-81.37-81.47-213.377-81.551-294.848-0.182c-81.47,81.371-81.552,213.379-0.181,294.85 c81.369,81.47,213.378,81.551,294.849,0.181C437.293,274.636,437.375,142.626,356.004,61.156z M237.6,340.786 c0,3.217-2.607,5.822-5.822,5.822h-46.576c-3.215,0-5.822-2.605-5.822-5.822V167.885c0-3.217,2.607-5.822,5.822-5.822h46.576 c3.215,0,5.822,2.604,5.822,5.822V340.786z M208.49,137.901c-18.618,0-33.766-15.146-33.766-33.765 c0-18.617,15.147-33.766,33.766-33.766c18.619,0,33.766,15.148,33.766,33.766C242.256,122.755,227.107,137.901,208.49,137.901z"
+                        ></path>
+                        <path
+                          d="M237.6,340.786 c0,3.217-2.607,5.822-5.822,5.822h-46.576c-3.215,0-5.822-2.605-5.822-5.822V167.885c0-3.217,2.607-5.822,5.822-5.822h46.576 c3.215,0,5.822,2.604,5.822,5.822V340.786z"
+                          fill="#FFFFFF"
+                        ></path>
+                      </g>
                     </g>
-                  </g>
-                </svg>
-                <span
-                  class="absolute z-10 w-[22rem] py-2 px-3 text-sm font-medium text-white bg-gray-700 rounded-lg shadow-sm opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300 -top-20 -right-24"
-                >
-                  Create a Personal Access Token in Github, set to just
-                  `read:user` permission scope. Paste the token here.
-                </span>
+                  </svg>
+                  <span
+                    class="absolute z-10 w-[22rem] py-2 px-3 text-sm font-medium text-white bg-gray-700 rounded-lg shadow-sm opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300 -top-20 -right-24"
+                  >
+                    Create a Personal Access Token in Github, set to just
+                    `read:user` permission scope. Paste the token here.
+                  </span>
+                </div>
+              </div>
+              <button
+                onclick="fetchData()"
+                class="bg-[#2da44e] text-white px-4 py-2 rounded-md hover:bg-[#2c974b]"
+              >
+                Load data
+              </button>
+              <button
+                onclick="downloadChart()"
+                class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md flex items-center gap-2"
+              >
+                Download chart
+              </button>
+            </div>
+
+            <div class="grid grid-cols-5 gap-4 mb-6">
+              <div>
+                <label class="block text-sm font-medium mb-1">No commits</label>
+                <input
+                  type="color"
+                  id="color0"
+                  value="#EBEDF0"
+                  class="w-[118px] h-8 rounded cursor-pointer"
+                />
+                <div class="text-sm text-gray-500">0 commits</div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Level 1</label>
+                <input
+                  type="color"
+                  id="color1"
+                  value="#9BE9A8"
+                  class="w-[118px] h-8 rounded cursor-pointer"
+                />
+                <div class="range-inputs text-sm">
+                  <input
+                    type="number"
+                    id="level1-min"
+                    value="1"
+                    min="0"
+                    class="border rounded range-input"
+                  />
+                  -
+                  <input
+                    type="number"
+                    id="level1-max"
+                    value="2"
+                    min="0"
+                    class="border rounded range-input"
+                  />
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Level 2</label>
+                <input
+                  type="color"
+                  id="color2"
+                  value="#40C463"
+                  class="w-[118px] h-8 rounded cursor-pointer"
+                />
+                <div class="range-inputs text-sm">
+                  <input
+                    type="number"
+                    id="level2-min"
+                    value="3"
+                    min="0"
+                    class="border rounded range-input"
+                  />
+                  -
+                  <input
+                    type="number"
+                    id="level2-max"
+                    value="5"
+                    min="0"
+                    class="border rounded range-input"
+                  />
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Level 3</label>
+                <input
+                  type="color"
+                  id="color3"
+                  value="#30A14D"
+                  class="w-[118px] h-8 rounded cursor-pointer"
+                />
+                <div class="range-inputs text-sm">
+                  <input
+                    type="number"
+                    id="level3-min"
+                    value="6"
+                    min="0"
+                    class="border rounded range-input"
+                  />
+                  -
+                  <input
+                    type="number"
+                    id="level3-max"
+                    value="8"
+                    min="0"
+                    class="border rounded range-input"
+                  />
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Level 4</label>
+                <input
+                  type="color"
+                  id="color4"
+                  value="#216E39"
+                  class="w-[118px] h-8 rounded cursor-pointer"
+                />
+                <div class="range-inputs text-sm">
+                  <input
+                    type="number"
+                    id="level4-min"
+                    value="9"
+                    min="0"
+                    class="border rounded range-input"
+                  />
+                  +
+                </div>
               </div>
             </div>
-            <button
-              onclick="fetchData()"
-              class="bg-[#2da44e] text-white px-4 py-2 rounded-md hover:bg-[#2c974b]"
-            >
-              Load data
-            </button>
-            <button
-              onclick="downloadChart()"
-              class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md flex items-center gap-2"
-            >
-              Download chart
-            </button>
           </div>
 
-          <div class="grid grid-cols-5 gap-4 mb-6">
-            <div>
-              <label class="block text-sm font-medium mb-1">No commits</label>
-              <input
-                type="color"
-                id="color0"
-                value="#EBEDF0"
-                class="w-[118px] h-8 rounded cursor-pointer"
-              />
-              <div class="text-sm text-gray-500">0 commits</div>
+          <div id="error" class="text-red-500 mb-4 hidden"></div>
+
+          <div id="chart-container" class="border rounded-lg p-4 bg-white">
+            <h2 class="text-base mb-4">
+              <span id="total-commits">0</span> contributions in 2024
+            </h2>
+            <div class="graph-wrapper">
+              <div
+                id="contribution-graph"
+                class="contribution-graph-container"
+              ></div>
             </div>
-            <div>
-              <label class="block text-sm font-medium mb-1">Level 1</label>
-              <input
-                type="color"
-                id="color1"
-                value="#9BE9A8"
-                class="w-[118px] h-8 rounded cursor-pointer"
-              />
-              <div class="range-inputs text-sm">
-                <input
-                  type="number"
-                  id="level1-min"
-                  value="1"
-                  min="0"
-                  class="border rounded range-input"
-                />
-                -
-                <input
-                  type="number"
-                  id="level1-max"
-                  value="2"
-                  min="0"
-                  class="border rounded range-input"
-                />
-              </div>
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1">Level 2</label>
-              <input
-                type="color"
-                id="color2"
-                value="#40C463"
-                class="w-[118px] h-8 rounded cursor-pointer"
-              />
-              <div class="range-inputs text-sm">
-                <input
-                  type="number"
-                  id="level2-min"
-                  value="3"
-                  min="0"
-                  class="border rounded range-input"
-                />
-                -
-                <input
-                  type="number"
-                  id="level2-max"
-                  value="5"
-                  min="0"
-                  class="border rounded range-input"
-                />
-              </div>
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1">Level 3</label>
-              <input
-                type="color"
-                id="color3"
-                value="#30A14D"
-                class="w-[118px] h-8 rounded cursor-pointer"
-              />
-              <div class="range-inputs text-sm">
-                <input
-                  type="number"
-                  id="level3-min"
-                  value="6"
-                  min="0"
-                  class="border rounded range-input"
-                />
-                -
-                <input
-                  type="number"
-                  id="level3-max"
-                  value="8"
-                  min="0"
-                  class="border rounded range-input"
-                />
-              </div>
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1">Level 4</label>
-              <input
-                type="color"
-                id="color4"
-                value="#216E39"
-                class="w-[118px] h-8 rounded cursor-pointer"
-              />
-              <div class="range-inputs text-sm">
-                <input
-                  type="number"
-                  id="level4-min"
-                  value="9"
-                  min="0"
-                  class="border rounded range-input"
-                />
-                +
-              </div>
+            <div class="flex items-center mt-3 text-xs space-x-1 text-gray-500">
+              <div>Less</div>
+              <div
+                class="contribution-cell"
+                data-color-id="color0"
+                style="background-color: rgb(235, 237, 240)"
+              ></div>
+              <div
+                class="contribution-cell"
+                data-color-id="color1"
+                style="background-color: rgb(155, 233, 168)"
+              ></div>
+              <div
+                class="contribution-cell"
+                data-color-id="color2"
+                style="background-color: rgb(64, 196, 99)"
+              ></div>
+              <div
+                class="contribution-cell"
+                data-color-id="color3"
+                style="background-color: rgb(48, 161, 77)"
+              ></div>
+              <div
+                class="contribution-cell"
+                data-color-id="color4"
+                style="background-color: rgb(33, 110, 57)"
+              ></div>
+              <div>More</div>
             </div>
           </div>
         </div>
+      </div>
+    </div>
 
-        <div id="error" class="text-red-500 mb-4 hidden"></div>
-
-        <div id="chart-container" class="border rounded-lg p-4 bg-white">
-          <h2 class="text-base mb-4">
-            <span id="total-commits">0</span> contributions in 2024
-          </h2>
-          <div class="graph-wrapper">
-            <div
-              id="contribution-graph"
-              class="contribution-graph-container"
-            ></div>
-          </div>
-          <div class="flex items-center mt-3 text-xs space-x-1 text-gray-500">
-            <div>Less</div>
-            <div
-              class="contribution-cell"
-              data-color-id="color0"
-              style="background-color: rgb(235, 237, 240)"
-            ></div>
-            <div
-              class="contribution-cell"
-              data-color-id="color1"
-              style="background-color: rgb(155, 233, 168)"
-            ></div>
-            <div
-              class="contribution-cell"
-              data-color-id="color2"
-              style="background-color: rgb(64, 196, 99)"
-            ></div>
-            <div
-              class="contribution-cell"
-              data-color-id="color3"              
-              style="background-color: rgb(48, 161, 77)"
-            ></div>
-            <div
-              class="contribution-cell"
-              data-color-id="color4"
-              style="background-color: rgb(33, 110, 57)"
-            ></div>
-            <div>More</div>
-          </div>
-        </div>
+    <div class="text-center text-sm mt-20 mb-3 space-y-3">
+      <div>
+        A project by
+        <a
+          href="https://jasonleow.com"
+          target="_blank"
+          class="text-blue-600 hover:text-blue-800"
+          >Jason Leow</a
+        >
+        <a
+          href="https://x.com/jasonleowsg"
+          target="_blank"
+          class="text-blue-600 hover:text-blue-800"
+          >@jasonleowsg</a
+        >
+      </div>
+      <div>—</div>
+      <div>
+        More random fun tools:
+        <a
+          href="https://jasonleow.com"
+          target="_blank"
+          class="text-blue-600 hover:text-blue-800"
+          >Profile picture editor</a
+        >
+        |
+        <a
+          href="https://jasonleow.com/bluescreenofdeath/"
+          target="_blank"
+          class="text-blue-600 hover:text-blue-800"
+        >
+          Blue Screen Of Death</a
+        >
+        |
+        <a
+          href="https://jasonleow.com/icq/"
+          target="_blank"
+          class="text-blue-600 hover:text-blue-800"
+        >
+          ICQ</a
+        >
       </div>
     </div>
 
@@ -351,7 +449,7 @@
         })
 
         document.getElementById("total-commits").textContent =
-          totalContributions
+          totalContributions + 1 // offset cos always seem 1 short from
         renderGraph()
       }
 
@@ -575,17 +673,19 @@
           showError("Failed to generate image. Please try again.")
         }
       }
-      
+
       document.querySelectorAll('input[type="color"]').forEach((input) => {
         input.addEventListener("change", (e) => {
-          const colorValue = e.target.value;
-          const colorId = e.target.id;
-          const contributionCell = document.querySelector(`.contribution-cell[data-color-id="${colorId}"]`);
+          const colorValue = e.target.value
+          const colorId = e.target.id
+          const contributionCell = document.querySelector(
+            `.contribution-cell[data-color-id="${colorId}"]`,
+          )
           if (contributionCell) {
-            contributionCell.style.backgroundColor = colorValue;
+            contributionCell.style.backgroundColor = colorValue
           }
-        });
-      });
+        })
+      })
     </script>
   </body>
 </html>
