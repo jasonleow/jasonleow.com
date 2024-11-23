@@ -128,8 +128,13 @@
     <div class="flex bg-white p-8 justify-center items-center h-screen">
       <div class="flex flex-shrink-0 flex-grow-0 max-w-5xl mx-auto">
         <div class="bg-white rounded-lg p-6">
+          <h1 class="text-3xl font-semibold">GitHub Chart Remixer</h1>
+          <h2 class="text-xs text-gray-500 mb-4">
+            Set your own contribution levels & colors to your Github commits
+            contribution chart.
+          </h2>
           <div class="mb-6">
-            <h1 class="text-xl font-semibold mb-4">Contribution settings</h1>
+            <h3 class="font-semibold mt-8 mb-4">Contribution settings</h3>
             <div class="flex gap-4 mb-4">
               <input
                 type="text"
@@ -137,12 +142,6 @@
                 placeholder="GitHub username"
                 class="border rounded px-3 py-2 w-40"
               />
-              <!-- <input
-              type="text"
-              id="token"
-              placeholder="GitHub Personal Access Token"
-              class="border rounded px-3 py-2 flex-grow"
-            /> -->
               <div class="relative flex-grow">
                 <input
                   type="text"
@@ -179,11 +178,13 @@
                     </g>
                   </svg>
                   <span
-                    class="absolute z-10 w-[23rem] py-2 px-3 text-sm font-medium text-white bg-gray-700 rounded-lg shadow-sm opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300 -top-40 -right-24"
+                    class="absolute z-10 w-[23.18rem] py-2 px-3 text-sm font-medium text-white bg-gray-700 rounded-lg shadow-sm opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300 -top-40 -right-24"
                   >
                     Create a Personal Access Token in Github, set to just
                     `read:user` permission scope. Paste the token here.<br /><br />Security
-                    note: We do not save your token - this is done only on your browser. This app doesn't alter your commit history either.
+                    note: We do not save your token - everything is done on
+                    local client. No data is sent to the server. We don't alter
+                    your commit history either.
                   </span>
                 </div>
               </div>
@@ -310,6 +311,8 @@
                 </div>
               </div>
             </div>
+            <hr class="mt-9" />
+            <h3 class="font-semibold mt-7 mb-4">Color settings</h3>
             <div class="flex items-center flex-wrap max-w-[720px] gap-2">
               <button
                 onclick="quickColorSwitch(this)"
@@ -421,6 +424,8 @@
 
           <div id="error" class="text-red-500 mb-4 hidden"></div>
 
+          <hr class="mt-9" />
+          <h3 class="font-semibold mt-7 mb-4">Chart preview</h3>
           <div id="chart-container" class="border rounded-lg p-4 bg-white">
             <h2 class="text-base mb-4">
               <span id="total-commits">0</span> contributions in 2024
@@ -465,7 +470,7 @@
       </div>
     </div>
 
-    <div class="text-center text-sm mt-20 mb-3 space-y-3">
+    <div class="text-center text-sm mt-48 mb-3 space-y-3">
       <div>
         A project by
         <a
