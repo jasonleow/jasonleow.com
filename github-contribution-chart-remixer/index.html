@@ -94,6 +94,22 @@
         width: 3rem;
         text-align: center;
       }
+      
+      .blink {
+        animation: blink 1s infinite;
+      }
+
+      @keyframes blink {
+        0% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.1;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
     </style>
   </head>
 
@@ -140,6 +156,7 @@
                 type="text"
                 id="username"
                 placeholder="GitHub username"
+                value="jasonleow"
                 class="border rounded px-3 py-2 w-40"
               />
               <div class="relative flex-grow">
@@ -147,6 +164,7 @@
                   type="text"
                   id="token"
                   placeholder="GitHub Personal Access Token"
+                  value=""
                   class="border rounded pl-3 pr-8 py-2 w-full"
                 />
                 <div
@@ -592,7 +610,7 @@
         })
 
         document.getElementById("total-commits").textContent =
-          totalContributions + 1 // offset cos always seem 1 short from
+          totalContributions + 2 // offset cos always seem 1 short from
         renderGraph()
       }
 
@@ -616,6 +634,23 @@
         if (count >= level4Min) return document.getElementById("color4").value
 
         return document.getElementById("color0").value
+      }
+      
+      function addPulseEffectToCurrentDay(dayEl, day) {
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth() + 1; // Months are 0-based
+        const currentDay = currentDate.getDate();
+
+        const dateParts = day.date.split("-");
+        const dayYear = parseInt(dateParts[0]);
+        const dayMonth = parseInt(dateParts[1]);
+        const dayDate = parseInt(dateParts[2]);
+
+        if (dayYear === currentYear && dayMonth === currentMonth && dayDate === currentDay) {
+	        dayEl.classList.add("blink-anchor"); // Add the blink-anchor class only to the current day to track it
+          dayEl.classList.add("blink"); // Add the blink class only to the current day
+        }
       }
 
       function renderGraph() {
@@ -672,7 +707,7 @@
             currentWeek = []
           }
         })
-
+        
         weeks.forEach((week) => {
           const weekEl = document.createElement("div")
           weekEl.className = "flex flex-col gap-[2px]"
@@ -687,6 +722,7 @@
               dayEl.style.backgroundColor = getColorForCount(day.count)
               if (day.date.startsWith("2024")) {
                 dayEl.title = `${day.count} contributions on ${day.date}`
+                addPulseEffectToCurrentDay(dayEl, day);
               } else {
                 dayEl.title = "No contributions"
               }
@@ -761,6 +797,20 @@
           showError("Failed to generate image. Please try again.")
         }
       } */
+      
+      function toggleBlinkEffect(chartContainer, toggleOn) {
+        const blinkElements = chartContainer.querySelectorAll(".blink-anchor")
+        blinkElements.forEach((element) => {
+          if (toggleOn) {
+            element.classList.add("blink")
+            // element.style.animationPlayState = "running"
+          } else {
+            element.classList.remove("blink")
+            // element.style.animationPlayState = "paused"
+          }
+        })
+      }
+
 
       async function downloadChart() {
         const chartContainer = document.getElementById("chart-container")
@@ -786,6 +836,9 @@
             width / chartContainer.offsetWidth,
             height / chartContainer.offsetHeight,
           )
+          
+          // Temporarily remove the blink class
+			    toggleBlinkEffect(chartContainer, false)
 
           // Create canvas from the chart container
           const canvas = await domtoimage.toPng(chartContainer, {
@@ -811,6 +864,8 @@
           // Restore button state
           downloadButton.innerHTML = originalContent
           downloadButton.disabled = false
+          // Add the blink class back
+			    toggleBlinkEffect(chartContainer, true);
         } catch (error) {
           console.error("Error generating image:", error)
           showError("Failed to generate image. Please try again.")
@@ -1040,6 +1095,7 @@
       }
 
       displaySavedPalettes()
+      
     </script>
   </body>
 </html>
