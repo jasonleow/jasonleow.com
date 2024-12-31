@@ -443,10 +443,15 @@
           <div id="error" class="text-red-500 mb-4 hidden"></div>
 
           <hr class="mt-9" />
-          <h3 class="font-semibold mt-7 mb-4">Chart preview</h3>
+          <h3 class="flex items-center font-semibold mt-7 mb-4">
+            Chart preview in
+            <span>
+              <select id="year" class="ml-2 px-2 h-6 text-[10px] text-gray-700 border rounded border-gray-300 focus:ring-blue-500 focus:border-blue-500"></select>
+            </span>
+          </h3>
           <div id="chart-container" class="border rounded-lg p-4 bg-white">
             <h2 class="text-base mb-4">
-              <span id="total-commits">0</span> contributions in 2024
+              <span id="total-commits">0</span> contributions in <span id="currentYear">2024</span>
             </h2>
             <div class="graph-wrapper">
               <div
@@ -533,12 +538,34 @@
     </div>
 
     <script>
+      const yearSelect = document.getElementById('year');
+      const currentYear = new Date().getFullYear();
+
+      // Start the year options from 2007
+      const startYear = 2007;
+      for (let i = startYear; i <= currentYear + 20; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.text = i;
+        yearSelect.appendChild(option);
+      }
+
+      yearSelect.value = currentYear;
+
+      yearSelect.addEventListener('change', (e) => {
+        const year = parseInt(e.target.value);
+        document.getElementById('currentYear').textContent = year;
+        fetchData(); // Fetch data for the selected year
+        renderGraph();
+      });
+      
+      
       let contributionData = []
 
       async function fetchData() {
         const username = document.getElementById("username").value
         const token = document.getElementById("token").value
-
+        
         if (!username || !token) {
           showError(
             "Please enter both GitHub username and personal access token",
@@ -548,7 +575,7 @@
 
         const query = `query {
           user(login: "${username}") {
-            contributionsCollection(from: "2023-12-31T00:00:00Z", to: "2024-12-31T23:59:59Z") {
+            contributionsCollection(from: "${yearSelect.value}-01-01T00:00:00Z", to: "${yearSelect.value}-12-31T23:59:59Z") {
               contributionCalendar {
                 totalContributions
                 weeks {
@@ -598,7 +625,7 @@
 
         calendar.weeks.forEach((week) => {
           week.contributionDays.forEach((day) => {
-            if (day.date.startsWith("2024")) {
+            if (day.date.startsWith(yearSelect.value)) {
               totalContributions += day.contributionCount
             }
             contributionData.push({
@@ -610,7 +637,7 @@
         })
 
         document.getElementById("total-commits").textContent =
-          totalContributions + 2 // offset cos always seem 1 short from
+          totalContributions // + 2 // offset cos always seem 1 short from
         renderGraph()
       }
 
@@ -648,7 +675,7 @@
         const dayDate = parseInt(dateParts[2]);
 
         if (dayYear === currentYear && dayMonth === currentMonth && dayDate === currentDay) {
-	        dayEl.classList.add("blink-anchor"); // Add the blink-anchor class only to the current day to track it
+	        dayEl.classList.add("blink-tracking-class"); // Add the blink-anchor class only to the current day to track it
           dayEl.classList.add("blink"); // Add the blink class only to the current day
         }
       }
@@ -657,36 +684,19 @@
         const container = document.getElementById("contribution-graph")
         container.innerHTML = ""
 
-        const monthLabels = [
-          "Jan",
-          "Feb",
-          "Mar",
-          "Apr",
-          "May",
-          "Jun",
-          "Jul",
-          "Aug",
-          "Sep",
-          "Oct",
-          "Nov",
-          "Dec",
-        ]
-
+        // Month labels setup remains the same
+        const monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
         const monthsRow = document.createElement("div")
         monthsRow.className = "flex ml-[35px] text-xs text-gray-500"
-        monthsRow.innerHTML =
-          '<div class="day-label-column"></div>' +
-          monthLabels
-            .map((month) => `<div class="month-label">${month}</div>`)
-            .join("")
+        monthsRow.innerHTML = '<div class="day-label-column"></div>' + monthLabels.map((month) => `<div class="month-label">${month}</div>`).join("")
         container.appendChild(monthsRow)
 
         const graphWrapper = document.createElement("div")
         graphWrapper.className = "flex"
 
+        // Day labels - Note these stay as is since they're just labels
         const dayLabels = document.createElement("div")
-        dayLabels.className =
-          "flex flex-col gap-[4px] mr-2 text-xs text-gray-500 day-label-column"
+        dayLabels.className = "flex flex-col gap-[4px] mr-2 text-xs text-gray-500 day-label-column"
         ;["", "Mon", "", "Wed", "", "Fri", ""].forEach((day) => {
           const dayLabel = document.createElement("div")
           dayLabel.className = "h-[10px] leading-[10px]"
@@ -695,46 +705,73 @@
         })
         graphWrapper.appendChild(dayLabels)
 
-        const weeks = []
+        // Calculate white tiles needed - key change here
+        const firstDay = new Date(`${yearSelect.value}-01-01`)
+        const dayOfWeek = firstDay.getDay() // 0 = Sunday, 1 = Monday, etc.
+        const whiteTilesToAdd = dayOfWeek // This is the correct number of white tiles needed
+
         let currentWeek = []
-        contributionData.forEach((day, index) => {
-          currentWeek.push(day)
-          if (
-            currentWeek.length === 7 ||
-            index === contributionData.length - 1
-          ) {
-            weeks.push([...currentWeek])
+
+        // Add white tiles if needed
+        if (whiteTilesToAdd > 0) {
+          // Calculate the date of the last Sunday of previous year
+          const lastSunday = new Date(firstDay)
+          lastSunday.setDate(firstDay.getDate() - whiteTilesToAdd)
+
+          // Add white tiles with correct dates
+          for (let i = 0; i < whiteTilesToAdd; i++) {
+            const tileDate = new Date(lastSunday)
+            tileDate.setDate(lastSunday.getDate() + i)
+
+            const dayEl = document.createElement("div")
+            dayEl.className = "contribution-cell"
+            dayEl.style.backgroundColor = "#FFFFFF"
+            dayEl.style.outline = "none"
+            dayEl.title = "No contributions"
+            dayEl.setAttribute('data-date', tileDate.toISOString().split('T')[0])
+
+            if (currentWeek.length === 7) {
+              const weekEl = document.createElement("div")
+              weekEl.className = "flex flex-col gap-[2px]"
+              currentWeek.forEach(cell => weekEl.appendChild(cell))
+              graphWrapper.appendChild(weekEl)
+              currentWeek = []
+            }
+            currentWeek.push(dayEl)
+          }
+        }
+
+        // Add contribution data
+        contributionData.forEach((day) => {
+          const dayEl = document.createElement("div")
+          dayEl.className = "contribution-cell"
+          dayEl.style.backgroundColor = getColorForCount(day.count)
+          dayEl.title = `${day.count} contributions on ${day.date}`
+          dayEl.setAttribute('data-date', day.date)
+          addPulseEffectToCurrentDay(dayEl, day)
+
+          currentWeek.push(dayEl)
+
+          if (currentWeek.length === 7) {
+            const weekEl = document.createElement("div")
+            weekEl.className = "flex flex-col gap-[2px]"
+            currentWeek.forEach(cell => weekEl.appendChild(cell))
+            graphWrapper.appendChild(weekEl)
             currentWeek = []
           }
         })
-        
-        weeks.forEach((week) => {
+
+        // Handle any remaining days in the last week
+        if (currentWeek.length > 0) {
           const weekEl = document.createElement("div")
           weekEl.className = "flex flex-col gap-[2px]"
-
-          week.forEach((day) => {
-            const dayEl = document.createElement("div")
-            dayEl.className = "contribution-cell"
-            if (day.date === "2023-12-31") {
-              dayEl.style.backgroundColor = "#FFFFFF"
-              dayEl.style.outline = "none"
-            } else {
-              dayEl.style.backgroundColor = getColorForCount(day.count)
-              if (day.date.startsWith("2024")) {
-                dayEl.title = `${day.count} contributions on ${day.date}`
-                addPulseEffectToCurrentDay(dayEl, day);
-              } else {
-                dayEl.title = "No contributions"
-              }
-            }
-            weekEl.appendChild(dayEl)
-          })
-
+          currentWeek.forEach(cell => weekEl.appendChild(cell))
           graphWrapper.appendChild(weekEl)
-        })
+        }
 
         container.appendChild(graphWrapper)
       }
+
 
       function showError(message) {
         const errorEl = document.getElementById("error")
@@ -799,7 +836,7 @@
       } */
       
       function toggleBlinkEffect(chartContainer, toggleOn) {
-        const blinkElements = chartContainer.querySelectorAll(".blink-anchor")
+        const blinkElements = chartContainer.querySelectorAll(".blink-tracking-class")
         blinkElements.forEach((element) => {
           if (toggleOn) {
             element.classList.add("blink")
@@ -842,8 +879,8 @@
 
           // Create canvas from the chart container
           const canvas = await domtoimage.toPng(chartContainer, {
-            quality: 1,
-            /* width: 1024,
+            /* quality: 1,
+            width: 1024,
 						height: 322,
             style: {
               transform: 'scale(1.4)',
