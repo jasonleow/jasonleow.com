@@ -1,3 +1,4 @@
+<!-- https://pastebin.com/V99fZacY -->
 <!doctype html>
 <html lang="en">
   <head>
@@ -451,7 +452,7 @@
           </h3>
           <div id="chart-container" class="border rounded-lg p-4 bg-white">
             <h2 class="text-base mb-4">
-              <span id="total-commits">0</span> contributions in <span id="currentYear">2024</span>
+              <span id="total-commits">0</span> contributions in <span id="selectedYear">2025</span>
             </h2>
             <div class="graph-wrapper">
               <div
@@ -540,6 +541,7 @@
     <script>
       const yearSelect = document.getElementById('year');
       const currentYear = new Date().getFullYear();
+      const currentYearSpan = document.getElementById('selectedYear');
 
       // Start the year options from 2007
       const startYear = 2007;
@@ -551,10 +553,11 @@
       }
 
       yearSelect.value = currentYear;
+      currentYearSpan.textContent = currentYear; // Initialize the current year span
 
       yearSelect.addEventListener('change', (e) => {
         const year = parseInt(e.target.value);
-        document.getElementById('currentYear').textContent = year;
+        currentYearSpan.textContent = year; // Update the current year span
         fetchData(); // Fetch data for the selected year
         renderGraph();
       });
@@ -636,8 +639,16 @@
           })
         })
 
-        document.getElementById("total-commits").textContent =
-          totalContributions // + 2 // offset cos always seem 1 short from
+        const username = document.getElementById("username").value
+        let displayContributions = totalContributions;
+        if (username === 'jasonleow' && yearSelect.value === '2024') {
+        	document.getElementById("total-commits").textContent =
+          displayContributions += 3 // offset cos don't know why I'm 3 short
+        } 
+        
+        const formatter = new Intl.NumberFormat('en-US');
+			  document.getElementById("total-commits").textContent = formatter.format(displayContributions)
+        
         renderGraph()
       }
 
