@@ -568,12 +568,11 @@
       let contributionData = []
 
       async function fetchData() {
-        const username = document.getElementById("username").value
-        // Remove the token input since we'll use the server-side token
+        const username = document.getElementById("username").value;
 
         if (!username) {
-          showError("Please enter a GitHub username")
-          return
+          showError("Please enter a GitHub username");
+          return;
         }
 
         const query = `query {
@@ -591,31 +590,32 @@
               }
             }
           }
-        }`
+        }`;
 
         try {
-          showError("")
-          // Call our Netlify function instead of GitHub directly
-          const response = await fetch("/.netlify/functions/github-data", {
+          showError("");
+          // Note the different URL path for edge functions
+          const response = await fetch("/github-data", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ query }), // Send just the query
-          })
+            body: JSON.stringify({ query }),
+          });
 
           if (!response.ok) {
-            throw new Error("Failed to fetch GitHub data")
+            const errorData = await response.json();
+            throw new Error(errorData.error || "Failed to fetch GitHub data");
           }
 
-          const data = await response.json()
+          const data = await response.json();
           if (data.errors) {
-            throw new Error(data.errors[0].message)
+            throw new Error(data.errors[0].message);
           }
 
-          processGraphQLData(data.data)
+          processGraphQLData(data.data);
         } catch (error) {
-          showError(error.message)
+          showError(error.message);
         }
       }
 
