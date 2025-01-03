@@ -3,3 +3,11 @@
   to = "https://profilepicture.app"
   status = 301
   force = true
+
+[build]
+  command = "your-build-command"
+  publish = "your-publish-directory"
+
+[[edge_functions]]
+  path = "/github-data"
+  function = "github-data"
