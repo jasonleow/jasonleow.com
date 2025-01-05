@@ -9,7 +9,7 @@
     <meta name="title" content="GitChart" />
     <meta
       name="description"
-      content="GitChart - A GitHub chart remixer to set your own contribution levels & colors to your Github commits contribution chart. Made by Jason Leow @jasonleowsg"
+      content="GitChart – A GitHub chart remixer to set your own contribution levels & colors to your Github commits contribution chart. Made by Jason Leow @jasonleowsg"
     />
 
     <!-- Open Graph / Facebook -->
@@ -21,9 +21,9 @@
     <meta property="og:title" content="GitChart" />
     <meta
       property="og:description"
-      content="GitChart - A GitHub chart remixer to set your own contribution levels & colors to your Github commits contribution chart. Made by Jason Leow @jasonleowsg"
+      content="GitChart – A GitHub chart remixer to set your own contribution levels & colors to your Github commits contribution chart. Made by Jason Leow @jasonleowsg"
     />
-    <meta property="og:image" content="/github-chart-remixer-ogimage.png" />
+    <meta property="og:image" content="/github-contribution-chart-remixer/ogimage-gitchart.png" />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
@@ -34,27 +34,41 @@
     <meta property="twitter:title" content="GitChart" />
     <meta
       property="twitter:description"
-      content="GitChart - A GitHub chart remixer to set your own contribution levels & colors to your Github commits contribution chart. Made by Jason Leow @jasonleowsg"
+      content="GitChart – A GitHub chart remixer to set your own contribution levels & colors to your Github commits contribution chart. Made by Jason Leow @jasonleowsg"
     />
     <meta
       property="twitter:image"
-      content="/github-chart-remixer-ogimage.png"
+      content="/github-contribution-chart-remixer/ogimage-gitchart.png"
     />
 
     <!-- <link rel="canonical" href="https://jasonleow.com/github-contribution-chart-remixer/"> -->
+
+    <!-- Mobile app icon -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="GitChart" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/github-contribution-chart-remixer/touchicon-gitchart.png"
+    />
 
     <!-- Favicon -->
     <link
       rel="icon"
       type="image/png"
       sizes="32x32"
-      href="/github-chart-remixer-favicon.png"
+      href="/github-contribution-chart-remixer/favicon-gitchart"
     />
     <link
       rel="icon"
       type="image/png"
       sizes="16x16"
-      href="/github-chart-remixer-favicon.png"
+      href="/github-contribution-chart-remixer/favicon-gitchart"
     />
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
@@ -144,7 +158,20 @@
     <div class="flex bg-white p-8 justify-center items-center h-screen">
       <div class="flex flex-shrink-0 flex-grow-0 max-w-5xl mx-auto">
         <div class="bg-white rounded-lg p-6">
-          <h1 class="text-3xl font-semibold">🟩 GitChart</h1>
+          <h1 class="flex items-center text-3xl font-semibold">
+            <span>
+              <svg height="30px" width="30px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="" class="mr-2">
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                <g id="SVGRepo_iconCarrier">
+                  <polygon style="fill:#9BE9A8;" points="480,112 256,0 32,112 32,400 256,512 480,400 "></polygon>
+                  <polygon style="fill:#40C468;" points="256,224 32,112 32,400 256,512 480,400 480,112 "></polygon>
+                  <polygon style="fill:#30A14D;" points="256,224 256,512 480,400 480,112 "></polygon>
+                </g>
+              </svg>
+            </span>
+            GitChart
+          </h1>
           <h2 class="text-xs text-gray-500 mb-4 mt-2">
             A Github chart remixer to set your own contribution levels & colors to your Github commits
             contribution chart.
@@ -548,7 +575,7 @@
 
       // Start the year options from 2007
       const startYear = 2007
-      for (let i = startYear; i <= currentYear + 1; i++) {
+      for (let i = startYear; i <= currentYear + 20; i++) {
         const option = document.createElement("option")
         option.value = i
         option.text = i
