@@ -155,116 +155,93 @@
       </div>
     </div>
 
-    <div class="flex bg-white p-8 justify-center items-center h-screen">
-      <div class="flex flex-shrink-0 flex-grow-0 max-w-5xl mx-auto">
-        <div class="bg-white rounded-lg p-6">
+    <div class="flex flex-col md:flex-row bg-white p-4 md:p-8 min-h-screen">
+      <div class="w-full md:max-w-5xl md:mx-auto">
+        <div class="bg-white rounded-lg p-4 md:p-6">
           <h1 class="flex items-center text-3xl font-semibold">
             <span>
-              <svg height="30px" width="30px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="" class="mr-2">
+              <svg
+                height="30px"
+                width="30px"
+                version="1.1"
+                id="Layer_1"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                viewBox="0 0 512 512"
+                xml:space="preserve"
+                fill=""
+                class="mr-2"
+              >
                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></g>
                 <g id="SVGRepo_iconCarrier">
-                  <polygon style="fill:#9BE9A8;" points="480,112 256,0 32,112 32,400 256,512 480,400 "></polygon>
-                  <polygon style="fill:#40C468;" points="256,224 32,112 32,400 256,512 480,400 480,112 "></polygon>
-                  <polygon style="fill:#30A14D;" points="256,224 256,512 480,400 480,112 "></polygon>
+                  <polygon
+                    style="fill: #9be9a8"
+                    points="480,112 256,0 32,112 32,400 256,512 480,400 "
+                  ></polygon>
+                  <polygon
+                    style="fill: #40c468"
+                    points="256,224 32,112 32,400 256,512 480,400 480,112 "
+                  ></polygon>
+                  <polygon
+                    style="fill: #30a14d"
+                    points="256,224 256,512 480,400 480,112 "
+                  ></polygon>
                 </g>
               </svg>
             </span>
             GitChart
           </h1>
-          <h2 class="text-xs text-gray-500 mb-4 mt-2">
-            A Github chart remixer to set your own contribution levels & colors to your Github commits
-            contribution chart.
+          <h2 class="text-xs text-gray-500 mb-4 mt-2 break-words">
+            A Github chart remixer to set your own contribution levels & colors
+            to your Github commits contribution chart.
           </h2>
           <div class="mb-6">
             <h3 class="font-semibold mt-8 mb-4">Contribution settings</h3>
-            <div class="flex gap-4 mb-4">
+            <div class="flex flex-col md:flex-row gap-2 md:gap-4 mb-4">
               <input
                 type="text"
                 id="username"
                 placeholder="GitHub username"
                 value="jasonleow"
-                class="border rounded px-3 py-2 w-40"
+                class="border rounded px-3 py-2 w-full md:w-40"
               />
-              <!-- <div class="relative flex-grow">
-                <input
-                  type="text"
-                  id="token"
-                  placeholder="GitHub Personal Access Token"
-                  value=""
-                  class="border rounded pl-3 pr-8 py-2 w-full"
-                />
-                <div
-                  class="absolute inset-y-0 right-0 flex items-center pr-3 group"
-                >
-                  <svg
-                    fill="#777777"
-                    version="1.1"
-                    id="Capa_1"
-                    xmlns="http://www.w3.org/2000/svg"
-                    xmlns:xlink="http://www.w3.org/1999/xlink"
-                    viewBox="0 0 416.979 416.979"
-                    xml:space="preserve"
-                    stroke="#777777"
-                    class="w-4 h-4 group-hover:fill-gray-900 group-hover:stroke-gray-900"
-                  >
-                    <g stroke-width="0"></g>
-                    <g stroke-linecap="round" stroke-linejoin="round"></g>
-                    <g>
-                      <g>
-                        <path
-                          d="M356.004,61.156c-81.37-81.47-213.377-81.551-294.848-0.182c-81.47,81.371-81.552,213.379-0.181,294.85 c81.369,81.47,213.378,81.551,294.849,0.181C437.293,274.636,437.375,142.626,356.004,61.156z M237.6,340.786 c0,3.217-2.607,5.822-5.822,5.822h-46.576c-3.215,0-5.822-2.605-5.822-5.822V167.885c0-3.217,2.607-5.822,5.822-5.822h46.576 c3.215,0,5.822,2.604,5.822,5.822V340.786z M208.49,137.901c-18.618,0-33.766-15.146-33.766-33.765 c0-18.617,15.147-33.766,33.766-33.766c18.619,0,33.766,15.148,33.766,33.766C242.256,122.755,227.107,137.901,208.49,137.901z"
-                        ></path>
-                        <path
-                          d="M237.6,340.786 c0,3.217-2.607,5.822-5.822,5.822h-46.576c-3.215,0-5.822-2.605-5.822-5.822V167.885c0-3.217,2.607-5.822,5.822-5.822h46.576 c3.215,0,5.822,2.604,5.822,5.822V340.786z"
-                          fill="#FFFFFF"
-                        ></path>
-                      </g>
-                    </g>
-                  </svg>
-                  <span
-                    class="absolute z-10 w-[23.18rem] py-2 px-3 text-sm font-medium text-white bg-gray-700 rounded-lg shadow-sm opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300 -top-40 -right-24"
-                  >
-                    Create a Personal Access Token in Github, set to just
-                    `read:user` permission scope. Paste the token here.<br /><br />Security
-                    note: We do not save your token - everything is done on
-                    local client. No data is sent to the server. We don't alter
-                    your commit history either.
-                  </span>
-                </div>
-              </div> -->
               <button
                 onclick="fetchData()"
-                class="bg-[#2da44e] text-white px-4 py-2 rounded-md hover:bg-[#2c974b]"
+                class="bg-[#2da44e] text-white px-4 py-2 rounded-md hover:bg-[#2c974b] w-full md:w-auto"
               >
                 Load data
               </button>
               <button
                 onclick="downloadChart()"
-                class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md flex items-center gap-2"
+                class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md w-full md:w-auto"
               >
                 Download chart
               </button>
             </div>
 
-            <div class="grid grid-cols-5 gap-4 mb-6">
-              <div>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+              <div class="w-full">
                 <label class="block text-sm font-medium mb-1">No commits</label>
                 <input
                   type="color"
                   id="color0"
                   value="#EBEDF0"
-                  class="w-[118px] h-8 rounded cursor-pointer"
+                  class="w-full md:w-[118px] h-8 rounded cursor-pointer"
                 />
                 <div class="text-sm text-gray-500">0 commits</div>
               </div>
-              <div>
+              <div class="w-full">
                 <label class="block text-sm font-medium mb-1">Level 1</label>
                 <input
                   type="color"
                   id="color1"
                   value="#9BE9A8"
-                  class="w-[118px] h-8 rounded cursor-pointer"
+                  class="w-full md:w-[118px] h-8 rounded cursor-pointer"
                 />
                 <div class="range-inputs text-sm">
                   <input
@@ -284,13 +261,13 @@
                   />
                 </div>
               </div>
-              <div>
+              <div class="w-full">
                 <label class="block text-sm font-medium mb-1">Level 2</label>
                 <input
                   type="color"
                   id="color2"
                   value="#40C463"
-                  class="w-[118px] h-8 rounded cursor-pointer"
+                  class="w-full md:w-[118px] h-8 rounded cursor-pointer"
                 />
                 <div class="range-inputs text-sm">
                   <input
@@ -310,13 +287,13 @@
                   />
                 </div>
               </div>
-              <div>
+              <div class="w-full">
                 <label class="block text-sm font-medium mb-1">Level 3</label>
                 <input
                   type="color"
                   id="color3"
                   value="#30A14D"
-                  class="w-[118px] h-8 rounded cursor-pointer"
+                  class="w-full md:w-[118px] h-8 rounded cursor-pointer"
                 />
                 <div class="range-inputs text-sm">
                   <input
@@ -336,13 +313,13 @@
                   />
                 </div>
               </div>
-              <div>
+              <div class="w-full">
                 <label class="block text-sm font-medium mb-1">Level 4</label>
                 <input
                   type="color"
                   id="color4"
                   value="#216E39"
-                  class="w-[118px] h-8 rounded cursor-pointer"
+                  class="w-full md:w-[118px] h-8 rounded cursor-pointer"
                 />
                 <div class="range-inputs text-sm">
                   <input
