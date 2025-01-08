@@ -124,6 +124,22 @@
           opacity: 1;
         }
       }
+      
+      .pulse polygon {
+        animation: glow 6s infinite cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      @keyframes glow {
+        0% {
+          filter: brightness(0.8);
+        }
+        50% {
+          filter: brightness(1.2);
+        }
+        100% {
+          filter: brightness(0.8);
+        }
+      }
     </style>
   </head>
 
@@ -170,7 +186,7 @@
                 viewBox="0 0 512 512"
                 xml:space="preserve"
                 fill=""
-                class="mr-2"
+                class="mr-2 pulse"
               >
                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                 <g
