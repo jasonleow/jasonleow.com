@@ -596,7 +596,7 @@
       yearSelect.addEventListener("change", (e) => {
         const year = parseInt(e.target.value)
         currentYearSpan.textContent = year // Update the current year span
-        fetchData() // Fetch data for the selected year
+         // Fetch data for the selected year
         renderGraph()
       })
 
@@ -654,7 +654,7 @@
         }
       }
 
-      fetchData()
+      // fetchData()
 
       function processGraphQLData(data) {
         const calendar = data.user.contributionsCollection.contributionCalendar
