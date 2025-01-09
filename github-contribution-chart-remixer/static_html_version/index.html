@@ -1,0 +1,1253 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GitChart – GitHub Chart Remixer</title>
+
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="GitChart" />
+    <meta
+      name="description"
+      content="GitChart – A GitHub chart remixer to set your own contribution levels & colors to your Github commits contribution chart. Made by Jason Leow @jasonleowsg"
+    />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:url"
+      content="https://jasonleow.com/github-contribution-chart-remixer/"
+    />
+    <meta property="og:title" content="GitChart" />
+    <meta
+      property="og:description"
+      content="GitChart – A GitHub chart remixer to set your own contribution levels & colors to your Github commits contribution chart. Made by Jason Leow @jasonleowsg"
+    />
+    <meta
+      property="og:image"
+      content="/github-contribution-chart-remixer/ogimage-gitchart.png"
+    />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta
+      property="twitter:url"
+      content="https://jasonleow.com/github-contribution-chart-remixer/"
+    />
+    <meta property="twitter:title" content="GitChart" />
+    <meta
+      property="twitter:description"
+      content="GitChart – A GitHub chart remixer to set your own contribution levels & colors to your Github commits contribution chart. Made by Jason Leow @jasonleowsg"
+    />
+    <meta
+      property="twitter:image"
+      content="/github-contribution-chart-remixer/ogimage-gitchart.png"
+    />
+
+    <!-- <link rel="canonical" href="https://jasonleow.com/github-contribution-chart-remixer/"> -->
+
+    <!-- Mobile app icon -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="GitChart" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/github-contribution-chart-remixer/touchicon-gitchart.png"
+    />
+
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/github-contribution-chart-remixer/favicon-gitchart"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/github-contribution-chart-remixer/favicon-gitchart"
+    />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dom-to-image@2.6.0/dist/dom-to-image.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+      .contribution-cell {
+        width: 10px;
+        height: 10px;
+        margin: 1px;
+        border-radius: 2px;
+        outline-offset: -1px;
+        outline: 1px solid rgb(27, 31, 35, 0.06);
+      }
+      .month-label {
+        width: 53px;
+        min-width: 53px;
+      }
+      .contribution-graph-container {
+        min-width: max-content;
+        margin-left: 0;
+        width: fit-content;
+      }
+      .graph-wrapper {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        overflow-x: auto;
+      }
+      .range-inputs {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+      .range-input {
+        width: 3rem;
+        text-align: center;
+      }
+
+      .blink {
+        animation: blink 1s infinite;
+      }
+
+      @keyframes blink {
+        0% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.1;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      .pulse polygon {
+        animation: glow 6s infinite cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      @keyframes glow {
+        0% {
+          filter: brightness(0.8);
+        }
+        50% {
+          filter: brightness(1.2);
+        }
+        100% {
+          filter: brightness(0.8);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div
+      id="save-palette-modal"
+      class="hidden fixed inset-0 bg-gray-200 bg-opacity-75 flex items-center justify-center z-10"
+    >
+      <div class="bg-white rounded-lg p-4 w-96">
+        <h2 class="text-base font-bold mb-2">Save Current Palette</h2>
+        <input
+          id="palette-name"
+          type="text"
+          class="w-full p-2 mb-2 border border-gray-300 rounded"
+          placeholder="Enter palette name"
+        />
+        <button
+          id="save-palette-button"
+          class="bg-[#2da44e] hover:bg-[#2c974b] text-white font-bold py-2 px-4 rounded-md"
+        >
+          Save
+        </button>
+        <button
+          id="cancel-save-palette-button"
+          class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-md"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+
+    <div class="flex flex-col md:flex-row bg-white p-4 md:p-8 min-h-screen">
+      <div class="md:max-w-5xl md:mx-auto">
+        <div class="bg-white rounded-lg p-4 md:p-6">
+          <h1 class="flex items-center text-3xl font-semibold">
+            <span>
+              <svg
+                height="30px"
+                width="30px"
+                version="1.1"
+                id="Layer_1"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                viewBox="0 0 512 512"
+                xml:space="preserve"
+                fill=""
+                class="mr-2 pulse"
+              >
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></g>
+                <g id="SVGRepo_iconCarrier">
+                  <polygon
+                    style="fill: #9be9a8"
+                    points="480,112 256,0 32,112 32,400 256,512 480,400 "
+                  ></polygon>
+                  <polygon
+                    style="fill: #40c468"
+                    points="256,224 32,112 32,400 256,512 480,400 480,112 "
+                  ></polygon>
+                  <polygon
+                    style="fill: #30a14d"
+                    points="256,224 256,512 480,400 480,112 "
+                  ></polygon>
+                </g>
+              </svg>
+            </span>
+            GitChart
+          </h1>
+          <h2 class="text-xs text-gray-500 mb-4 mt-2 break-words">
+            A Github chart remixer to set your own contribution levels & colors
+            to your Github commits contribution chart.
+          </h2>
+
+          <!-- <div id="error" class="text-red-500 mb-4 hidden"></div> -->
+          <div
+            id="error"
+            class="text-red-500 bg-red-50 rounded-md px-3 py-2 mb-4 hidden fixed top-0 right-0 mt-5 mr-5 z-50 w-[20rem] transform transition-all duration-500 ease-out translate-x-full opacity-0"
+          ></div>
+
+          <div class="mb-6">
+            <h3 class="font-semibold mt-8 mb-4">Contribution settings</h3>
+            <div class="flex flex-col md:flex-row gap-2 md:gap-4 mb-4">
+              <input
+                type="text"
+                id="username"
+                placeholder="Your GitHub username"
+                value="jasonleow"
+                class="border rounded px-3 py-2 w-full md:w-[30%]"
+              />
+              <div class="hidden relative flex-grow">
+                <input
+                  type="text"
+                  id="token"
+                  placeholder="GitHub Personal Access Token"
+                  value=""
+                  class="border rounded pl-3 pr-8 py-2 w-full"
+                />
+                <div
+                  class="absolute inset-y-0 right-0 flex items-center pr-3 group"
+                >
+                  <svg
+                    fill="#777777"
+                    version="1.1"
+                    id="Capa_1"
+                    xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink"
+                    viewBox="0 0 416.979 416.979"
+                    xml:space="preserve"
+                    stroke="#777777"
+                    class="w-4 h-4 group-hover:fill-gray-900 group-hover:stroke-gray-900"
+                  >
+                    <g stroke-width="0"></g>
+                    <g stroke-linecap="round" stroke-linejoin="round"></g>
+                    <g>
+                      <g>
+                        <path
+                          d="M356.004,61.156c-81.37-81.47-213.377-81.551-294.848-0.182c-81.47,81.371-81.552,213.379-0.181,294.85 c81.369,81.47,213.378,81.551,294.849,0.181C437.293,274.636,437.375,142.626,356.004,61.156z M237.6,340.786 c0,3.217-2.607,5.822-5.822,5.822h-46.576c-3.215,0-5.822-2.605-5.822-5.822V167.885c0-3.217,2.607-5.822,5.822-5.822h46.576 c3.215,0,5.822,2.604,5.822,5.822V340.786z M208.49,137.901c-18.618,0-33.766-15.146-33.766-33.765 c0-18.617,15.147-33.766,33.766-33.766c18.619,0,33.766,15.148,33.766,33.766C242.256,122.755,227.107,137.901,208.49,137.901z"
+                        ></path>
+                        <path
+                          d="M237.6,340.786 c0,3.217-2.607,5.822-5.822,5.822h-46.576c-3.215,0-5.822-2.605-5.822-5.822V167.885c0-3.217,2.607-5.822,5.822-5.822h46.576 c3.215,0,5.822,2.604,5.822,5.822V340.786z"
+                          fill="#FFFFFF"
+                        ></path>
+                      </g>
+                    </g>
+                  </svg>
+                  <span
+                    class="absolute z-10 w-[23.18rem] py-2 px-3 text-sm font-medium text-white bg-gray-700 rounded-lg shadow-sm opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300 -top-40 -right-24"
+                  >
+                    Create a Personal Access Token in Github, set to just
+                    `read:user` permission scope. Paste the token here.<br /><br />Security
+                    note: We do not save your token - everything is done on
+                    local client. No data is sent to the server. We don't alter
+                    your commit history either.
+                  </span>
+                </div>
+              </div>
+              <button
+                onclick="fetchData()"
+                class="bg-[#2da44e] text-white px-4 py-2 rounded-md hover:bg-[#2c974b] w-full md:w-auto"
+              >
+                Load data
+              </button>
+              <button
+                onclick="downloadChart()"
+                class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md w-full md:w-auto"
+              >
+                Download chart
+              </button>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+              <div class="w-full">
+                <label class="block text-sm font-medium mb-1">No commits</label>
+                <input
+                  type="color"
+                  id="color0"
+                  value="#EBEDF0"
+                  class="w-full md:w-[118px] h-8 rounded cursor-pointer"
+                />
+                <div class="text-sm text-gray-500">0 commits</div>
+              </div>
+              <div class="w-full">
+                <label class="block text-sm font-medium mb-1">Level 1</label>
+                <input
+                  type="color"
+                  id="color1"
+                  value="#9BE9A8"
+                  class="w-full md:w-[118px] h-8 rounded cursor-pointer"
+                />
+                <div class="range-inputs text-sm">
+                  <input
+                    type="number"
+                    id="level1-min"
+                    value="1"
+                    min="0"
+                    class="border rounded range-input"
+                  />
+                  -
+                  <input
+                    type="number"
+                    id="level1-max"
+                    value="2"
+                    min="0"
+                    class="border rounded range-input"
+                  />
+                </div>
+              </div>
+              <div class="w-full">
+                <label class="block text-sm font-medium mb-1">Level 2</label>
+                <input
+                  type="color"
+                  id="color2"
+                  value="#40C463"
+                  class="w-full md:w-[118px] h-8 rounded cursor-pointer"
+                />
+                <div class="range-inputs text-sm">
+                  <input
+                    type="number"
+                    id="level2-min"
+                    value="3"
+                    min="0"
+                    class="border rounded range-input"
+                  />
+                  -
+                  <input
+                    type="number"
+                    id="level2-max"
+                    value="5"
+                    min="0"
+                    class="border rounded range-input"
+                  />
+                </div>
+              </div>
+              <div class="w-full">
+                <label class="block text-sm font-medium mb-1">Level 3</label>
+                <input
+                  type="color"
+                  id="color3"
+                  value="#30A14D"
+                  class="w-full md:w-[118px] h-8 rounded cursor-pointer"
+                />
+                <div class="range-inputs text-sm">
+                  <input
+                    type="number"
+                    id="level3-min"
+                    value="6"
+                    min="0"
+                    class="border rounded range-input"
+                  />
+                  -
+                  <input
+                    type="number"
+                    id="level3-max"
+                    value="8"
+                    min="0"
+                    class="border rounded range-input"
+                  />
+                </div>
+              </div>
+              <div class="w-full">
+                <label class="block text-sm font-medium mb-1">Level 4</label>
+                <input
+                  type="color"
+                  id="color4"
+                  value="#216E39"
+                  class="w-full md:w-[118px] h-8 rounded cursor-pointer"
+                />
+                <div class="range-inputs text-sm">
+                  <input
+                    type="number"
+                    id="level4-min"
+                    value="9"
+                    min="0"
+                    class="border rounded range-input"
+                  />
+                  +
+                </div>
+              </div>
+            </div>
+            <hr class="mt-9" />
+            <h3 class="font-semibold mt-7 mb-4">Color settings</h3>
+            <div class="flex items-center flex-wrap max-w-[720px] gap-2">
+              <button
+                onclick="quickColorSwitch(this)"
+                data-palette="Spring"
+                class="border border-gray-300 text-xs text-gray-800 h-9 px-3 py-2 rounded-md flex items-center gap-1"
+              >
+                <div class="flex flex-col gap-[1px] justify-center">
+                  <div class="flex gap-[1px] justify-center">
+                    <span class="w-2 h-2 rounded-sm bg-[#EDEBF0]"></span>
+                    <span class="w-2 h-2 rounded-sm bg-[#F6D6D6]"></span>
+                  </div>
+                  <div class="flex gap-[1px] justify-center">
+                    <span class="w-2 h-2 rounded-sm bg-[#F6F7C4]"></span>
+                    <span class="w-2 h-2 rounded-sm bg-[#A1EEBD]"></span>
+                    <span class="w-2 h-2 rounded-sm bg-[#7BD3EA]"></span>
+                  </div>
+                </div>
+                <div class="ml-2">Spring</div>
+              </button>
+
+              <button
+                onclick="quickColorSwitch(this)"
+                data-palette="Summer"
+                class="border border-gray-300 text-xs text-gray-800 h-9 px-3 py-2 rounded-md flex items-center gap-1"
+              >
+                <div class="flex flex-col gap-[1px] justify-center">
+                  <div class="flex gap-[1px] justify-center">
+                    <span class="w-2 h-2 rounded-sm bg-[#FFFBD1]"></span>
+                    <span class="w-2 h-2 rounded-sm bg-[#FCF596]"></span>
+                  </div>
+                  <div class="flex gap-[1px] justify-center">
+                    <span class="w-2 h-2 rounded-sm bg-[#FBD288]"></span>
+                    <span class="w-2 h-2 rounded-sm bg-[#FF9C73]"></span>
+                    <span class="w-2 h-2 rounded-sm bg-[#FF4545]"></span>
+                  </div>
+                </div>
+                <div class="ml-2">Summer</div>
+              </button>
+
+              <button
+                onclick="quickColorSwitch(this)"
+                data-palette="Autumn"
+                class="border border-gray-300 text-xs text-gray-800 h-9 px-3 py-2 rounded-md flex items-center gap-1"
+              >
+                <div class="flex flex-col gap-[1px] justify-center">
+                  <div class="flex gap-[1px] justify-center">
+                    <span class="w-2 h-2 rounded-sm bg-[#FFEFCF]"></span>
+                    <span class="w-2 h-2 rounded-sm bg-[#FF7A00]"></span>
+                  </div>
+                  <div class="flex gap-[1px] justify-center">
+                    <span class="w-2 h-2 rounded-sm bg-[#D44000]"></span>
+                    <span class="w-2 h-2 rounded-sm bg-[#864000]"></span>
+                    <span class="w-2 h-2 rounded-sm bg-[#310B0B]"></span>
+                  </div>
+                </div>
+                <div class="ml-2">Autumn</div>
+              </button>
+
+              <button
+                onclick="quickColorSwitch(this)"
+                data-palette="Winter"
+                class="border border-gray-300 text-xs text-gray-800 h-9 px-3 py-2 rounded-md flex items-center gap-1"
+              >
+                <div class="flex flex-col gap-[1px] justify-center">
+                  <div class="flex gap-[1px] justify-center">
+                    <span class="w-2 h-2 rounded-sm bg-[#66CCCC]"></span>
+                    <span class="w-2 h-2 rounded-sm bg-[#87CEEB]"></span>
+                  </div>
+                  <div class="flex gap-[1px] justify-center">
+                    <span class="w-2 h-2 rounded-sm bg-[#4682B4]"></span>
+                    <span class="w-2 h-2 rounded-sm bg-[#6495ED]"></span>
+                    <span class="w-2 h-2 rounded-sm bg-[#4169E1]"></span>
+                  </div>
+                </div>
+                <div class="ml-2">Winter</div>
+              </button>
+
+              <div
+                id="saved-palettes-container"
+                class="hidden flex flex-wrap"
+              ></div>
+
+              <button
+                id="save-current-palette-button"
+                class="border border-gray-300 text-xs text-gray-800 h-9 px-3 py-2 rounded-md flex items-center gap-1"
+              >
+                <div
+                  class="flex items-center justify-center w-4 h-4 bg-gray-200 rounded-full cursor-pointer hover:bg-green-400"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 text-gray-500 hover:text-white"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    />
+                  </svg>
+                </div>
+                Save current palette
+              </button>
+            </div>
+          </div>
+
+          <hr class="mt-9" />
+          <h3 class="flex items-center font-semibold mt-7 mb-4">
+            Chart preview in
+            <span>
+              <select
+                id="year"
+                class="ml-2 px-2 h-6 text-[10px] text-gray-700 border rounded border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+              ></select>
+            </span>
+          </h3>
+          <div id="chart-container" class="border rounded-lg p-4 bg-white">
+            <h2 class="text-base ml-2 mb-4">
+              <span id="total-commits">0</span> contributions in
+              <span id="selectedYear">2025</span>
+            </h2>
+            <div class="graph-wrapper">
+              <div
+                id="contribution-graph"
+                class="contribution-graph-container"
+              ></div>
+            </div>
+            <div
+              class="flex items-center ml-2 mt-4 text-xs space-x-0.5 text-gray-500"
+            >
+              <div class="mr-[6px]">Less</div>
+              <div
+                class="contribution-cell"
+                data-color-id="color0"
+                style="background-color: rgb(235, 237, 240)"
+              ></div>
+              <div
+                class="contribution-cell"
+                data-color-id="color1"
+                style="background-color: rgb(155, 233, 168)"
+              ></div>
+              <div
+                class="contribution-cell"
+                data-color-id="color2"
+                style="background-color: rgb(64, 196, 99)"
+              ></div>
+              <div
+                class="contribution-cell"
+                data-color-id="color3"
+                style="background-color: rgb(48, 161, 77)"
+              ></div>
+              <div
+                class="contribution-cell"
+                data-color-id="color4"
+                style="background-color: rgb(33, 110, 57)"
+              ></div>
+              <div class="!ml-[6px]">More</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center text-sm mt-48 mb-3 space-y-3 px-5">
+      <div>
+        A project by
+        <a
+          href="https://jasonleow.com"
+          target="_blank"
+          class="text-blue-600 hover:text-blue-800"
+          >Jason Leow</a
+        >
+        <a
+          href="https://x.com/jasonleowsg"
+          target="_blank"
+          class="text-blue-600 hover:text-blue-800"
+          >@jasonleowsg</a
+        >
+      </div>
+      <div>—</div>
+      <div>
+        More random fun tools:
+        <a
+          href="https://profilepicture.app/"
+          target="_blank"
+          class="text-blue-600 hover:text-blue-800"
+          >Profile picture editor</a
+        >
+        |
+        <a
+          href="https://jasonleow.com/bluescreenofdeath/"
+          target="_blank"
+          class="text-blue-600 hover:text-blue-800"
+        >
+          Blue Screen Of Death</a
+        >
+        |
+        <a
+          href="https://jasonleow.com/icq/"
+          target="_blank"
+          class="text-blue-600 hover:text-blue-800"
+        >
+          ICQ</a
+        >
+      </div>
+    </div>
+
+    <script>
+      const yearSelect = document.getElementById("year")
+      const currentYear = new Date().getFullYear()
+      const currentYearSpan = document.getElementById("selectedYear")
+
+      // Start the year options from 2007
+      const startYear = 2007
+      for (let i = startYear; i <= currentYear + 20; i++) {
+        const option = document.createElement("option")
+        option.value = i
+        option.text = i
+        yearSelect.appendChild(option)
+      }
+
+      yearSelect.value = currentYear
+      currentYearSpan.textContent = currentYear // Initialize the current year span
+
+      yearSelect.addEventListener("change", (e) => {
+        const year = parseInt(e.target.value)
+        currentYearSpan.textContent = year // Update the current year span
+        fetchData() // Fetch data for the selected year
+        renderGraph()
+      })
+
+      let contributionData = []
+
+      async function fetchData() {
+        const username = document.getElementById("username").value
+        const token = document.getElementById("token").value
+
+        if (!username || !token) {
+          showError(
+            "Please enter both GitHub username and personal access token",
+          )
+          return
+        }
+
+        const query = `query {
+          user(login: "${username}") {
+            contributionsCollection(from: "${yearSelect.value}-01-01T00:00:00Z", to: "${yearSelect.value}-12-31T23:59:59Z") {
+              contributionCalendar {
+                totalContributions
+                weeks {
+                  contributionDays {
+                    contributionCount
+                    date
+                    weekday
+                  }
+                }
+              }
+            }
+          }
+        }`
+
+        try {
+          showError("")
+          const response = await fetch("https://api.github.com/graphql", {
+            method: "POST",
+            headers: {
+              Authorization: `bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ query }),
+          })
+
+          if (!response.ok) {
+            throw new Error("Failed to fetch GitHub data")
+          }
+
+          const data = await response.json()
+          if (data.errors) {
+            throw new Error(data.errors[0].message)
+          }
+
+          processGraphQLData(data.data)
+        } catch (error) {
+          showError(error.message)
+        }
+      }
+
+      fetchData()
+
+      function processGraphQLData(data) {
+        const calendar = data.user.contributionsCollection.contributionCalendar
+        contributionData = []
+        let totalContributions = 0
+
+        calendar.weeks.forEach((week) => {
+          week.contributionDays.forEach((day) => {
+            if (day.date.startsWith(yearSelect.value)) {
+              totalContributions += day.contributionCount
+            }
+            contributionData.push({
+              date: day.date,
+              count: day.contributionCount,
+              weekday: day.weekday,
+            })
+          })
+        })
+
+        const username = document.getElementById("username").value
+        let displayContributions = totalContributions
+        if (username === "jasonleow" && yearSelect.value === "2024") {
+          document.getElementById("total-commits").textContent =
+            displayContributions += 3 // offset cos don't know why I'm 3 short
+        }
+
+        const formatter = new Intl.NumberFormat("en-US")
+        document.getElementById("total-commits").textContent =
+          formatter.format(displayContributions)
+
+        renderGraph()
+      }
+
+      function getColorForCount(count) {
+        if (count === 0) return document.getElementById("color0").value
+
+        const level1Min = parseInt(document.getElementById("level1-min").value)
+        const level1Max = parseInt(document.getElementById("level1-max").value)
+        const level2Min = parseInt(document.getElementById("level2-min").value)
+        const level2Max = parseInt(document.getElementById("level2-max").value)
+        const level3Min = parseInt(document.getElementById("level3-min").value)
+        const level3Max = parseInt(document.getElementById("level3-max").value)
+        const level4Min = parseInt(document.getElementById("level4-min").value)
+
+        if (count >= level1Min && count <= level1Max)
+          return document.getElementById("color1").value
+        if (count >= level2Min && count <= level2Max)
+          return document.getElementById("color2").value
+        if (count >= level3Min && count <= level3Max)
+          return document.getElementById("color3").value
+        if (count >= level4Min) return document.getElementById("color4").value
+
+        return document.getElementById("color0").value
+      }
+
+      function addPulseEffectToCurrentDay(dayEl, day) {
+        const currentDate = new Date()
+        const currentYear = currentDate.getFullYear()
+        const currentMonth = currentDate.getMonth() + 1 // Months are 0-based
+        const currentDay = currentDate.getDate()
+
+        const dateParts = day.date.split("-")
+        const dayYear = parseInt(dateParts[0])
+        const dayMonth = parseInt(dateParts[1])
+        const dayDate = parseInt(dateParts[2])
+
+        if (
+          dayYear === currentYear &&
+          dayMonth === currentMonth &&
+          dayDate === currentDay
+        ) {
+          dayEl.classList.add("blink-tracking-class") // Add the blink-anchor class only to the current day to track it
+          dayEl.classList.add("blink") // Add the blink class only to the current day
+        }
+      }
+
+      function renderGraph() {
+        const container = document.getElementById("contribution-graph")
+        container.innerHTML = ""
+
+        // Month labels setup remains the same
+        const monthLabels = [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ]
+        const monthsRow = document.createElement("div")
+        monthsRow.className = "flex ml-[35px] text-xs text-gray-500"
+        monthsRow.innerHTML =
+          '<div class="day-label-column"></div>' +
+          monthLabels
+            .map((month) => `<div class="month-label">${month}</div>`)
+            .join("")
+        container.appendChild(monthsRow)
+
+        const graphWrapper = document.createElement("div")
+        graphWrapper.className = "flex"
+
+        // Day labels - Note these stay as is since they're just labels
+        const dayLabels = document.createElement("div")
+        dayLabels.className =
+          "flex flex-col gap-[4px] mr-2 text-xs text-gray-500 day-label-column"
+        ;["", "Mon", "", "Wed", "", "Fri", ""].forEach((day) => {
+          const dayLabel = document.createElement("div")
+          dayLabel.className = "h-[10px] leading-[10px]"
+          dayLabel.textContent = day
+          dayLabels.appendChild(dayLabel)
+        })
+        graphWrapper.appendChild(dayLabels)
+
+        // Calculate white tiles needed - key change here
+        const firstDay = new Date(`${yearSelect.value}-01-01`)
+        const dayOfWeek = firstDay.getDay() // 0 = Sunday, 1 = Monday, etc.
+        const whiteTilesToAdd = dayOfWeek // This is the correct number of white tiles needed
+
+        let currentWeek = []
+
+        // Add white tiles if needed
+        if (whiteTilesToAdd > 0) {
+          // Calculate the date of the last Sunday of previous year
+          const lastSunday = new Date(firstDay)
+          lastSunday.setDate(firstDay.getDate() - whiteTilesToAdd)
+
+          // Add white tiles with correct dates
+          for (let i = 0; i < whiteTilesToAdd; i++) {
+            const tileDate = new Date(lastSunday)
+            tileDate.setDate(lastSunday.getDate() + i)
+
+            const dayEl = document.createElement("div")
+            dayEl.className = "contribution-cell"
+            dayEl.style.backgroundColor = "#FFFFFF"
+            dayEl.style.outline = "none"
+            dayEl.title = "No contributions"
+            dayEl.setAttribute(
+              "data-date",
+              tileDate.toISOString().split("T")[0],
+            )
+
+            if (currentWeek.length === 7) {
+              const weekEl = document.createElement("div")
+              weekEl.className = "flex flex-col gap-[2px]"
+              currentWeek.forEach((cell) => weekEl.appendChild(cell))
+              graphWrapper.appendChild(weekEl)
+              currentWeek = []
+            }
+            currentWeek.push(dayEl)
+          }
+        }
+
+        // Add contribution data
+        contributionData.forEach((day) => {
+          const dayEl = document.createElement("div")
+          dayEl.className = "contribution-cell"
+          dayEl.style.backgroundColor = getColorForCount(day.count)
+          dayEl.title = `${day.count} contributions on ${day.date}`
+          dayEl.setAttribute("data-date", day.date)
+          addPulseEffectToCurrentDay(dayEl, day)
+
+          currentWeek.push(dayEl)
+
+          if (currentWeek.length === 7) {
+            const weekEl = document.createElement("div")
+            weekEl.className = "flex flex-col gap-[2px]"
+            currentWeek.forEach((cell) => weekEl.appendChild(cell))
+            graphWrapper.appendChild(weekEl)
+            currentWeek = []
+          }
+        })
+
+        // Handle any remaining days in the last week
+        if (currentWeek.length > 0) {
+          const weekEl = document.createElement("div")
+          weekEl.className = "flex flex-col gap-[2px]"
+          currentWeek.forEach((cell) => weekEl.appendChild(cell))
+          graphWrapper.appendChild(weekEl)
+        }
+
+        container.appendChild(graphWrapper)
+      }
+
+      function showError(message) {
+        const errorEl = document.getElementById("error")
+        if (message) {
+          errorEl.textContent = message
+          errorEl.classList.remove("hidden")
+        } else {
+          errorEl.classList.add("hidden")
+        }
+      }
+
+      // Update graph when colors or ranges change
+      document
+        .querySelectorAll('input[type="color"], input[type="number"]')
+        .forEach((input) => {
+          input.addEventListener("change", () => {
+            if (contributionData.length > 0) {
+              renderGraph()
+            }
+          })
+        })
+
+      /*async function downloadChart() {
+        const chartContainer = document.getElementById("chart-container")
+
+        try {
+          // Add loading state to button
+          const downloadButton = document.querySelector(
+            'button[onclick="downloadChart()"]',
+          )
+          const originalContent = downloadButton.innerHTML
+          downloadButton.innerHTML = `
+            <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Generating...
+          `
+          downloadButton.disabled = true
+
+          // Create canvas from the chart container
+          const canvas = await html2canvas(chartContainer, {
+            backgroundColor: "#ffffff",
+            scale: 2, // Higher quality
+            logging: false,
+            useCORS: true,
+          })
+
+          // Create download link
+          const link = document.createElement("a")
+          link.download = `github-contributions-${new Date().toISOString().split("T")[0]}.png`
+          link.href = canvas.toDataURL("image/png")
+          link.click()
+
+          // Restore button state
+          downloadButton.innerHTML = originalContent
+          downloadButton.disabled = false
+        } catch (error) {
+          console.error("Error generating image:", error)
+          showError("Failed to generate image. Please try again.")
+        }
+      } */
+
+      function toggleBlinkEffect(chartContainer, toggleOn) {
+        const blinkElements = chartContainer.querySelectorAll(
+          ".blink-tracking-class",
+        )
+        blinkElements.forEach((element) => {
+          if (toggleOn) {
+            element.classList.add("blink")
+            // element.style.animationPlayState = "running"
+          } else {
+            element.classList.remove("blink")
+            // element.style.animationPlayState = "paused"
+          }
+        })
+      }
+
+      async function downloadChart() {
+        const chartContainer = document.getElementById("chart-container")
+
+        try {
+          // Add loading state to button
+          const downloadButton = document.querySelector(
+            'button[onclick="downloadChart()"]',
+          )
+          const originalContent = downloadButton.innerHTML
+          downloadButton.innerHTML = `
+          <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Generating...
+        `
+          downloadButton.disabled = true
+
+          const width = 1024
+          const height = 322
+          const scaleFactor = Math.max(
+            width / chartContainer.offsetWidth,
+            height / chartContainer.offsetHeight,
+          )
+
+          // Temporarily remove the blink class
+          toggleBlinkEffect(chartContainer, false)
+
+          // Create canvas from the chart container
+          const canvas = await domtoimage.toPng(chartContainer, {
+            /* quality: 1,
+            width: 1024,
+						height: 322,
+            style: {
+              transform: 'scale(1.4)',
+              transformOrigin: '0 0',
+            }, */
+            /* style: {
+              transform: `scale(${scaleFactor})`,
+              transformOrigin: "0 0",
+            }, */
+          })
+
+          // Create download link
+          const link = document.createElement("a")
+          link.download = `github-contributions-${new Date().toISOString().split("T")[0]}.png`
+          link.href = canvas
+          link.click()
+
+          // Restore button state
+          downloadButton.innerHTML = originalContent
+          downloadButton.disabled = false
+          // Add the blink class back
+          toggleBlinkEffect(chartContainer, true)
+        } catch (error) {
+          console.error("Error generating image:", error)
+          showError("Failed to generate image. Please try again.")
+        }
+      }
+
+      document.querySelectorAll('input[type="color"]').forEach((input) => {
+        input.addEventListener("change", (e) => {
+          const colorValue = e.target.value
+          const colorId = e.target.id
+          const contributionCell = document.querySelector(
+            `.contribution-cell[data-color-id="${colorId}"]`,
+          )
+          if (contributionCell) {
+            contributionCell.style.backgroundColor = colorValue
+          }
+        })
+      })
+
+      // DEFAULT COLOR PALETTES HERE
+      const colorPalettes = {
+        Spring: ["#EDEBF0", "#F6D6D6", "#F6F7C4", "#A1EEBD", "#7BD3EA"],
+        Summer: ["#FFFBD1", "#FCF596", "#FBD288", "#FF9C73", "#FF4545"],
+        Autumn: ["#FDF1D6", "#F2A154", "#BECA5C", "#FB743E", "#314E52"],
+        Winter: ["#66CCCC", "#87CEEB", "#4682B4", "#6495ED", "#4169E1"],
+      }
+
+      function quickColorSwitch(button) {
+        const paletteName = button.getAttribute("data-palette")
+        const color0 = document.getElementById("color0")
+        const color1 = document.getElementById("color1")
+        const color2 = document.getElementById("color2")
+        const color3 = document.getElementById("color3")
+        const color4 = document.getElementById("color4")
+
+        const palette = colorPalettes[paletteName]
+        if (palette) {
+          color0.value = palette[0]
+          color1.value = palette[1]
+          color2.value = palette[2]
+          color3.value = palette[3]
+          color4.value = palette[4]
+
+          const legendCells = document.querySelectorAll("[data-color-id]")
+          legendCells.forEach((cell) => {
+            const colorId = cell.getAttribute("data-color-id")
+            const colorValue = document.getElementById(colorId).value
+            cell.style.backgroundColor = colorValue
+          })
+        }
+
+        renderGraph()
+      }
+
+      // ------------------------------ ------------ //
+      // --- Functions for saving color palettes --- //
+      // ------------------------------ ------------ //
+
+      // Add an event listener to the save current palette button
+      document
+        .getElementById("save-current-palette-button")
+        .addEventListener("click", () => {
+          document.getElementById("palette-name").value = ""
+          document
+            .getElementById("save-palette-modal")
+            .classList.remove("hidden")
+        })
+
+      // Add an event listener to the save palette button
+      document
+        .getElementById("save-palette-button")
+        .addEventListener("click", () => {
+          const paletteName = document.getElementById("palette-name").value
+          const color0 = document.getElementById("color0").value
+          const color1 = document.getElementById("color1").value
+          const color2 = document.getElementById("color2").value
+          const color3 = document.getElementById("color3").value
+          const color4 = document.getElementById("color4").value
+
+          const palettes = JSON.parse(localStorage.getItem("palettes")) || {}
+
+          if (palettes[paletteName]) {
+            alert(
+              "A palette with this name already exists. Please choose a different name.",
+            )
+            return
+          }
+
+          // Save the palette to local storage
+          palettes[paletteName] = [color0, color1, color2, color3, color4]
+          localStorage.setItem("palettes", JSON.stringify(palettes))
+
+          // Display the saved palettes
+          displaySavedPalettes()
+
+          // Close the modal
+          document.getElementById("save-palette-modal").classList.add("hidden")
+        })
+
+      // Add an event listener to the cancel save palette button
+      document
+        .getElementById("cancel-save-palette-button")
+        .addEventListener("click", () => {
+          document.getElementById("save-palette-modal").classList.add("hidden")
+        })
+
+      function displaySavedPalettes() {
+        const palettes = JSON.parse(localStorage.getItem("palettes")) || {}
+        const savedPalettesContainer = document.getElementById(
+          "saved-palettes-container",
+        )
+
+        savedPalettesContainer.innerHTML = ""
+
+        Object.keys(palettes).forEach((paletteName) => {
+          const palette = palettes[paletteName]
+          const paletteButton = document.createElement("button")
+
+          // Unhide the saved-palettes-container element and add gap-2 to it
+          savedPalettesContainer.classList.remove("hidden")
+          savedPalettesContainer.classList.add("gap-2")
+
+          paletteButton.className =
+            "border border-gray-300 text-xs text-gray-800 px-3 py-2 rounded-md flex items-center gap-1 relative"
+
+          const colorContainer = document.createElement("div")
+          colorContainer.className = "flex flex-col gap-[1px] justify-center"
+
+          const topColors = document.createElement("div")
+          topColors.className = "flex gap-[1px] justify-center"
+          const color0 = document.createElement("span")
+          color0.className = "w-2 h-2 rounded-sm"
+          color0.style.backgroundColor = palette[0]
+          const color1 = document.createElement("span")
+          color1.className = "w-2 h-2 rounded-sm"
+          color1.style.backgroundColor = palette[1]
+          topColors.appendChild(color0)
+          topColors.appendChild(color1)
+
+          const bottomColors = document.createElement("div")
+          bottomColors.className = "flex gap-[1px] justify-center"
+          const color2 = document.createElement("span")
+          color2.className = "w-2 h-2 rounded-sm"
+          color2.style.backgroundColor = palette[2]
+          const color3 = document.createElement("span")
+          color3.className = "w-2 h-2 rounded-sm"
+          color3.style.backgroundColor = palette[3]
+          const color4 = document.createElement("span")
+          color4.className = "w-2 h-2 rounded-sm"
+          color4.style.backgroundColor = palette[4]
+          bottomColors.appendChild(color2)
+          bottomColors.appendChild(color3)
+          bottomColors.appendChild(color4)
+
+          colorContainer.appendChild(topColors)
+          colorContainer.appendChild(bottomColors)
+
+          const paletteNameContainer = document.createElement("div")
+          paletteNameContainer.className = "ml-2 pr-3"
+          paletteNameContainer.textContent = paletteName
+
+          const deleteButton = document.createElement("div")
+          deleteButton.className =
+            "flex items-center justify-center w-4 h-4 bg-gray-200 rounded-full cursor-pointer hover:bg-red-400 hover:text-white"
+          const deleteIcon = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "svg",
+          )
+          deleteIcon.className = "h-4 w-4 text-gray-500"
+          deleteIcon.setAttribute("viewBox", "0 0 24 24")
+          deleteIcon.setAttribute("fill", "none")
+          deleteIcon.setAttribute("stroke", "currentColor")
+          deleteIcon.setAttribute("stroke-width", "2")
+          const deletePath = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "path",
+          )
+          deletePath.setAttribute("stroke-linecap", "round")
+          deletePath.setAttribute("stroke-linejoin", "round")
+          deletePath.setAttribute("d", "M12 6v6m0 0v6m0-6h6m-6 0H6")
+          deletePath.setAttribute("transform", "rotate(45 12 12)")
+          deleteIcon.appendChild(deletePath)
+          deleteButton.appendChild(deleteIcon)
+
+          paletteButton.appendChild(colorContainer)
+          paletteButton.appendChild(paletteNameContainer)
+          paletteButton.appendChild(deleteButton)
+
+          paletteButton.addEventListener("click", (e) => {
+            if (e.target.tagName === "svg") {
+              // Remove the palette from local storage
+              const palettes =
+                JSON.parse(localStorage.getItem("palettes")) || {}
+              delete palettes[paletteName]
+              localStorage.setItem("palettes", JSON.stringify(palettes))
+
+              // Remove the button from the view
+              paletteButton.remove()
+
+              return
+            }
+
+            const color0 = document.getElementById("color0")
+            const color1 = document.getElementById("color1")
+            const color2 = document.getElementById("color2")
+            const color3 = document.getElementById("color3")
+            const color4 = document.getElementById("color4")
+
+            color0.value = palette[0]
+            color1.value = palette[1]
+            color2.value = palette[2]
+            color3.value = palette[3]
+            color4.value = palette[4]
+
+            const legendCells = document.querySelectorAll("[data-color-id]")
+            legendCells.forEach((cell) => {
+              const colorId = cell.getAttribute("data-color-id")
+              const colorValue = document.getElementById(colorId).value
+              cell.style.backgroundColor = colorValue
+            })
+
+            renderGraph()
+          })
+
+          savedPalettesContainer.appendChild(paletteButton)
+        })
+      }
+
+      displaySavedPalettes()
+    </script>
+  </body>
+</html>
