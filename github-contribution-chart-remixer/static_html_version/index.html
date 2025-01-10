@@ -908,8 +908,16 @@
         if (message) {
           errorEl.textContent = message
           errorEl.classList.remove("hidden")
+          errorEl.classList.remove('translate-x-full', 'opacity-0')
+          errorEl.classList.add('translate-x-0', 'opacity-100')
+          setTimeout(() => {
+            errorEl.classList.add('translate-x-full', 'opacity-0')
+		        errorEl.classList.remove('translate-x-0', 'opacity-100')
+          }, 5000);
         } else {
           errorEl.classList.add("hidden")
+          errorEl.classList.add('translate-x-full', 'opacity-0')
+	        errorEl.classList.remove('translate-x-0', 'opacity-100')
         }
       }
 
