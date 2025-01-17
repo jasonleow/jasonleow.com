@@ -4,6 +4,12 @@
   status = 301
   force = true
 
+[[redirects]]
+  from = "/github-contribution-chart-remixer"
+  to = "https://commit365.dev/gitchart"
+  status = 301
+  force = true
+
 [build]
   publish = "/"  # Serves files from the root directory
   functions = "netlify/functions"  # Matches your functions directory setting
