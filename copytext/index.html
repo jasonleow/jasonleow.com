@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Work Categories App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@tailwindcss/forms@0.5.3/dist/forms.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100 min-h-screen">
+  <div class="container mx-auto p-6">
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">Copy Text App</h1>
+
+    <!-- Preview Window -->
+    <div id="preview" class="bg-white p-4 rounded-lg shadow-md mb-4 h-40 overflow-y-auto"></div>
+
+    <!-- Add Custom Button -->
+    <div class="mb-4">
+      <button id="addCustomBtn" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300">
+        + Add Custom Button
+      </button>
+    </div>
+
+    <!-- Custom Button Modal -->
+    <div id="customBtnModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center">
+      <div class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="text-xl font-bold mb-4">Add Custom Button</h2>
+        <input id="customBtnTitle" type="text" placeholder="Button Title" class="w-full mb-2 p-2 border rounded">
+        <textarea id="customBtnText" placeholder="Button Text" class="w-full mb-4 p-2 border rounded" rows="4"></textarea>
+        <div class="flex justify-end">
+          <button id="cancelCustomBtn" class="bg-gray-300 text-gray-800 px-4 py-2 rounded mr-2 hover:bg-gray-400 transition duration-300">Cancel</button>
+          <button id="saveCustomBtn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="mb-4">
+      <nav class="flex space-x-4" aria-label="Tabs">
+        <button class="tab-btn bg-white px-3 py-2 font-medium text-sm rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition duration-300" data-tab="domain">Domain</button>
+        <button class="tab-btn bg-white px-3 py-2 font-medium text-sm rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition duration-300" data-tab="builder">Builder</button>
+        <button class="tab-btn bg-white px-3 py-2 font-medium text-sm rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition duration-300" data-tab="account">Account</button>
+        <button class="tab-btn bg-white px-3 py-2 font-medium text-sm rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition duration-300" data-tab="others">Others</button>
+      </nav>
+    </div>
+
+    <!-- Tab Content -->
+    <div id="tabContent" class="bg-white p-6 rounded-lg shadow-md"></div>
+  </div>
+
+  <script>
+    const categories = ['domain', 'builder', 'account', 'others'];
+    const buttons = {
+      domain: [{
+          title: 'Domain 1',
+          text: 'This is domain text 1.\nIt can have multiple lines.'
+        },
+        {
+          title: 'Domain 2',
+          text: 'This is domain text 2.\nAnother line here.'
+        },
+        // Add more predefined buttons for the domain category
+      ],
+      builder: [{
+          title: 'Builder 1',
+          text: 'This is builder text 1.\nIt can have multiple lines.'
+        },
+        {
+          title: 'Builder 2',
+          text: 'This is builder text 2.\nAnother line here.'
+        },
+        // Add more predefined buttons for the builder category
+      ],
+      account: [{
+          title: 'Account 1',
+          text: 'This is account text 1.\nIt can have multiple lines.'
+        },
+        {
+          title: 'Account 2',
+          text: 'This is account text 2.\nAnother line here.'
+        },
+        // Add more predefined buttons for the account category
+      ],
+      others: [{
+          title: 'Other 1',
+          text: 'This is other text 1.\nIt can have multiple lines.'
+        },
+        {
+          title: 'Other 2',
+          text: 'This is other text 2.\nAnother line here.'
+        },
+        // Add more predefined buttons for the others category
+      ],
+    };
+    const preview = document.getElementById('preview');
+    const tabContent = document.getElementById('tabContent');
+    const addCustomBtn = document.getElementById('addCustomBtn');
+    const customBtnModal = document.getElementById('customBtnModal');
+    const customBtnTitle = document.getElementById('customBtnTitle');
+    const customBtnText = document.getElementById('customBtnText');
+    const cancelCustomBtn = document.getElementById('cancelCustomBtn');
+    const saveCustomBtn = document.getElementById('saveCustomBtn');
+
+    function createButton(title, text, category) {
+    const button = document.createElement('button');
+    button.className = 'bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded inline-flex items-center justify-between mr-3 mb-2 transition duration-300';
+    button.innerHTML = `
+      <span>${title}</span>
+      <span class="delete-btn text-red-500 hover:text-red-700 ml-4">&times;</span>
+    `;
+    button.addEventListener('click', (e) => {
+      if (!e.target.classList.contains('delete-btn')) {
+        copyToClipboard(text, button);
+      }
+    });
+      button.addEventListener('mouseover', () => showPreview(text));
+      button.addEventListener('mouseout', () => clearPreview());
+      const deleteBtn = button.querySelector('.delete-btn');
+      deleteBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        deleteButton(button, category, title);
+      });
+      return button;
+    }
+
+    function deleteButton(button, category, title) {
+      if (confirm('Are you sure you want to delete this button?')) {
+        buttons[category] = buttons[category].filter(btn => btn.title !== title);
+        saveToLocalStorage();
+        renderButtons(category); // Re-render the buttons for the current category
+      }
+    }
+
+    function renderButtons(category) {
+      tabContent.innerHTML = '';
+      buttons[category].forEach(btn => {
+        tabContent.appendChild(createButton(btn.title, btn.text, category));
+      });
+    }
+
+    function showPreview(text) {
+      preview.innerHTML = text.replace(/\n/g, '<br>');
+    }
+
+    function clearPreview() {
+      preview.innerHTML = '';
+    }
+
+    function copyToClipboard(text, button) {
+      navigator.clipboard.writeText(text).then(() => {
+        const deleteBtn = button.querySelector('.delete-btn');
+        deleteBtn.innerHTML = '&#10003;'; // Change to checkmark
+        deleteBtn.classList.remove('text-red-500', 'hover:text-red-700');
+        deleteBtn.classList.add('text-green-500', 'hover:text-green-700');
+        
+        setTimeout(() => {
+          deleteBtn.innerHTML = '&times;'; // Revert to 'x' symbol
+          deleteBtn.classList.remove('text-green-500', 'hover:text-green-700');
+          deleteBtn.classList.add('text-red-500', 'hover:text-red-700');
+        }, 2000); // Change back after 2 seconds
+      });
+    }
+
+    function saveToLocalStorage() {
+      localStorage.setItem('customButtons', JSON.stringify(buttons));
+    }
+
+    function loadFromLocalStorage() {
+      const savedButtons = localStorage.getItem('customButtons');
+      if (savedButtons) {
+        Object.assign(buttons, JSON.parse(savedButtons));
+      }
+    }
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => {
+          b.classList.remove('bg-blue-500', 'text-white');
+          b.classList.add('bg-white', 'text-gray-600');
+        });
+        btn.classList.remove('bg-white', 'text-gray-600');
+        btn.classList.add('bg-blue-500', 'text-white');
+        renderButtons(btn.dataset.tab);
+      });
+    });
+    // Add custom button
+    addCustomBtn.addEventListener('click', () => {
+      customBtnModal.classList.remove('hidden');
+      customBtnModal.classList.add('flex');
+    });
+    cancelCustomBtn.addEventListener('click', () => {
+      customBtnModal.classList.add('hidden');
+      customBtnModal.classList.remove('flex');
+      customBtnTitle.value = '';
+      customBtnText.value = '';
+    });
+    saveCustomBtn.addEventListener('click', () => {
+      const title = customBtnTitle.value.trim();
+      const text = customBtnText.value.trim();
+      const activeTab = document.querySelector('.tab-btn.bg-blue-500').dataset.tab;
+      if (title && text) {
+        buttons[activeTab].push({
+          title,
+          text
+        });
+        saveToLocalStorage();
+        renderButtons(activeTab);
+        customBtnModal.classList.add('hidden');
+        customBtnModal.classList.remove('flex');
+        customBtnTitle.value = '';
+        customBtnText.value = '';
+      } else {
+        alert('Please enter both a title and text for the custom button.');
+      }
+    });
+    // Initialize
+    loadFromLocalStorage();
+    document.querySelector('.tab-btn').click(); // Activate the first tab
+  </script>
+</body>
+
+</html>
