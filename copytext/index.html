@@ -15,7 +15,7 @@
 </head>
 
 <body class="bg-gray-100 dark:bg-gray-900 min-h-screen">
-  <div class="container mx-auto p-6">
+  <div class="container md:max-w-4xl md:mx-auto p-6">
     <div class="flex items-center justify-between">
       <h1 class="text-3xl font-bold mb-6 text-gray-800 dark:text-gray-50">Copy Text App</h1>
       <button id="darkModeToggle" class="mb-4 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition duration-300">
@@ -27,13 +27,6 @@
     <div class="relative">
       <div class="w-fit absolute top-2 left-4 mb-3 text-xs rounded text-gray-200 bg-fuchsia-800 bg-opacity-100 px-2 py-1">Preview</div>
       <div id="preview" class="bg-white dark:bg-gray-800 pt-10 pb-4 px-4 rounded-lg shadow-md mb-4 h-60 overflow-y-auto dark:text-gray-200"></div>
-    </div>
-
-    <!-- Add Custom Button -->
-    <div class="mb-4">
-      <button id="addCustomBtn" class="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 transition duration-300">
-        + Add Custom Button
-      </button>
     </div>
 
     <!-- Custom Button Modal -->
@@ -61,7 +54,19 @@
     </div>
 
     <!-- Tab Content -->
-    <div id="tabContent" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md"></div>
+    <div id="tabContent" class="mb-4 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md"></div>
+
+    <!-- Add Custom Button -->
+    <div class="mb-4">
+      <button id="addCustomBtn" class="bg-transparent border border-teal-500 dark:text-white text-gray-600 py-2 px-4 rounded inline-flex items-center justify-between mr-3 mb-2 hover:bg-teal-600 hover:bg-opacity-20 transition duration-300">
+        <span class="flex items-center justify-center w-4 h-4 mr-2 bg-gray-200 rounded-full cursor-pointer hover:bg-green-400">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 hover:text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+        </span>
+        Add custom button
+      </button>
+    </div>
   </div>
 
   <script>
@@ -123,7 +128,7 @@
       
       let buttonContent = `<span>${title}</span>`;
       if (isCustom) {
-        buttonContent += `<span class="delete-btn text-red-500 hover:text-red-700 ml-4">&times;</span>`;
+        buttonContent += `<span class="delete-btn flex items-center justify-center w-4 h-4 ml-2 bg-gray-200 text-gray-600 rounded-full cursor-pointer hover:bg-red-400 hover:text-white"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" transform="rotate(45 12 12)"></path></svg></span>`;
       }
       button.innerHTML = buttonContent;
 
@@ -154,12 +159,36 @@
       }
     }
 
-    function renderButtons(category) {
+    /* function renderButtons(category) {
       tabContent.innerHTML = '';
       buttons[category].forEach(btn => {
         tabContent.appendChild(createButton(btn.title, btn.text, category, btn.isCustom));
       });
+    } */
+
+    function renderButtons(category) {
+      tabContent.innerHTML = '';
+      
+      // Create a single wrapper for all buttons
+      const buttonWrapper = document.createElement('div');
+      buttonWrapper.className = 'flex flex-wrap items-center';
+      tabContent.appendChild(buttonWrapper);
+
+      // Add the "Add Custom Button" at the start of the button wrapper
+      const addCustomBtnClone = addCustomBtn.cloneNode(true);
+      addCustomBtnClone.addEventListener('click', () => {
+        customBtnModal.classList.remove('hidden');
+        customBtnModal.classList.add('flex');
+      });
+      buttonWrapper.appendChild(addCustomBtnClone);
+
+      // Add category-specific buttons
+      buttons[category].forEach(btn => {
+        buttonWrapper.appendChild(createButton(btn.title, btn.text, category, btn.isCustom));
+      });
     }
+    // Remove the original "Add Custom Button" from the main container
+    document.querySelector('#addCustomBtn').remove();
 
     // Function to close the modal
     function closeModal() {
