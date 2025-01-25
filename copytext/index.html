@@ -4,48 +4,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <title>Work Categories App</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-    }
-  </script>
+  <link href="https://cdn.jsdelivr.net/npm/@tailwindcss/forms@0.5.3/dist/forms.min.css" rel="stylesheet">
 </head>
 
-<body class="bg-gray-100 dark:bg-gray-900 min-h-screen">
+<body class="bg-gray-100 min-h-screen">
   <div class="container mx-auto p-6">
-    <div class="flex items-center justify-between">
-      <h1 class="text-3xl font-bold mb-6 text-gray-800 dark:text-gray-50">Copy Text App</h1>
-      <button id="darkModeToggle" class="mb-4 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition duration-300">
-        🌗
-      </button>
-    </div>
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">Copy Text App</h1>
 
     <!-- Preview Window -->
-    <div class="relative">
-      <div class="w-fit absolute top-2 left-4 mb-3 text-xs rounded text-gray-200 bg-fuchsia-800 bg-opacity-100 px-2 py-1">Preview</div>
-      <div id="preview" class="bg-white dark:bg-gray-800 pt-10 pb-4 px-4 rounded-lg shadow-md mb-4 h-60 overflow-y-auto dark:text-gray-200"></div>
-    </div>
+    <div id="preview" class="bg-white p-4 rounded-lg shadow-md mb-4 h-40 overflow-y-auto"></div>
 
     <!-- Add Custom Button -->
     <div class="mb-4">
-      <button id="addCustomBtn" class="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 transition duration-300">
+      <button id="addCustomBtn" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300">
         + Add Custom Button
       </button>
     </div>
 
     <!-- Custom Button Modal -->
     <div id="customBtnModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center">
-      <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg">
-        <h2 class="text-xl dark:text-white font-bold mb-2">Add Custom Button</h2>
-        <p class="text-sm dark:text-white mb-6">For now, this is saved locally in your browser.</p>
-        <input id="customBtnTitle" type="text" placeholder="Button Title" class="w-full mb-2 p-2 border rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:ring-teal-500 dark:focus:ring-teal-500 focus:border-teal-500 dark:focus:border-teal-500">
-<textarea id="customBtnText" placeholder="Button Text" class="w-full mb-4 p-2 border rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:ring-teal-500 dark:focus:ring-teal-500 focus:border-teal-500 dark:focus:border-teal-500" rows="4"></textarea>
+      <div class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="text-xl font-bold mb-4">Add Custom Button</h2>
+        <input id="customBtnTitle" type="text" placeholder="Button Title" class="w-full mb-2 p-2 border rounded">
+        <textarea id="customBtnText" placeholder="Button Text" class="w-full mb-4 p-2 border rounded" rows="4"></textarea>
         <div class="flex justify-end">
           <button id="cancelCustomBtn" class="bg-gray-300 text-gray-800 px-4 py-2 rounded mr-2 hover:bg-gray-400 transition duration-300">Cancel</button>
-          <button id="saveCustomBtn" class="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 transition duration-300">Save</button>
+          <button id="saveCustomBtn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300">Save</button>
         </div>
       </div>
     </div>
@@ -53,45 +39,33 @@
     <!-- Tabs -->
     <div class="mb-4">
       <nav class="flex space-x-4" aria-label="Tabs">
-        <button class="tab-btn bg-white px-3 py-2 font-medium text-sm rounded text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition duration-300" data-tab="domain">Domain</button>
-        <button class="tab-btn bg-white px-3 py-2 font-medium text-sm rounded text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition duration-300" data-tab="builder">Builder</button>
-        <button class="tab-btn bg-white px-3 py-2 font-medium text-sm rounded text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition duration-300" data-tab="account">Account</button>
-        <button class="tab-btn bg-white px-3 py-2 font-medium text-sm rounded text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition duration-300" data-tab="others">Others</button>
+        <button class="tab-btn bg-white px-3 py-2 font-medium text-sm rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition duration-300" data-tab="domain">Domain</button>
+        <button class="tab-btn bg-white px-3 py-2 font-medium text-sm rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition duration-300" data-tab="builder">Builder</button>
+        <button class="tab-btn bg-white px-3 py-2 font-medium text-sm rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition duration-300" data-tab="account">Account</button>
+        <button class="tab-btn bg-white px-3 py-2 font-medium text-sm rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition duration-300" data-tab="others">Others</button>
       </nav>
     </div>
 
     <!-- Tab Content -->
-    <div id="tabContent" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md"></div>
+    <div id="tabContent" class="bg-white p-6 rounded-lg shadow-md"></div>
   </div>
 
   <script>
     const categories = ['domain', 'builder', 'account', 'others'];
     const buttons = {
       domain: [{
-          title: 'Can\'t see site',
-          text: 'Hi there. Sorry about that. Is this still happening for you? I was able to visit your site. Seems to be working fine now. Can you try clearing your browser cache and refreshing the page to view it? Please let us know if there\'s still an issue.'
+          title: 'Domain 1',
+          text: 'This is domain text 1.\nIt can have multiple lines.'
         },
         {
-          title: 'URL fwd',
-          text: 'Hello. Sorry for the confusion. Are you trying to permanently redirect all traffic from your old domain to the new domain?\nIf so, instead of changing DNS record, you can set up a Page Rule in Cloudflare to do this:\nhttps://developers.cloudflare.com/rules/page-rules/how-to/url-forwarding/'
-        },
-        {
-          title: 'Transfer domain',
-          text: 'Hey there. There\'s no need to transfer your domain to Carrd. To set up your custom domain for your Carrd site, please follow these steps:\nhttps://carrd.co/docs/sites/using-a-custom-domain' 
-        },
-        {
-          title: 'DNS missing',
-          text: 'Hey. Your domain\'s DNS records appear to be missing. Would you mind sending us a screenshot of what those currently look like for your domain over at your domain provider?\nMeantime, this handy tutorial might help you with the set up:\nhttps://carrd.co/docs/sites/using-a-custom-domain#cloudflare' 
-        },
-        {
-          title: 'SSL issued',
-          text: 'Thanks for the update. Just issued your site an SSL certificate so it should be good to go in 5-10 minutes.' 
+          title: 'Domain 2',
+          text: 'This is domain text 2.\nAnother line here.'
         },
         // Add more predefined buttons for the domain category
       ],
       builder: [{
-          title: 'More templates',
-          text: 'Hi there. Thanks for reaching out. Yes, there\'s some templates that are only available under a Pro subscription. With the Pro plan, you can also buy and download Pro templates from Carrd makers:\nhttps://zite.design\nhttps://lynnx.design\nhttps://templates-of.carrd.co\nhttps://templatery.com'
+          title: 'Builder 1',
+          text: 'This is builder text 1.\nIt can have multiple lines.'
         },
         {
           title: 'Builder 2',
@@ -100,8 +74,8 @@
         // Add more predefined buttons for the builder category
       ],
       account: [{
-          title: 'No verf email',
-          text: 'Hey there. Sorry about that. Could you check your spam/junk folder to see if it landed there?\nA few other things you can try:\nhttps://carrd.co/docs/account/troubleshooting#no-verification-email.'
+          title: 'Account 1',
+          text: 'This is account text 1.\nIt can have multiple lines.'
         },
         {
           title: 'Account 2',
@@ -166,21 +140,6 @@
       });
     }
 
-    // Function to close the modal
-    function closeModal() {
-      customBtnModal.classList.add('hidden');
-      customBtnModal.classList.remove('flex');
-      customBtnTitle.value = '';
-      customBtnText.value = '';
-    }
-
-    // Event listener for clicking outside the modal
-    customBtnModal.addEventListener('click', (e) => {
-      if (e.target === customBtnModal) {
-        closeModal();
-      }
-    });
-
     function showPreview(text) {
       preview.innerHTML = text.replace(/\n/g, '<br>');
     }
@@ -218,11 +177,11 @@
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.tab-btn').forEach(b => {
-          b.classList.remove('bg-teal-500', 'text-white');
+          b.classList.remove('bg-blue-500', 'text-white');
           b.classList.add('bg-white', 'text-gray-600');
         });
         btn.classList.remove('bg-white', 'text-gray-600');
-        btn.classList.add('bg-teal-500', 'text-white');
+        btn.classList.add('bg-blue-500', 'text-white');
         renderButtons(btn.dataset.tab);
       });
     });
@@ -231,11 +190,16 @@
       customBtnModal.classList.remove('hidden');
       customBtnModal.classList.add('flex');
     });
-    cancelCustomBtn.addEventListener('click', closeModal);
+    cancelCustomBtn.addEventListener('click', () => {
+      customBtnModal.classList.add('hidden');
+      customBtnModal.classList.remove('flex');
+      customBtnTitle.value = '';
+      customBtnText.value = '';
+    });
     saveCustomBtn.addEventListener('click', () => {
       const title = customBtnTitle.value.trim();
       const text = customBtnText.value.trim();
-      const activeTab = document.querySelector('.tab-btn.bg-teal-500').dataset.tab;
+      const activeTab = document.querySelector('.tab-btn.bg-blue-500').dataset.tab;
       if (title && text) {
         buttons[activeTab].push({
           title,
@@ -243,7 +207,10 @@
         });
         saveToLocalStorage();
         renderButtons(activeTab);
-        closeModal();
+        customBtnModal.classList.add('hidden');
+        customBtnModal.classList.remove('flex');
+        customBtnTitle.value = '';
+        customBtnText.value = '';
       } else {
         alert('Please enter both a title and text for the custom button.');
       }
@@ -251,20 +218,6 @@
     // Initialize
     loadFromLocalStorage();
     document.querySelector('.tab-btn').click(); // Activate the first tab
-
-    // Dark mode toggle
-    const darkModeToggle = document.getElementById('darkModeToggle');
-    const html = document.documentElement;
-
-    darkModeToggle.addEventListener('click', () => {
-      html.classList.toggle('dark');
-      localStorage.setItem('darkMode', html.classList.contains('dark'));
-    });
-
-    // Check for saved dark mode preference
-    if (localStorage.getItem('darkMode') === 'true') {
-      html.classList.add('dark');
-    }
   </script>
 </body>
 
