@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <title>Canned Support App</title>
+  
+  <!-- Primary Meta Tags -->
+  <meta name="title" content="Canned Support App" />
+  <meta name="description" content="Canned Support App – A tool for customer support folks to set up presets and canned replies. Made by Jason Leow @jasonleowsg" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://jasonleow.com/cannedsupport/" />
+  <meta property="og:title" content="Canned Support App" />
+  <meta property="og:description" content="Canned Support App – A tool for customer support folks to set up presets and canned replies. Made by Jason Leow @jasonleowsg" />
+  <meta property="og:image" content="/cannedsupport/cannedsupport-ogimage.png" />
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="https://jasonleow.com/cannedsupport/" />
+  <meta property="twitter:title" content="Canned Support App" />
+  <meta property="twitter:description" content="Canned Support App – A tool for customer support folks to set up presets and canned replies. Made by Jason Leow @jasonleowsg" />
+  <meta property="twitter:image" content="/cannedsupport/cannedsupport-ogimage.png" />
+
+  <link rel="canonical" href="https://jasonleow.com/cannedsupport/">
+
+  <!-- Mobile app icon -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Canned Support App" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/cannedsupport/cannedsupport-thumbnail.png" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/cannedsupport/cannedsupport-favicon.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/cannedsupport/cannedsupport-favicon.png" />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+  </script>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-900 min-h-screen">
+  <div class="container md:max-w-7xl md:mx-auto p-6">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center justify-start">
+        <!-- <img src="/cannedsupport-transparentbg.png" class="h-12 w-12 -mt-5 mr-3" /> -->
+        <img src="https://em-content.zobj.net/source/apple/391/canned-food_1f96b.png" class="h-12 w-12 -mt-5 mr-3" />
+        <div>
+          <h1 class="text-3xl font-bold mb-1 text-gray-800 dark:text-gray-50">Canned Support App</h1>
+          <p class="text-sm dark:text-white mb-6">A tool for customer support folks to set up presets and canned replies.</p>
+        </div>
+      </div>
+      <button id="darkModeToggle" class="mb-4 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition duration-300">
+        🌗
+      </button>
+    </div>
+
+    <!-- Preview Window -->
+    <div id="previewContainer" class="sticky top-0 mb-4">
+      <div class="relative">
+        <div class="w-fit absolute top-2 left-4 mb-3 text-xs rounded text-gray-200 bg-fuchsia-800 bg-opacity-100 px-2 py-1">Preview</div>
+        <div id="preview" class="bg-white dark:bg-gray-800 pt-10 pb-4 px-4 rounded-lg shadow-md mb-4 h-60 overflow-y-auto dark:text-gray-200"></div>
+      </div>
+    </div>
+
+    <!-- Search Input -->
+    <div class="mb-4">
+      <div class="relative">
+        <input 
+          id="searchInput"
+          type="text" 
+          placeholder="Search for text content in buttons..." 
+          class="w-full p-2 pl-10 pr-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500 dark:focus:ring-teal-500 focus:border-transparent"
+        >
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Custom Button Modal -->
+    <div id="customBtnModal" class="fixed z-10 inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center">
+      <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg">
+        <h2 class="text-xl dark:text-white font-bold mb-2">Add Custom Button</h2>
+        <p class="text-sm dark:text-white mb-6">For now, this is saved locally in your browser.</p>
+        <input id="customBtnTitle" type="text" placeholder="Button Title" class="w-full mb-2 p-2 border rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:ring-teal-500 dark:focus:ring-teal-500 focus:border-teal-500 dark:focus:border-teal-500">
+        <textarea id="customBtnText" placeholder="Button Text" class="w-full mb-4 p-2 border rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:ring-teal-500 dark:focus:ring-teal-500 focus:border-teal-500 dark:focus:border-teal-500" rows="4"></textarea>
+        <div class="flex justify-end">
+          <button id="cancelCustomBtn" class="bg-gray-300 text-gray-800 px-4 py-2 rounded mr-2 hover:bg-gray-400 transition duration-300">Cancel</button>
+          <button id="saveCustomBtn" class="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 transition duration-300">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div id="allContent" class="mb-4"></div>
+
+  </div>
+
+  <script>
+    const categories = ['domain', 'builder', 'account', 'others'];
+    const buttons = {
+      domain: [{
+          title: 'Domain 1',
+          text: 'This is domain text 1.\nIt can have multiple lines.'
+        },
+        {
+          title: 'Domain 2',
+          text: 'This is domain text 2.\nAnother line here.'
+        },
+        // Add more predefined buttons for the domain category
+      ],
+      builder: [{
+          title: 'Builder 1',
+          text: 'This is builder text 1.\nIt can have multiple lines.'
+        },
+        {
+          title: 'Builder 2',
+          text: 'This is builder text 2.\nAnother line here.'
+        },
+        // Add more predefined buttons for the builder category
+      ],
+      account: [{
+          title: 'Account 1',
+          text: 'This is account text 1.\nIt can have multiple lines.'
+        },
+        {
+          title: 'Account 2',
+          text: 'This is account text 2.\nAnother line here.'
+        },
+        // Add more predefined buttons for the account category
+      ],
+      others: [{
+          title: 'Other 1',
+          text: 'This is other text 1.\nIt can have multiple lines.'
+        },
+        {
+          title: 'Other 2',
+          text: 'This is other text 2.\nAnother line here.'
+        },
+        // Add more predefined buttons for the others category
+      ],
+    };
+    const preview = document.getElementById('preview');
+    const allContent = document.getElementById('allContent');
+    const customBtnModal = document.getElementById('customBtnModal');
+    const customBtnTitle = document.getElementById('customBtnTitle');
+    const customBtnText = document.getElementById('customBtnText');
+    const cancelCustomBtn = document.getElementById('cancelCustomBtn');
+    const saveCustomBtn = document.getElementById('saveCustomBtn');
+
+    function createButton(title, text, category, isCustom = false) {
+      const button = document.createElement('button');
+      button.className = 'bg-transparent border border-teal-500 dark:text-white text-gray-600 py-2 px-4 rounded inline-flex items-center justify-center min-w-[6.5rem] mr-4 mb-4 hover:bg-teal-600 hover:bg-opacity-20 transition duration-300';
+
+      let buttonContent = `<span>${title}</span>`;
+      if (isCustom) {
+        buttonContent += `<span class="delete-btn flex items-center justify-center w-4 h-4 ml-2 bg-gray-200 text-gray-600 rounded-full cursor-pointer hover:bg-red-400 hover:text-white"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" transform="rotate(45 12 12)"></path></svg></span>`;
+      }
+      button.innerHTML = buttonContent;
+
+      button.addEventListener('click', (e) => {
+        if (!e.target.closest('.delete-btn')) {
+          copyToClipboard(text, button);
+        }
+      });
+
+      button.addEventListener('mouseover', () => showPreview(text));
+      button.addEventListener('mouseout', () => clearPreview());
+
+      if (isCustom) {
+        const deleteBtn = button.querySelector('.delete-btn');
+        deleteBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          deleteButton(button, category, title);
+        });
+      }
+
+      return button;
+    }
+
+
+    function deleteButton(button, category, title) {
+      if (confirm('Are you sure you want to delete this button?')) {
+        buttons[category] = buttons[category].filter(btn => btn.title !== title);
+        saveToLocalStorage();
+        renderAllContent(); // Re-render all content
+      }
+    }
+
+    function renderAllContent() {
+      allContent.innerHTML = '';
+      
+      categories.forEach(category => {
+        const categoryContainer = document.createElement('div');
+        categoryContainer.className = 'mb-5';
+        
+        const categoryTitle = document.createElement('h2');
+        categoryTitle.className = 'w-fit text-xs rounded text-white bg-gray-400 bg-opacity-100 px-2 py-1 mb-1';
+        categoryTitle.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+        categoryContainer.appendChild(categoryTitle);
+
+        const buttonWrapper = document.createElement('div');
+        buttonWrapper.className = 'flex flex-wrap items-center bg-white dark:bg-gray-800 p-3 rounded-lg shadow-md';
+        
+        const addCustomBtnClone = createAddCustomButton(category);
+        buttonWrapper.appendChild(addCustomBtnClone);
+
+        buttons[category].forEach(btn => {
+          buttonWrapper.appendChild(createButton(btn.title, btn.text, category, btn.isCustom));
+        });
+
+        categoryContainer.appendChild(buttonWrapper);
+        allContent.appendChild(categoryContainer);
+      });
+    }
+
+    function createAddCustomButton(category) {
+      const addCustomBtnClone = document.createElement('button');
+      addCustomBtnClone.className = 'bg-teal-500 bg-opacity-50 border border-teal-500 dark:text-white text-gray-600 py-2 px-4 rounded inline-flex items-center justify-between mr-4 mb-4 hover:bg-teal-600 hover:bg-opacity-20 transition duration-300';
+      addCustomBtnClone.innerHTML = `
+        <span class="flex items-center justify-center w-4 h-4 mr-2 bg-gray-200 rounded-full cursor-pointer hover:bg-green-400">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 hover:text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+        </span>
+        Add
+      `;
+      addCustomBtnClone.addEventListener('click', () => {
+        customBtnModal.classList.remove('hidden');
+        customBtnModal.classList.add('flex');
+        customBtnModal.dataset.category = category;
+      });
+      return addCustomBtnClone;
+    }
+
+    function showPreview(text) {
+      preview.innerHTML = text.replace(/\n/g, '<br>');
+    }
+
+    function clearPreview() {
+      preview.innerHTML = '';
+    }
+
+    function copyToClipboard(text, button) {
+      navigator.clipboard.writeText(text).then(() => {
+        const originalContent = button.innerHTML;
+        const originalClasses = button.className;
+
+        // Store the original width
+        const originalWidth = button.offsetWidth;
+
+        // Update button content and classes
+        button.innerHTML = '<span class="flex items-center justify-center w-full">Copied ✓</span>';
+        button.className = 'bg-teal-500 border border-teal-500 text-white py-2 px-4 rounded inline-flex items-center justify-center mr-4 mb-4 transition duration-300';
+
+        // Set the button width to match the original width
+        button.style.width = `${originalWidth}px`;
+
+        setTimeout(() => {
+          button.innerHTML = originalContent;
+          button.className = originalClasses;
+          button.style.width = ''; // Remove the inline width
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy text: ', err);
+        alert('Failed to copy text. Please try again.');
+      });
+    }
+
+    function saveToLocalStorage() {
+      localStorage.setItem('customButtons', JSON.stringify(buttons));
+    }
+
+    function loadFromLocalStorage() {
+      const savedButtons = localStorage.getItem('customButtons');
+      if (savedButtons) {
+        const parsedButtons = JSON.parse(savedButtons);
+        for (const category in parsedButtons) {
+          buttons[category] = parsedButtons[category].map(btn => ({
+            ...btn,
+            isCustom: btn.isCustom || false
+          }));
+        }
+      }
+    }
+
+    function closeModal() {
+      customBtnModal.classList.add('hidden');
+      customBtnModal.classList.remove('flex');
+      customBtnTitle.value = '';
+      customBtnText.value = '';
+    }
+
+    customBtnModal.addEventListener('click', (e) => {
+      if (e.target === customBtnModal) {
+        closeModal();
+      }
+    });
+
+    cancelCustomBtn.addEventListener('click', closeModal);
+    saveCustomBtn.addEventListener('click', () => {
+      const title = customBtnTitle.value.trim();
+      const text = customBtnText.value.trim();
+      const category = customBtnModal.dataset.category;
+      if (title && text) {
+        buttons[category].push({
+          title,
+          text,
+          isCustom: true
+        });
+        saveToLocalStorage();
+        renderAllContent();
+        closeModal();
+      } else {
+        alert('Please enter both a title and text for the custom button.');
+      }
+    });
+
+    // Initialize
+    loadFromLocalStorage();
+    renderAllContent();
+
+    // Dark mode toggle
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const html = document.documentElement;
+
+    darkModeToggle.addEventListener('click', () => {
+      html.classList.toggle('dark');
+      localStorage.setItem('darkMode', html.classList.contains('dark'));
+    });
+
+    // Check for saved dark mode preference
+    if (localStorage.getItem('darkMode') === 'true') {
+      html.classList.add('dark');
+    }
+    
+    // ------------------------------------------------------------- //
+    // ------------------------- SEARCH ---------------------------- //
+    // ------------------------------------------------------------- //
+    
+    function searchButtons(query) {
+      const lowercaseQuery = query.toLowerCase().trim();
+
+      // Reset all buttons to their original state
+      document.querySelectorAll('.search-highlight').forEach(el => {
+        el.classList.remove('search-highlight', 'bg-yellow-200', 'hover:bg-opacity-70', 'dark:bg-yellow-300', 'dark:text-gray-800', 'dark:hover:bg-opacity-70');
+        el.classList.add('hover:bg-teal-600', 'hover:bg-opacity-20');
+      });
+
+      if (lowercaseQuery === '') return; // If query is empty, just reset and return
+
+      categories.forEach(category => {
+        buttons[category].forEach(button => {
+          const titleMatch = button.title.toLowerCase().includes(lowercaseQuery);
+          const textMatch = button.text.toLowerCase().includes(lowercaseQuery);
+
+          if (titleMatch || textMatch) {
+            highlightButton(button.title);
+          }
+        });
+      });
+    }
+
+    function highlightButton(title) {
+      const buttons = document.querySelectorAll('button');
+      for (const button of buttons) {
+        if (button.textContent.includes(title)) {
+          button.classList.remove('hover:bg-teal-600', 'hover:bg-opacity-20');
+          button.classList.add('search-highlight', 'bg-yellow-200', 'hover:bg-opacity-70', 'dark:bg-yellow-300', 'dark:text-gray-800', 'dark:hover:bg-opacity-70');
+          break; // Stop after finding the first match
+        }
+      }
+    }
+
+    // Add event listener to the existing search input
+    document.getElementById('searchInput').addEventListener('input', (e) => searchButtons(e.target.value));
+
+
+  </script>
+</body>
+
+</html>
