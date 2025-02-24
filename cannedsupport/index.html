@@ -63,7 +63,7 @@
     </div>
 
     <!-- Preview Window -->
-    <div id="previewContainer" class="sticky top-0 mb-4">
+    <div id="previewContainer" class="sticky z-10 top-0 mb-4">
       <div class="relative">
         <div class="w-fit absolute top-2 left-4 mb-3 text-xs rounded text-gray-200 bg-fuchsia-800 bg-opacity-100 px-2 py-1">Preview</div>
         <div id="preview" class="bg-white dark:bg-gray-800 pt-10 pb-4 px-4 rounded-lg shadow-md mb-4 h-60 overflow-y-auto dark:text-gray-200"></div>
@@ -210,7 +210,7 @@
         categoryContainer.appendChild(categoryTitle);
 
         const buttonWrapper = document.createElement('div');
-        buttonWrapper.className = 'flex flex-wrap items-center bg-white dark:bg-gray-800 p-3 rounded-lg shadow-md';
+        buttonWrapper.className = 'flex flex-wrap items-center bg-white dark:bg-gray-800 pt-3 px-3 rounded-lg shadow-md';
         
         const addCustomBtnClone = createAddCustomButton(category);
         buttonWrapper.appendChild(addCustomBtnClone);
