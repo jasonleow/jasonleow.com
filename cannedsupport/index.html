@@ -16,14 +16,14 @@
   <meta property="og:url" content="https://jasonleow.com/cannedsupport/" />
   <meta property="og:title" content="Canned Support App" />
   <meta property="og:description" content="Canned Support App – A tool for customer support folks to set up presets and canned replies. Made by Jason Leow @jasonleowsg" />
-  <meta property="og:image" content="/cannedsupport/cannedsupport-ogimage.png" />
+  <meta property="og:image" content="/cannedsupport-ogimage.png" />
 
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image" />
   <meta property="twitter:url" content="https://jasonleow.com/cannedsupport/" />
   <meta property="twitter:title" content="Canned Support App" />
   <meta property="twitter:description" content="Canned Support App – A tool for customer support folks to set up presets and canned replies. Made by Jason Leow @jasonleowsg" />
-  <meta property="twitter:image" content="/cannedsupport/cannedsupport-ogimage.png" />
+  <meta property="twitter:image" content="/cannedsupport-ogimage.png" />
 
   <link rel="canonical" href="https://jasonleow.com/cannedsupport/">
 
@@ -32,11 +32,11 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Canned Support App" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/cannedsupport/cannedsupport-thumbnail.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/cannedsupport-thumbnail.png" />
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" sizes="32x32" href="/cannedsupport/cannedsupport-favicon.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="/cannedsupport/cannedsupport-favicon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/cannedsupport-favicon.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/cannedsupport-favicon.png" />
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -93,7 +93,8 @@
         <h2 class="text-xl dark:text-white font-bold mb-2">Add Custom Button</h2>
         <p class="text-sm dark:text-white mb-6">For now, this is saved locally in your browser.</p>
         <input id="customBtnTitle" type="text" placeholder="Button Title" class="w-full mb-2 p-2 border rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:ring-teal-500 dark:focus:ring-teal-500 focus:border-teal-500 dark:focus:border-teal-500">
-        <textarea id="customBtnText" placeholder="Button Text" class="w-full mb-4 p-2 border rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:ring-teal-500 dark:focus:ring-teal-500 focus:border-teal-500 dark:focus:border-teal-500" rows="4"></textarea>
+        <textarea id="customBtnText" placeholder="Button Text" class="w-full mb-2 p-2 border rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:ring-teal-500 dark:focus:ring-teal-500 focus:border-teal-500 dark:focus:border-teal-500" rows="4"></textarea>
+        <input id="customBtnCategory" type="text" placeholder="Category (optional)" class="w-full mb-4 p-2 border rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:ring-teal-500 dark:focus:ring-teal-500 focus:border-teal-500 dark:focus:border-teal-500">
         <div class="flex justify-end">
           <button id="cancelCustomBtn" class="bg-gray-300 text-gray-800 px-4 py-2 rounded mr-2 hover:bg-gray-400 transition duration-300">Cancel</button>
           <button id="saveCustomBtn" class="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 transition duration-300">Save</button>
@@ -107,8 +108,8 @@
   </div>
 
   <script>
-    const categories = ['domain', 'builder', 'account', 'others'];
-    const buttons = {
+    let categories = ['domain', 'builder', 'account', 'others'];
+    let buttons = {
       domain: [{
           title: 'Domain 1',
           text: 'This is domain text 1.\nIt can have multiple lines.'
@@ -147,7 +148,7 @@
           title: 'Other 2',
           text: 'This is other text 2.\nAnother line here.'
         },
-        // Add more predefined buttons for the others category
+        // Add more predefined buttons for the others category 
       ],
     };
     const preview = document.getElementById('preview');
@@ -199,28 +200,30 @@
 
     function renderAllContent() {
       allContent.innerHTML = '';
-      
+
       categories.forEach(category => {
-        const categoryContainer = document.createElement('div');
-        categoryContainer.className = 'mb-5';
-        
-        const categoryTitle = document.createElement('h2');
-        categoryTitle.className = 'w-fit text-xs rounded text-white bg-gray-400 bg-opacity-100 px-2 py-1 mb-1';
-        categoryTitle.textContent = category.charAt(0).toUpperCase() + category.slice(1);
-        categoryContainer.appendChild(categoryTitle);
+        if (buttons[category] && buttons[category].length > 0) {
+          const categoryContainer = document.createElement('div');
+          categoryContainer.className = 'mb-5';
 
-        const buttonWrapper = document.createElement('div');
-        buttonWrapper.className = 'flex flex-wrap items-center bg-white dark:bg-gray-800 pt-3 px-3 rounded-lg shadow-md';
-        
-        const addCustomBtnClone = createAddCustomButton(category);
-        buttonWrapper.appendChild(addCustomBtnClone);
+          const categoryTitle = document.createElement('h2');
+          categoryTitle.className = 'w-fit text-xs rounded text-white bg-gray-400 bg-opacity-100 px-2 py-1 mb-1';
+          categoryTitle.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+          categoryContainer.appendChild(categoryTitle);
 
-        buttons[category].forEach(btn => {
-          buttonWrapper.appendChild(createButton(btn.title, btn.text, category, btn.isCustom));
-        });
+          const buttonWrapper = document.createElement('div');
+          buttonWrapper.className = 'flex flex-wrap items-center bg-white dark:bg-gray-800 pt-3 px-3 rounded-lg shadow-md';
 
-        categoryContainer.appendChild(buttonWrapper);
-        allContent.appendChild(categoryContainer);
+          const addCustomBtnClone = createAddCustomButton(category);
+          buttonWrapper.appendChild(addCustomBtnClone);
+
+          buttons[category].forEach(btn => {
+            buttonWrapper.appendChild(createButton(btn.title, btn.text, category, btn.isCustom));
+          });
+
+          categoryContainer.appendChild(buttonWrapper);
+          allContent.appendChild(categoryContainer);
+        }
       });
     }
 
@@ -284,13 +287,8 @@
     function loadFromLocalStorage() {
       const savedButtons = localStorage.getItem('customButtons');
       if (savedButtons) {
-        const parsedButtons = JSON.parse(savedButtons);
-        for (const category in parsedButtons) {
-          buttons[category] = parsedButtons[category].map(btn => ({
-            ...btn,
-            isCustom: btn.isCustom || false
-          }));
-        }
+        buttons = JSON.parse(savedButtons);
+        categories = Object.keys(buttons);
       }
     }
 
@@ -311,8 +309,13 @@
     saveCustomBtn.addEventListener('click', () => {
       const title = customBtnTitle.value.trim();
       const text = customBtnText.value.trim();
-      const category = customBtnModal.dataset.category;
+      const category = customBtnCategory.value.trim().toLowerCase() || 'others';
+
       if (title && text) {
+        if (!buttons[category]) {
+          buttons[category] = [];
+          categories.push(category);
+        }
         buttons[category].push({
           title,
           text,
