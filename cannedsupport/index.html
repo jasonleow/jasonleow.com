@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <title>Canned Support App</title>
-  
+
   <!-- Primary Meta Tags -->
   <meta name="title" content="Canned Support App" />
   <meta name="description" content="Canned Support App – A tool for customer support folks to set up presets and canned replies. Made by Jason Leow @jasonleowsg" />
@@ -16,14 +16,14 @@
   <meta property="og:url" content="https://jasonleow.com/cannedsupport/" />
   <meta property="og:title" content="Canned Support App" />
   <meta property="og:description" content="Canned Support App – A tool for customer support folks to set up presets and canned replies. Made by Jason Leow @jasonleowsg" />
-  <meta property="og:image" content="/cannedsupport-ogimage.png" />
+  <meta property="og:image" content="/cannedsupport/cannedsupport-ogimage.png" />
 
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image" />
   <meta property="twitter:url" content="https://jasonleow.com/cannedsupport/" />
   <meta property="twitter:title" content="Canned Support App" />
   <meta property="twitter:description" content="Canned Support App – A tool for customer support folks to set up presets and canned replies. Made by Jason Leow @jasonleowsg" />
-  <meta property="twitter:image" content="/cannedsupport-ogimage.png" />
+  <meta property="twitter:image" content="/cannedsupport/cannedsupport-ogimage.png" />
 
   <link rel="canonical" href="https://jasonleow.com/cannedsupport/">
 
@@ -32,12 +32,12 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Canned Support App" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/cannedsupport-thumbnail.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/cannedsupport/cannedsupport-thumbnail.png" />
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" sizes="32x32" href="/cannedsupport-favicon.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="/cannedsupport-favicon.png" />
-  
+  <link rel="icon" type="image/png" sizes="32x32" href="/cannedsupport/cannedsupport-favicon.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/cannedsupport/cannedsupport-favicon.png" />
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -73,12 +73,7 @@
     <!-- Search Input -->
     <div class="mb-4">
       <div class="relative">
-        <input 
-          id="searchInput"
-          type="text" 
-          placeholder="Search for text content in buttons..." 
-          class="w-full p-2 pl-10 pr-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500 dark:focus:ring-teal-500 focus:border-transparent"
-        >
+        <input id="searchInput" type="text" placeholder="Search for text content in buttons..." class="w-full p-2 pl-10 pr-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500 dark:focus:ring-teal-500 focus:border-transparent">
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
@@ -93,8 +88,7 @@
         <h2 class="text-xl dark:text-white font-bold mb-2">Add Custom Button</h2>
         <p class="text-sm dark:text-white mb-6">For now, this is saved locally in your browser.</p>
         <input id="customBtnTitle" type="text" placeholder="Button Title" class="w-full mb-2 p-2 border rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:ring-teal-500 dark:focus:ring-teal-500 focus:border-teal-500 dark:focus:border-teal-500">
-        <textarea id="customBtnText" placeholder="Button Text" class="w-full mb-2 p-2 border rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:ring-teal-500 dark:focus:ring-teal-500 focus:border-teal-500 dark:focus:border-teal-500" rows="4"></textarea>
-        <input id="customBtnCategory" type="text" placeholder="Category (optional)" class="w-full mb-4 p-2 border rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:ring-teal-500 dark:focus:ring-teal-500 focus:border-teal-500 dark:focus:border-teal-500">
+        <textarea id="customBtnText" placeholder="Button Text" class="w-full mb-4 p-2 border rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:ring-teal-500 dark:focus:ring-teal-500 focus:border-teal-500 dark:focus:border-teal-500" rows="4"></textarea>
         <div class="flex justify-end">
           <button id="cancelCustomBtn" class="bg-gray-300 text-gray-800 px-4 py-2 rounded mr-2 hover:bg-gray-400 transition duration-300">Cancel</button>
           <button id="saveCustomBtn" class="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 transition duration-300">Save</button>
@@ -104,6 +98,28 @@
 
     <!-- Content -->
     <div id="allContent" class="mb-4"></div>
+
+    <!-- Add Category Button -->
+    <button id="addCategoryBtn" class="bg-teal-500 bg-opacity-50 border border-teal-500 dark:text-white text-gray-600 py-2 px-4 rounded inline-flex items-center justify-between mr-4 mb-4 hover:bg-teal-600 hover:bg-opacity-20 transition duration-300">
+      <span class="flex items-center justify-center w-4 h-4 mr-2 bg-gray-200 rounded-full cursor-pointer hover:bg-green-400">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 hover:text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+        </svg>
+      </span>
+      Add Category
+    </button>
+
+    <!-- Add Category Modal -->
+    <div id="addCategoryModal" class="fixed z-10 inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center">
+      <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg">
+        <h2 class="text-xl dark:text-white font-bold mb-2">Add New Category</h2>
+        <input id="newCategoryName" type="text" placeholder="Category Name" class="w-full mb-4 p-2 border rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:ring-teal-500 dark:focus:ring-teal-500 focus:border-teal-500 dark:focus:border-teal-500">
+        <div class="flex justify-end">
+          <button id="cancelAddCategory" class="bg-gray-300 text-gray-800 px-4 py-2 rounded mr-2 hover:bg-gray-400 transition duration-300">Cancel</button>
+          <button id="saveNewCategory" class="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 transition duration-300">Save</button>
+        </div>
+      </div>
+    </div>
 
   </div>
 
@@ -148,7 +164,7 @@
           title: 'Other 2',
           text: 'This is other text 2.\nAnother line here.'
         },
-        // Add more predefined buttons for the others category 
+        // Add more predefined buttons for the others category
       ],
     };
     const preview = document.getElementById('preview');
@@ -162,22 +178,18 @@
     function createButton(title, text, category, isCustom = false) {
       const button = document.createElement('button');
       button.className = 'bg-transparent border border-teal-500 dark:text-white text-gray-600 py-2 px-4 rounded inline-flex items-center justify-center min-w-[6.5rem] mr-4 mb-4 hover:bg-teal-600 hover:bg-opacity-20 transition duration-300';
-
       let buttonContent = `<span>${title}</span>`;
       if (isCustom) {
         buttonContent += `<span class="delete-btn flex items-center justify-center w-4 h-4 ml-2 bg-gray-200 text-gray-600 rounded-full cursor-pointer hover:bg-red-400 hover:text-white"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" transform="rotate(45 12 12)"></path></svg></span>`;
       }
       button.innerHTML = buttonContent;
-
       button.addEventListener('click', (e) => {
         if (!e.target.closest('.delete-btn')) {
           copyToClipboard(text, button);
         }
       });
-
       button.addEventListener('mouseover', () => showPreview(text));
       button.addEventListener('mouseout', () => clearPreview());
-
       if (isCustom) {
         const deleteBtn = button.querySelector('.delete-btn');
         deleteBtn.addEventListener('click', (e) => {
@@ -185,10 +197,8 @@
           deleteButton(button, category, title);
         });
       }
-
       return button;
     }
-
 
     function deleteButton(button, category, title) {
       if (confirm('Are you sure you want to delete this button?')) {
@@ -200,30 +210,22 @@
 
     function renderAllContent() {
       allContent.innerHTML = '';
-
       categories.forEach(category => {
-        if (buttons[category] && buttons[category].length > 0) {
-          const categoryContainer = document.createElement('div');
-          categoryContainer.className = 'mb-5';
-
-          const categoryTitle = document.createElement('h2');
-          categoryTitle.className = 'w-fit text-xs rounded text-white bg-gray-400 bg-opacity-100 px-2 py-1 mb-1';
-          categoryTitle.textContent = category.charAt(0).toUpperCase() + category.slice(1);
-          categoryContainer.appendChild(categoryTitle);
-
-          const buttonWrapper = document.createElement('div');
-          buttonWrapper.className = 'flex flex-wrap items-center bg-white dark:bg-gray-800 pt-3 px-3 rounded-lg shadow-md';
-
-          const addCustomBtnClone = createAddCustomButton(category);
-          buttonWrapper.appendChild(addCustomBtnClone);
-
-          buttons[category].forEach(btn => {
-            buttonWrapper.appendChild(createButton(btn.title, btn.text, category, btn.isCustom));
-          });
-
-          categoryContainer.appendChild(buttonWrapper);
-          allContent.appendChild(categoryContainer);
-        }
+        const categoryContainer = document.createElement('div');
+        categoryContainer.className = 'mb-5';
+        const categoryTitle = document.createElement('h2');
+        categoryTitle.className = 'w-fit text-xs rounded text-white bg-gray-400 bg-opacity-100 px-2 py-1 mb-1';
+        categoryTitle.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+        categoryContainer.appendChild(categoryTitle);
+        const buttonWrapper = document.createElement('div');
+        buttonWrapper.className = 'flex flex-wrap items-center bg-white dark:bg-gray-800 pt-3 px-3 rounded-lg shadow-md';
+        const addCustomBtnClone = createAddCustomButton(category);
+        buttonWrapper.appendChild(addCustomBtnClone);
+        buttons[category].forEach(btn => {
+          buttonWrapper.appendChild(createButton(btn.title, btn.text, category, btn.isCustom));
+        });
+        categoryContainer.appendChild(buttonWrapper);
+        allContent.appendChild(categoryContainer);
       });
     }
 
@@ -258,17 +260,13 @@
       navigator.clipboard.writeText(text).then(() => {
         const originalContent = button.innerHTML;
         const originalClasses = button.className;
-
         // Store the original width
         const originalWidth = button.offsetWidth;
-
         // Update button content and classes
         button.innerHTML = '<span class="flex items-center justify-center w-full">Copied ✓</span>';
         button.className = 'bg-teal-500 border border-teal-500 text-white py-2 px-4 rounded inline-flex items-center justify-center mr-4 mb-4 transition duration-300';
-
         // Set the button width to match the original width
         button.style.width = `${originalWidth}px`;
-
         setTimeout(() => {
           button.innerHTML = originalContent;
           button.className = originalClasses;
@@ -282,13 +280,23 @@
 
     function saveToLocalStorage() {
       localStorage.setItem('customButtons', JSON.stringify(buttons));
+      localStorage.setItem('categories', JSON.stringify(categories));
     }
 
     function loadFromLocalStorage() {
       const savedButtons = localStorage.getItem('customButtons');
+      const savedCategories = localStorage.getItem('categories');
       if (savedButtons) {
-        buttons = JSON.parse(savedButtons);
-        categories = Object.keys(buttons);
+        const parsedButtons = JSON.parse(savedButtons);
+        for (const category in parsedButtons) {
+          buttons[category] = parsedButtons[category].map(btn => ({
+            ...btn,
+            isCustom: btn.isCustom || false
+          }));
+        }
+      }
+      if (savedCategories) {
+        categories = JSON.parse(savedCategories);
       }
     }
 
@@ -298,24 +306,17 @@
       customBtnTitle.value = '';
       customBtnText.value = '';
     }
-
     customBtnModal.addEventListener('click', (e) => {
       if (e.target === customBtnModal) {
         closeModal();
       }
     });
-
     cancelCustomBtn.addEventListener('click', closeModal);
     saveCustomBtn.addEventListener('click', () => {
       const title = customBtnTitle.value.trim();
       const text = customBtnText.value.trim();
-      const category = customBtnCategory.value.trim().toLowerCase() || 'others';
-
+      const category = customBtnModal.dataset.category;
       if (title && text) {
-        if (!buttons[category]) {
-          buttons[category] = [];
-          categories.push(category);
-        }
         buttons[category].push({
           title,
           text,
@@ -328,45 +329,170 @@
         alert('Please enter both a title and text for the custom button.');
       }
     });
+    // Add Category functionality
+    const addCategoryBtn = document.getElementById('addCategoryBtn');
+    const addCategoryModal = document.getElementById('addCategoryModal');
+    const newCategoryName = document.getElementById('newCategoryName');
+    const cancelAddCategory = document.getElementById('cancelAddCategory');
+    const saveNewCategory = document.getElementById('saveNewCategory');
+    addCategoryBtn.addEventListener('click', () => {
+      addCategoryModal.classList.remove('hidden');
+      addCategoryModal.classList.add('flex');
+    });
 
+    function closeAddCategoryModal() {
+      addCategoryModal.classList.add('hidden');
+      addCategoryModal.classList.remove('flex');
+      newCategoryName.value = '';
+    }
+    addCategoryModal.addEventListener('click', (e) => {
+      if (e.target === addCategoryModal) {
+        closeAddCategoryModal();
+      }
+    });
+    cancelAddCategory.addEventListener('click', closeAddCategoryModal);
+    saveNewCategory.addEventListener('click', () => {
+      const categoryName = newCategoryName.value.trim().toLowerCase();
+      if (categoryName && !categories.includes(categoryName)) {
+        categories.push(categoryName);
+        buttons[categoryName] = [];
+        saveToLocalStorage();
+        renderAllContent();
+        closeAddCategoryModal();
+      } else {
+        alert('Please enter a unique category name.');
+      }
+    });
     // Initialize
     loadFromLocalStorage();
     renderAllContent();
-
     // Dark mode toggle
     const darkModeToggle = document.getElementById('darkModeToggle');
     const html = document.documentElement;
-
     darkModeToggle.addEventListener('click', () => {
       html.classList.toggle('dark');
       localStorage.setItem('darkMode', html.classList.contains('dark'));
     });
-
     // Check for saved dark mode preference
     if (localStorage.getItem('darkMode') === 'true') {
       html.classList.add('dark');
     }
-    
+
+    function createButton(title, text, category, isCustom = false) {
+      const button = document.createElement('button');
+      button.className = 'bg-transparent border border-teal-500 dark:text-white text-gray-600 py-2 px-4 rounded inline-flex items-center justify-center min-w-[6.5rem] mr-4 mb-4 hover:bg-teal-600 hover:bg-opacity-20 transition duration-300';
+      let buttonContent = `<span>${title}</span>`;
+      if (isCustom) {
+        buttonContent += `<span class="delete-btn flex items-center justify-center w-4 h-4 ml-2 bg-gray-200 text-gray-600 rounded-full cursor-pointer hover:bg-red-400 hover:text-white"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" transform="rotate(45 12 12)"></path></svg></span>`;
+      }
+      button.innerHTML = buttonContent;
+      button.addEventListener('click', (e) => {
+        if (!e.target.closest('.delete-btn')) {
+          copyToClipboard(text, button);
+        }
+      });
+      button.addEventListener('mouseover', () => showPreview(text));
+      button.addEventListener('mouseout', () => clearPreview());
+      if (isCustom) {
+        const deleteBtn = button.querySelector('.delete-btn');
+        deleteBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          deleteButton(button, category, title);
+        });
+      }
+      return button;
+    }
+
+    function deleteButton(button, category, title) {
+      if (confirm('Are you sure you want to delete this button?')) {
+        buttons[category] = buttons[category].filter(btn => btn.title !== title);
+        saveToLocalStorage();
+        renderAllContent();
+      }
+    }
+
+    function renderAllContent() {
+      allContent.innerHTML = '';
+      categories.forEach(category => {
+        const categoryContainer = document.createElement('div');
+        categoryContainer.className = 'mb-5';
+        const categoryTitleContainer = document.createElement('div');
+        categoryTitleContainer.className = 'flex items-center mb-1';
+        const categoryTitle = document.createElement('h2');
+        categoryTitle.className = 'w-fit text-xs rounded text-white bg-gray-400 bg-opacity-100 px-2 py-1';
+        categoryTitle.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+        categoryTitleContainer.appendChild(categoryTitle);
+        // Add delete category button for custom categories
+        if (!['domain', 'builder', 'account', 'others'].includes(category)) {
+          const deleteCategoryBtn = createDeleteCategoryButton(category);
+          categoryTitleContainer.appendChild(deleteCategoryBtn);
+        }
+        categoryContainer.appendChild(categoryTitleContainer);
+        const buttonWrapper = document.createElement('div');
+        buttonWrapper.className = 'flex flex-wrap items-center bg-white dark:bg-gray-800 pt-3 px-3 rounded-lg shadow-md';
+        const addCustomBtnClone = createAddCustomButton(category);
+        buttonWrapper.appendChild(addCustomBtnClone);
+        buttons[category].forEach(btn => {
+          buttonWrapper.appendChild(createButton(btn.title, btn.text, category, btn.isCustom));
+        });
+        categoryContainer.appendChild(buttonWrapper);
+        allContent.appendChild(categoryContainer);
+      });
+    }
+
+    function createDeleteCategoryButton(category) {
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'ml-2 flex items-center justify-center w-4 h-4 bg-gray-200 text-gray-600 rounded-full cursor-pointer hover:bg-red-400 hover:text-white';
+      deleteBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" transform="rotate(45 12 12)"></path></svg>';
+      deleteBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        deleteCategory(category);
+      });
+      return deleteBtn;
+    }
+
+    function deleteCategory(category) {
+      if (confirm(`Are you sure you want to delete the category "${category}" and all its buttons?`)) {
+        categories = categories.filter(cat => cat !== category);
+        delete buttons[category];
+        saveToLocalStorage();
+        renderAllContent();
+      }
+    }
+
+    function createAddCustomButton(category) {
+      const addCustomBtnClone = document.createElement('button');
+      addCustomBtnClone.className = 'bg-teal-500 bg-opacity-50 border border-teal-500 dark:text-white text-gray-600 py-2 px-4 rounded inline-flex items-center justify-between mr-4 mb-4 hover:bg-teal-600 hover:bg-opacity-20 transition duration-300';
+      addCustomBtnClone.innerHTML = `
+        <span class="flex items-center justify-center w-4 h-4 mr-2 bg-gray-200 rounded-full cursor-pointer hover:bg-green-400">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 hover:text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+        </span>
+        Add
+      `;
+      addCustomBtnClone.addEventListener('click', () => {
+        customBtnModal.classList.remove('hidden');
+        customBtnModal.classList.add('flex');
+        customBtnModal.dataset.category = category;
+      });
+      return addCustomBtnClone;
+    }
     // ------------------------------------------------------------- //
     // ------------------------- SEARCH ---------------------------- //
     // ------------------------------------------------------------- //
-    
     function searchButtons(query) {
       const lowercaseQuery = query.toLowerCase().trim();
-
       // Reset all buttons to their original state
       document.querySelectorAll('.search-highlight').forEach(el => {
         el.classList.remove('search-highlight', 'bg-yellow-200', 'hover:bg-opacity-70', 'dark:bg-yellow-300', 'dark:text-gray-800', 'dark:hover:bg-opacity-70');
         el.classList.add('hover:bg-teal-600', 'hover:bg-opacity-20');
       });
-
       if (lowercaseQuery === '') return; // If query is empty, just reset and return
-
       categories.forEach(category => {
         buttons[category].forEach(button => {
           const titleMatch = button.title.toLowerCase().includes(lowercaseQuery);
           const textMatch = button.text.toLowerCase().includes(lowercaseQuery);
-
           if (titleMatch || textMatch) {
             highlightButton(button.title);
           }
@@ -384,11 +510,8 @@
         }
       }
     }
-
     // Add event listener to the existing search input
     document.getElementById('searchInput').addEventListener('input', (e) => searchButtons(e.target.value));
-
-
   </script>
 </body>
 
