@@ -124,47 +124,17 @@
   </div>
 
   <script>
-    let categories = ['domain', 'builder', 'account', 'others'];
+    let categories = ['FAQs'];
     let buttons = {
-      domain: [{
-          title: 'Domain 1',
-          text: 'This is domain text 1.\nIt can have multiple lines.'
+      FAQs: [{
+          title: 'FAQ 1',
+          text: 'This is the answer for FAQ 1.\nIt can have multiple lines.'
         },
         {
-          title: 'Domain 2',
-          text: 'This is domain text 2.\nAnother line here.'
+          title: 'FAQ 2',
+          text: 'This is the answer for FAQ 2.\nAnother line here.'
         },
-        // Add more predefined buttons for the domain category
-      ],
-      builder: [{
-          title: 'Builder 1',
-          text: 'This is builder text 1.\nIt can have multiple lines.'
-        },
-        {
-          title: 'Builder 2',
-          text: 'This is builder text 2.\nAnother line here.'
-        },
-        // Add more predefined buttons for the builder category
-      ],
-      account: [{
-          title: 'Account 1',
-          text: 'This is account text 1.\nIt can have multiple lines.'
-        },
-        {
-          title: 'Account 2',
-          text: 'This is account text 2.\nAnother line here.'
-        },
-        // Add more predefined buttons for the account category
-      ],
-      others: [{
-          title: 'Other 1',
-          text: 'This is other text 1.\nIt can have multiple lines.'
-        },
-        {
-          title: 'Other 2',
-          text: 'This is other text 2.\nAnother line here.'
-        },
-        // Add more predefined buttons for the others category
+        // Add more predefined buttons for the FAQs category
       ],
     };
     const preview = document.getElementById('preview');
@@ -423,7 +393,7 @@
         categoryTitle.textContent = category.charAt(0).toUpperCase() + category.slice(1);
         categoryTitleContainer.appendChild(categoryTitle);
         // Add delete category button for custom categories
-        if (!['domain', 'builder', 'account', 'others'].includes(category)) {
+        if (!['FAQs'].includes(category)) {
           const deleteCategoryBtn = createDeleteCategoryButton(category);
           categoryTitleContainer.appendChild(deleteCategoryBtn);
         }
