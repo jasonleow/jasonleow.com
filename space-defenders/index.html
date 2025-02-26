@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Defenders</title>
+  
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="Space Defenders" />
+    <meta name="description" content="Space Defenders – Fight the aliens! A game made by Jason Leow @jasonleowsg" />
+  
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://jasonleow.com/space-defenders/" />
+    <meta property="og:title" content="Space Defenders" />
+    <meta property="og:description" content="Space Defenders – Fight the aliens! A game made by Jason Leow @jasonleowsg" />
+    <meta property="og:image" content="/space-defenders/space-defenders-ogimage.png" />
+  
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://jasonleow.com/space-defenders/" />
+    <meta property="twitter:title" content="Space Defenders" />
+    <meta property="twitter:description" content="Space Defenders – Fight the aliens! A game made by Jason Leow @jasonleowsg" />
+    <meta property="twitter:image" content="/space-defenders/space-defenders-ogimage.png" />
+  
+    <link rel="canonical" href="https://jasonleow.com/space-defenders/">
+  
+    <!-- Mobile app icon -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Space Defenders" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/space-defenders/space-defenders-thumbnail.png" />
+  
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/space-defenders/space-defenders-favicon.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/space-defenders/space-defenders-favicon.png" />
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: #fff;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        #game-container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            border: 2px solid #33ff33;
+            box-shadow: 0 0 10px #33ff33;
+        }
+        
+        #game-canvas {
+            background-color: #000;
+            width: 100%;
+            height: 100%;
+        }
+        
+        #start-screen, #game-over-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 10;
+        }
+        
+        #game-over-screen {
+            display: none;
+        }
+        
+        h1 {
+            color: #33ff33;
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 0 0 10px #33ff33;
+        }
+        
+        .instructions {
+            margin: 20px 0;
+            text-align: center;
+            line-height: 1.5;
+        }
+        
+        button {
+            background-color: #33ff33;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            font-family: 'Courier New', Courier, monospace;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+        
+        button:hover {
+            background-color: #fff;
+        }
+        
+        .score-display {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 20px;
+            color: #33ff33;
+        }
+        
+        .lives-display {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            color: #33ff33;
+        }
+        
+        .paused-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            color: #33ff33;
+            display: none;
+            z-index: 5;
+            text-shadow: 0 0 10px #33ff33;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="game-canvas"></canvas>
+        
+        <div id="start-screen">
+            <h1>SPACE DEFENDERS</h1>
+            <div class="instructions">
+                <p>Use LEFT/RIGHT ARROW KEYS or A/D to move</p>
+                <p>Press SPACEBAR to shoot</p>
+                <p>Press P to pause the game</p>
+                <p>Destroy all aliens before they reach Earth!</p>
+            </div>
+            <button id="start-button">START GAME</button>
+        </div>
+        
+        <div id="game-over-screen">
+            <h1>GAME OVER</h1>
+            <div id="final-score">Score: 0</div>
+            <button id="restart-button">PLAY AGAIN</button>
+        </div>
+        
+        <div class="score-display">Score: <span id="score">0</span></div>
+        <div class="lives-display">Lives: <span id="lives">3</span></div>
+        <div class="paused-indicator" id="paused">PAUSED</div>
+    </div>
+
+    <script>
+        // Game constants
+        const CANVAS_WIDTH = 800;
+        const CANVAS_HEIGHT = 600;
+        const PLAYER_WIDTH = 40;
+        const PLAYER_HEIGHT = 30;
+        const PLAYER_SPEED = 5;
+        const BULLET_WIDTH = 3;
+        const BULLET_HEIGHT = 15;
+        const BULLET_SPEED = 7;
+        const ALIEN_WIDTH = 40;
+        const ALIEN_HEIGHT = 30;
+        const ALIEN_ROWS = 5;
+        const ALIEN_COLS = 11;
+        const ALIEN_HORIZONTAL_SPACING = 15;
+        const ALIEN_VERTICAL_SPACING = 15;
+        const ALIEN_HORIZONTAL_PADDING = 50;
+        const ALIEN_VERTICAL_PADDING = 50;
+        const ALIEN_MOVE_SPEED = 1;
+        const ALIEN_DROP_DISTANCE = 20;
+        const ALIEN_FIRE_RATE = 0.005; // Probability of an alien firing per frame
+        const SHIELD_BLOCKS = 4;
+        const SHIELD_BLOCK_WIDTH = 80;
+        const SHIELD_BLOCK_HEIGHT = 60;
+        const SHIELD_SEGMENTS = 12;
+        const SHIELD_SEGMENT_SIZE = 10;
+        
+        // Game variables
+        let canvas, ctx;
+        let player, playerBullet;
+        let aliens = [];
+        let alienBullets = [];
+        let shields = [];
+        let score = 0;
+        let lives = 3;
+        let gameActive = false;
+        let gameOver = false;
+        let paused = false;
+        let alienDirection = 1; // 1 for right, -1 for left
+        let alienMoveDownTimer = 0;
+        let lastTime = 0;
+        let keys = {};
+        
+        // Initialize the game
+        function init() {
+            canvas = document.getElementById('game-canvas');
+            ctx = canvas.getContext('2d');
+            canvas.width = CANVAS_WIDTH;
+            canvas.height = CANVAS_HEIGHT;
+            
+            // Create player
+            player = {
+                x: CANVAS_WIDTH / 2 - PLAYER_WIDTH / 2,
+                y: CANVAS_HEIGHT - PLAYER_HEIGHT - 20,
+                width: PLAYER_WIDTH,
+                height: PLAYER_HEIGHT,
+                speed: PLAYER_SPEED
+            };
+            
+            playerBullet = null;
+            
+            // Create aliens
+            createAliens();
+            
+            // Create shields
+            createShields();
+            
+            // Reset game state
+            score = 0;
+            lives = 3;
+            gameActive = true;
+            gameOver = false;
+            paused = false;
+            alienDirection = 1;
+            alienMoveDownTimer = 0;
+            alienBullets = [];
+            
+            // Update UI
+            document.getElementById('score').textContent = score;
+            document.getElementById('lives').textContent = lives;
+            
+            // Hide start screen
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('game-over-screen').style.display = 'none';
+            
+            // Start game loop
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Create alien formation
+        function createAliens() {
+            aliens = [];
+            
+            for (let row = 0; row < ALIEN_ROWS; row++) {
+                for (let col = 0; col < ALIEN_COLS; col++) {
+                    aliens.push({
+                        x: ALIEN_HORIZONTAL_PADDING + col * (ALIEN_WIDTH + ALIEN_HORIZONTAL_SPACING),
+                        y: ALIEN_VERTICAL_PADDING + row * (ALIEN_HEIGHT + ALIEN_VERTICAL_SPACING),
+                        width: ALIEN_WIDTH,
+                        height: ALIEN_HEIGHT,
+                        type: row, // Different types for different rows (for visuals)
+                        alive: true
+                    });
+                }
+            }
+        }
+        
+        // Create defensive shields
+        function createShields() {
+            shields = [];
+            
+            const shieldPositionY = CANVAS_HEIGHT - 150;
+            const spacing = (CANVAS_WIDTH - (SHIELD_BLOCKS * SHIELD_BLOCK_WIDTH)) / (SHIELD_BLOCKS + 1);
+            
+            for (let i = 0; i < SHIELD_BLOCKS; i++) {
+                const shieldX = spacing + i * (SHIELD_BLOCK_WIDTH + spacing);
+                
+                // Create shield segments
+                const segments = [];
+                const segmentsPerRow = SHIELD_BLOCK_WIDTH / SHIELD_SEGMENT_SIZE;
+                const segmentsPerCol = SHIELD_BLOCK_HEIGHT / SHIELD_SEGMENT_SIZE;
+                
+                for (let row = 0; row < segmentsPerCol; row++) {
+                    for (let col = 0; col < segmentsPerRow; col++) {
+                        // Create a gap in the bottom center of each shield
+                        if (row >= segmentsPerCol - 2 && col >= segmentsPerRow / 2 - 1 && col <= segmentsPerRow / 2 + 1) {
+                            continue;
+                        }
+                        
+                        segments.push({
+                            x: shieldX + col * SHIELD_SEGMENT_SIZE,
+                            y: shieldPositionY + row * SHIELD_SEGMENT_SIZE,
+                            width: SHIELD_SEGMENT_SIZE,
+                            height: SHIELD_SEGMENT_SIZE,
+                            health: 3 // Shield segments can take multiple hits
+                        });
+                    }
+                }
+                
+                shields.push({
+                    x: shieldX,
+                    y: shieldPositionY,
+                    width: SHIELD_BLOCK_WIDTH,
+                    height: SHIELD_BLOCK_HEIGHT,
+                    segments: segments
+                });
+            }
+        }
+        
+        // Main game loop
+        function gameLoop(timestamp) {
+            if (!gameActive) return;
+            
+            // Calculate delta time
+            const deltaTime = timestamp - lastTime;
+            lastTime = timestamp;
+            
+            if (!paused) {
+                update(deltaTime);
+            }
+            
+            render();
+            
+            if (!gameOver) {
+                requestAnimationFrame(gameLoop);
+            }
+        }
+        
+        // Update game state
+        function update(deltaTime) {
+            // Move player
+            if (keys['ArrowLeft'] || keys['a'] || keys['A']) {
+                player.x -= player.speed;
+                if (player.x < 0) player.x = 0;
+            }
+            if (keys['ArrowRight'] || keys['d'] || keys['D']) {
+                player.x += player.speed;
+                if (player.x > CANVAS_WIDTH - player.width) player.x = CANVAS_WIDTH - player.width;
+            }
+            
+            // Update player bullet
+            if (playerBullet) {
+                playerBullet.y -= BULLET_SPEED;
+                
+                // Check if bullet is off screen
+                if (playerBullet.y < 0) {
+                    playerBullet = null;
+                } else {
+                    // Check collision with aliens
+                    for (let i = 0; i < aliens.length; i++) {
+                        const alien = aliens[i];
+                        if (alien.alive && checkCollision(playerBullet, alien)) {
+                            alien.alive = false;
+                            playerBullet = null;
+                            
+                            // Add score based on alien row (higher rows = more points)
+                            score += (ALIEN_ROWS - alien.type) * 10;
+                            document.getElementById('score').textContent = score;
+                            
+                            // Check if all aliens are defeated
+                            if (aliens.every(a => !a.alive)) {
+                                // Level complete, create new wave
+                                createAliens();
+                            }
+                            
+                            break;
+                        }
+                    }
+                    
+                    // Check collision with shield segments
+                    if (playerBullet) {
+                        for (const shield of shields) {
+                            for (let i = 0; i < shield.segments.length; i++) {
+                                const segment = shield.segments[i];
+                                if (segment.health > 0 && checkCollision(playerBullet, segment)) {
+                                    segment.health--;
+                                    playerBullet = null;
+                                    break;
+                                }
+                            }
+                            if (!playerBullet) break;
+                        }
+                    }
+                }
+            }
+            
+            // Move aliens
+            let moveDown = false;
+            let alienSpeed = ALIEN_MOVE_SPEED * (1 + (1 - aliens.filter(a => a.alive).length / (ALIEN_ROWS * ALIEN_COLS)) * 2);
+            
+            // Find leftmost and rightmost aliens
+            let leftmost = CANVAS_WIDTH;
+            let rightmost = 0;
+            
+            aliens.forEach(alien => {
+                if (alien.alive) {
+                    leftmost = Math.min(leftmost, alien.x);
+                    rightmost = Math.max(rightmost, alien.x + alien.width);
+                }
+            });
+            
+            // Check if aliens need to change direction
+            if (rightmost >= CANVAS_WIDTH - 10 && alienDirection > 0) {
+                alienDirection = -1;
+                moveDown = true;
+            } else if (leftmost <= 10 && alienDirection < 0) {
+                alienDirection = 1;
+                moveDown = true;
+            }
+            
+            // Move aliens
+            aliens.forEach(alien => {
+                if (alien.alive) {
+                    alien.x += alienSpeed * alienDirection;
+                    
+                    if (moveDown) {
+                        alien.y += ALIEN_DROP_DISTANCE;
+                        
+                        // Check if aliens reached the bottom
+                        if (alien.y + alien.height >= player.y) {
+                            endGame();
+                        }
+                    }
+                    
+                    // Random chance for alien to fire
+                    if (Math.random() < ALIEN_FIRE_RATE) {
+                        // Only allow bottom-most aliens in each column to fire
+                        const column = Math.round((alien.x - ALIEN_HORIZONTAL_PADDING) / (ALIEN_WIDTH + ALIEN_HORIZONTAL_SPACING));
+                        const isBottomMost = !aliens.some(a => 
+                            a.alive && 
+                            Math.round((a.x - ALIEN_HORIZONTAL_PADDING) / (ALIEN_WIDTH + ALIEN_HORIZONTAL_SPACING)) === column && 
+                            a.y > alien.y
+                        );
+                        
+                        if (isBottomMost) {
+                            alienBullets.push({
+                                x: alien.x + alien.width / 2 - BULLET_WIDTH / 2,
+                                y: alien.y + alien.height,
+                                width: BULLET_WIDTH,
+                                height: BULLET_HEIGHT
+                            });
+                        }
+                    }
+                }
+            });
+            
+            // Update alien bullets
+            for (let i = alienBullets.length - 1; i >= 0; i--) {
+                const bullet = alienBullets[i];
+                bullet.y += BULLET_SPEED;
+                
+                // Check if bullet is off screen
+                if (bullet.y > CANVAS_HEIGHT) {
+                    alienBullets.splice(i, 1);
+                    continue;
+                }
+                
+                // Check collision with player
+                if (checkCollision(bullet, player)) {
+                    alienBullets.splice(i, 1);
+                    lives--;
+                    document.getElementById('lives').textContent = lives;
+                    
+                    if (lives <= 0) {
+                        endGame();
+                    }
+                    continue;
+                }
+                
+                // Check collision with shield segments
+                let shieldHit = false;
+                for (const shield of shields) {
+                    for (let j = 0; j < shield.segments.length; j++) {
+                        const segment = shield.segments[j];
+                        if (segment.health > 0 && checkCollision(bullet, segment)) {
+                            segment.health--;
+                            alienBullets.splice(i, 1);
+                            shieldHit = true;
+                            break;
+                        }
+                    }
+                    if (shieldHit) break;
+                }
+            }
+        }
+        
+        // Render game
+        function render() {
+            // Clear canvas
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            
+            // Draw player
+            ctx.fillStyle = '#33ff33';
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+            
+            // Draw player cannon
+            ctx.fillRect(player.x + player.width / 2 - 2, player.y - 10, 4, 10);
+            
+            // Draw player bullet
+            if (playerBullet) {
+                ctx.fillStyle = '#fff';
+                ctx.fillRect(playerBullet.x, playerBullet.y, playerBullet.width, playerBullet.height);
+            }
+            
+            // Draw aliens
+            aliens.forEach(alien => {
+                if (alien.alive) {
+                    // Different colors for different alien types
+                    switch(alien.type) {
+                        case 0: ctx.fillStyle = '#ff5555'; break; // Top row (red)
+                        case 1:
+                        case 2: ctx.fillStyle = '#55ff55'; break; // Middle rows (green)
+                        default: ctx.fillStyle = '#5555ff'; break; // Bottom rows (blue)
+                    }
+                    
+                    // Draw alien body
+                    ctx.fillRect(alien.x, alien.y, alien.width, alien.height);
+                    
+                    // Draw alien features (eyes and mouth)
+                    ctx.fillStyle = '#000';
+                    // Eyes
+                    ctx.fillRect(alien.x + 8, alien.y + 8, 6, 6);
+                    ctx.fillRect(alien.x + alien.width - 14, alien.y + 8, 6, 6);
+                    // Mouth
+                    ctx.fillRect(alien.x + 10, alien.y + 20, alien.width - 20, 4);
+                }
+            });
+            
+            // Draw alien bullets
+            ctx.fillStyle = '#ff5555';
+            alienBullets.forEach(bullet => {
+                ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+            });
+            
+            // Draw shields
+            shields.forEach(shield => {
+                shield.segments.forEach(segment => {
+                    if (segment.health > 0) {
+                        // Color based on health
+                        switch(segment.health) {
+                            case 3: ctx.fillStyle = '#33ff33'; break; // Full health (green)
+                            case 2: ctx.fillStyle = '#ffff33'; break; // Medium health (yellow)
+                            case 1: ctx.fillStyle = '#ff3333'; break; // Low health (red)
+                        }
+                        ctx.fillRect(segment.x, segment.y, segment.width, segment.height);
+                    }
+                });
+            });
+            
+            // Draw paused indicator if game is paused
+            if (paused) {
+                document.getElementById('paused').style.display = 'block';
+            } else {
+                document.getElementById('paused').style.display = 'none';
+            }
+        }
+        
+        // Check collision between two objects
+        function checkCollision(obj1, obj2) {
+            return obj1.x < obj2.x + obj2.width &&
+                   obj1.x + obj1.width > obj2.x &&
+                   obj1.y < obj2.y + obj2.height &&
+                   obj1.y + obj1.height > obj2.y;
+        }
+        
+        // End the game
+        function endGame() {
+            gameActive = false;
+            gameOver = true;
+            
+            document.getElementById('final-score').textContent = `Score: ${score}`;
+            document.getElementById('game-over-screen').style.display = 'flex';
+        }
+        
+        // Event listeners
+        document.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            
+            // Shoot with spacebar
+            if (e.key === ' ' && !playerBullet && gameActive && !paused) {
+                playerBullet = {
+                    x: player.x + player.width / 2 - BULLET_WIDTH / 2,
+                    y: player.y - BULLET_HEIGHT,
+                    width: BULLET_WIDTH,
+                    height: BULLET_HEIGHT
+                };
+            }
+            
+            // Pause game with P
+            if (e.key === 'p' || e.key === 'P') {
+                if (gameActive && !gameOver) {
+                    paused = !paused;
+                }
+            }
+            
+            // Prevent default for game keys
+            if (['ArrowLeft', 'ArrowRight', ' ', 'a', 'A', 'd', 'D', 'p', 'P'].includes(e.key)) {
+                e.preventDefault();
+            }
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+        
+        // Start and restart buttons
+        document.getElementById('start-button').addEventListener('click', init);
+        document.getElementById('restart-button').addEventListener('click', init);
+    </script>
+</body>
+</html> 
