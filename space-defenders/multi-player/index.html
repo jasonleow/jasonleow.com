@@ -848,73 +848,155 @@
         function initializePeerJS(isInitiator) {
             document.getElementById('mp-status').textContent = 'Setting up connection...';
             
-            // Create Peer
-            peer = new Peer(isInitiator ? gameCode : null, {
+            // Create Peer with more robust configuration
+            const peerOptions = {
                 debug: 2,
+                host: 'peerjs-server.herokuapp.com', // Use a different server
+                secure: true,
+                port: 443,
                 config: {
                     'iceServers': [
                         { urls: 'stun:stun.l.google.com:19302' },
-                        { urls: 'stun:stun1.l.google.com:19302' }
+                        { urls: 'stun:stun1.l.google.com:19302' },
+                        { urls: 'stun:stun2.l.google.com:19302' },
+                        { urls: 'stun:stun3.l.google.com:19302' },
+                        { urls: 'stun:stun4.l.google.com:19302' },
+                        {
+                            urls: 'turn:numb.viagenie.ca',
+                            credential: 'muazkh',
+                            username: 'webrtc@live.com'
+                        }
                     ]
                 }
-            });
+            };
             
-            peer.on('open', (id) => {
-                document.getElementById('mp-status').textContent = `Peer connection established. Your ID: ${id}`;
+            try {
+                peer = new Peer(isInitiator ? gameCode : null, peerOptions);
                 
-                if (!isInitiator) {
-                    // Client connects to host
-                    connectToPeer(gameCode);
-                }
-            });
-            
-            peer.on('connection', (conn) => {
-                // Host receives connection from client
-                connection = conn;
-                setupConnection();
-            });
-            
-            peer.on('error', (err) => {
-                console.error('Peer error:', err);
-                document.getElementById('mp-status').textContent = `Connection error: ${err.type}`;
+                peer.on('open', (id) => {
+                    debugLog('Peer connection established. ID:', id);
+                    document.getElementById('mp-status').textContent = `Peer connection established. Your ID: ${id}`;
+                    
+                    if (!isInitiator) {
+                        // Client connects to host
+                        connectToPeer(gameCode);
+                    }
+                });
                 
-                if (err.type === 'peer-unavailable') {
-                    document.getElementById('mp-status').textContent = 'Game not found. Check the code and try again.';
-                    // Reset UI for retry
-                    document.getElementById('host-area').style.display = 'block';
-                    document.getElementById('join-area').style.display = 'block';
-                }
-            });
+                peer.on('connection', (conn) => {
+                    debugLog('Received connection from peer');
+                    // Host receives connection from client
+                    connection = conn;
+                    setupConnection();
+                });
+                
+                peer.on('error', (err) => {
+                    debugLog('Peer error:', err);
+                    document.getElementById('mp-status').textContent = `Connection error: ${err.type}`;
+                    
+                    if (err.type === 'peer-unavailable') {
+                        document.getElementById('mp-status').textContent = 'Game not found. Check the code and try again.';
+                        // Reset UI for retry
+                        document.getElementById('host-area').style.display = 'block';
+                        document.getElementById('join-area').style.display = 'block';
+                    } else if (err.type === 'network' || err.type === 'server-error') {
+                        document.getElementById('mp-status').textContent = 'Network or server error. Please try again.';
+                        // Add a retry button
+                        const retryBtn = document.createElement('button');
+                        retryBtn.textContent = 'Retry Connection';
+                        retryBtn.className = 'mp-button';
+                        retryBtn.style.marginTop = '10px';
+                        retryBtn.onclick = () => {
+                            document.getElementById('mp-status').textContent = '';
+                            retryBtn.remove();
+                            if (isInitiator) {
+                                createGame();
+                            } else {
+                                joinGame();
+                            }
+                        };
+                        document.getElementById('mp-status').appendChild(retryBtn);
+                    }
+                });
+                
+                // Add a timeout to detect if peer connection fails to establish
+                setTimeout(() => {
+                    if (peer && !peer.id) {
+                        debugLog('Peer connection timed out');
+                        document.getElementById('mp-status').textContent = 'Connection timed out. Please try again.';
+                        if (peer) {
+                            peer.destroy();
+                            peer = null;
+                        }
+                    }
+                }, 10000);
+                
+            } catch (err) {
+                debugLog('Error creating peer:', err);
+                document.getElementById('mp-status').textContent = `Error creating connection: ${err.message}`;
+            }
         }
         
         function connectToPeer(peerId) {
             document.getElementById('mp-status').textContent = `Connecting to game ${peerId}...`;
             
-            connection = peer.connect(peerId, {
-                reliable: true
-            });
-            
-            setupConnection();
+            try {
+                debugLog('Attempting to connect to peer:', peerId);
+                connection = peer.connect(peerId, {
+                    reliable: true,
+                    serialization: 'json' // Explicitly set serialization
+                });
+                
+                // Set a timeout for connection attempt
+                const connectionTimeout = setTimeout(() => {
+                    if (connection && !connection.open) {
+                        debugLog('Connection attempt timed out');
+                        document.getElementById('mp-status').textContent = 'Connection attempt timed out. Please try again.';
+                        if (connection) {
+                            connection.close();
+                            connection = null;
+                        }
+                    }
+                }, 10000);
+                
+                // Clear timeout if connection succeeds
+                connection.on('open', () => {
+                    clearTimeout(connectionTimeout);
+                });
+                
+                setupConnection();
+            } catch (err) {
+                debugLog('Error connecting to peer:', err);
+                document.getElementById('mp-status').textContent = `Error connecting: ${err.message}`;
+            }
         }
         
         function setupConnection() {
             if (!connection) return;
             
-            // Add a timeout to ensure connection is fully established
-            setTimeout(() => {
-                connection.on('open', () => {
-                    document.getElementById('mp-status').textContent = 'Connected! Waiting for both players to be ready.';
-                    document.getElementById('ready-area').style.display = 'block';
-                    lastReceivedTime = Date.now();
-                    
-                    // Send a ping to confirm connection is working
+            // Set up event handlers immediately (don't wait for timeout)
+            connection.on('open', () => {
+                debugLog('Connection opened');
+                document.getElementById('mp-status').textContent = 'Connected! Waiting for both players to be ready.';
+                document.getElementById('ready-area').style.display = 'block';
+                lastReceivedTime = Date.now();
+                
+                // Send a ping to confirm connection is working
+                try {
                     connection.send({
                         type: 'ping',
                         timestamp: Date.now()
                     });
-                });
-                
-                connection.on('data', (data) => {
+                } catch (err) {
+                    debugLog('Error sending ping:', err);
+                }
+            });
+            
+            connection.on('data', (data) => {
+                try {
+                    debugLog('Received data:', data);
+                    lastReceivedTime = Date.now();
+                    
                     // Add ping response
                     if (data.type === 'ping') {
                         connection.send({
@@ -931,10 +1013,22 @@
                     }
                     
                     handleConnectionData(data);
-                });
-                
-                // Other event handlers...
-            }, 500); // Give the connection time to stabilize
+                } catch (error) {
+                    debugLog('Error handling data:', error);
+                }
+            });
+            
+            connection.on('close', () => {
+                debugLog('Connection closed');
+                document.getElementById('mp-status').textContent = 'Connection closed.';
+                handleDisconnect();
+            });
+            
+            connection.on('error', (err) => {
+                debugLog('Connection error:', err);
+                document.getElementById('mp-status').textContent = `Connection error: ${err}`;
+                handleDisconnect();
+            });
         }
         
         function handleConnectionData(data) {
