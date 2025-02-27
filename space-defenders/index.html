@@ -4,38 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Space Defenders</title>
-  
-    <!-- Primary Meta Tags -->
-    <meta name="title" content="Space Defenders" />
-    <meta name="description" content="Space Defenders – Fight the aliens! A game made by Jason Leow @jasonleowsg" />
-  
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://jasonleow.com/space-defenders/" />
-    <meta property="og:title" content="Space Defenders" />
-    <meta property="og:description" content="Space Defenders – Fight the aliens! A game made by Jason Leow @jasonleowsg" />
-    <meta property="og:image" content="/space-defenders/space-defenders-ogimage.png" />
-  
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://jasonleow.com/space-defenders/" />
-    <meta property="twitter:title" content="Space Defenders" />
-    <meta property="twitter:description" content="Space Defenders – Fight the aliens! A game made by Jason Leow @jasonleowsg" />
-    <meta property="twitter:image" content="/space-defenders/space-defenders-ogimage.png" />
-  
-    <link rel="canonical" href="https://jasonleow.com/space-defenders/">
-  
-    <!-- Mobile app icon -->
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Space Defenders" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/space-defenders/space-defenders-thumbnail.png" />
-  
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="/space-defenders/space-defenders-favicon.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/space-defenders/space-defenders-favicon.png" />
-
     <style>
         body {
             margin: 0;
@@ -177,7 +145,8 @@
         const PLAYER_SPEED = 5;
         const BULLET_WIDTH = 3;
         const BULLET_HEIGHT = 15;
-        const BULLET_SPEED = 7;
+        const BULLET_SPEED = 12;
+        const MAX_PLAYER_BULLETS = 10;
         const ALIEN_WIDTH = 40;
         const ALIEN_HEIGHT = 30;
         const ALIEN_ROWS = 5;
@@ -197,7 +166,7 @@
         
         // Game variables
         let canvas, ctx;
-        let player, playerBullet;
+        let player, playerBullets = [];
         let aliens = [];
         let alienBullets = [];
         let shields = [];
@@ -227,7 +196,7 @@
                 speed: PLAYER_SPEED
             };
             
-            playerBullet = null;
+            playerBullets = [];
             
             // Create aliens
             createAliens();
@@ -348,49 +317,56 @@
                 if (player.x > CANVAS_WIDTH - player.width) player.x = CANVAS_WIDTH - player.width;
             }
             
-            // Update player bullet
-            if (playerBullet) {
-                playerBullet.y -= BULLET_SPEED;
+            // Update player bullets
+            for (let i = playerBullets.length - 1; i >= 0; i--) {
+                const bullet = playerBullets[i];
+                bullet.y -= BULLET_SPEED;
                 
                 // Check if bullet is off screen
-                if (playerBullet.y < 0) {
-                    playerBullet = null;
-                } else {
-                    // Check collision with aliens
-                    for (let i = 0; i < aliens.length; i++) {
-                        const alien = aliens[i];
-                        if (alien.alive && checkCollision(playerBullet, alien)) {
-                            alien.alive = false;
-                            playerBullet = null;
-                            
-                            // Add score based on alien row (higher rows = more points)
-                            score += (ALIEN_ROWS - alien.type) * 10;
-                            document.getElementById('score').textContent = score;
-                            
-                            // Check if all aliens are defeated
-                            if (aliens.every(a => !a.alive)) {
-                                // Level complete, create new wave
-                                createAliens();
-                            }
-                            
+                if (bullet.y < 0) {
+                    playerBullets.splice(i, 1);
+                    continue;
+                }
+                
+                // Check collision with aliens
+                let hitAlien = false;
+                for (let j = 0; j < aliens.length; j++) {
+                    const alien = aliens[j];
+                    if (alien.alive && checkCollision(bullet, alien)) {
+                        alien.alive = false;
+                        playerBullets.splice(i, 1);
+                        hitAlien = true;
+                        
+                        // Add score based on alien row (higher rows = more points)
+                        score += (ALIEN_ROWS - alien.type) * 10;
+                        document.getElementById('score').textContent = score;
+                        
+                        // Check if all aliens are defeated
+                        if (aliens.every(a => !a.alive)) {
+                            // Level complete, create new wave
+                            createAliens();
+                        }
+                        
+                        break;
+                    }
+                }
+                
+                // Skip shield check if already hit an alien
+                if (hitAlien) continue;
+                
+                // Check collision with shield segments
+                for (const shield of shields) {
+                    let hitShield = false;
+                    for (let j = 0; j < shield.segments.length; j++) {
+                        const segment = shield.segments[j];
+                        if (segment.health > 0 && checkCollision(bullet, segment)) {
+                            segment.health--;
+                            playerBullets.splice(i, 1);
+                            hitShield = true;
                             break;
                         }
                     }
-                    
-                    // Check collision with shield segments
-                    if (playerBullet) {
-                        for (const shield of shields) {
-                            for (let i = 0; i < shield.segments.length; i++) {
-                                const segment = shield.segments[i];
-                                if (segment.health > 0 && checkCollision(playerBullet, segment)) {
-                                    segment.health--;
-                                    playerBullet = null;
-                                    break;
-                                }
-                            }
-                            if (!playerBullet) break;
-                        }
-                    }
+                    if (hitShield) break;
                 }
             }
             
@@ -507,11 +483,11 @@
             // Draw player cannon
             ctx.fillRect(player.x + player.width / 2 - 2, player.y - 10, 4, 10);
             
-            // Draw player bullet
-            if (playerBullet) {
-                ctx.fillStyle = '#fff';
-                ctx.fillRect(playerBullet.x, playerBullet.y, playerBullet.width, playerBullet.height);
-            }
+            // Draw player bullets
+            ctx.fillStyle = '#fff';
+            playerBullets.forEach(bullet => {
+                ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+            });
             
             // Draw aliens
             aliens.forEach(alien => {
@@ -588,13 +564,16 @@
             keys[e.key] = true;
             
             // Shoot with spacebar
-            if (e.key === ' ' && !playerBullet && gameActive && !paused) {
-                playerBullet = {
-                    x: player.x + player.width / 2 - BULLET_WIDTH / 2,
-                    y: player.y - BULLET_HEIGHT,
-                    width: BULLET_WIDTH,
-                    height: BULLET_HEIGHT
-                };
+            if (e.key === ' ' && gameActive && !paused) {
+                // Only allow shooting if we haven't reached the maximum number of bullets
+                if (playerBullets.length < MAX_PLAYER_BULLETS) {
+                    playerBullets.push({
+                        x: player.x + player.width / 2 - BULLET_WIDTH / 2,
+                        y: player.y - BULLET_HEIGHT,
+                        width: BULLET_WIDTH,
+                        height: BULLET_HEIGHT
+                    });
+                }
             }
             
             // Pause game with P
