@@ -281,7 +281,16 @@
         const ICE_SERVERS = {
             iceServers: [
                 { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:stun1.l.google.com:19302' }
+                { urls: 'stun:stun1.l.google.com:19302' },
+                { urls: 'stun:stun2.l.google.com:19302' },
+                { urls: 'stun:stun3.l.google.com:19302' },
+                { urls: 'stun:stun4.l.google.com:19302' },
+                // Add a free TURN server (limited capacity but better than nothing)
+                {
+                    urls: 'turn:numb.viagenie.ca',
+                    credential: 'muazkh',
+                    username: 'webrtc@live.com'
+                }
             ]
         };
         const RECONNECT_TIMEOUT = 5000; // ms to wait before considering disconnected
@@ -312,6 +321,25 @@
         let playersReady = { host: false, client: false };
         let lastSyncTime = 0;
         let lastReceivedTime = 0;
+        
+        // Add a debug mode toggle
+        const DEBUG_MODE = true;
+        
+        // Replace console.log with this function
+        function debugLog(...args) {
+            if (DEBUG_MODE) {
+                console.log(...args);
+                
+                // Also display in UI for easier debugging
+                const debugEl = document.getElementById('mp-status');
+                debugEl.innerHTML += `<br>${args.join(' ')}`;
+                // Keep only the last 5 lines
+                const lines = debugEl.innerHTML.split('<br>');
+                if (lines.length > 5) {
+                    debugEl.innerHTML = lines.slice(lines.length - 5).join('<br>');
+                }
+            }
+        }
         
         // Initialize the game
         function init(multiplayer = false) {
@@ -872,26 +900,41 @@
         function setupConnection() {
             if (!connection) return;
             
-            connection.on('open', () => {
-                document.getElementById('mp-status').textContent = 'Connected! Waiting for both players to be ready.';
-                document.getElementById('ready-area').style.display = 'block';
-                lastReceivedTime = Date.now();
-            });
-            
-            connection.on('data', (data) => {
-                handleConnectionData(data);
-            });
-            
-            connection.on('close', () => {
-                document.getElementById('mp-status').textContent = 'Connection closed.';
-                handleDisconnect();
-            });
-            
-            connection.on('error', (err) => {
-                console.error('Connection error:', err);
-                document.getElementById('mp-status').textContent = `Connection error: ${err}`;
-                handleDisconnect();
-            });
+            // Add a timeout to ensure connection is fully established
+            setTimeout(() => {
+                connection.on('open', () => {
+                    document.getElementById('mp-status').textContent = 'Connected! Waiting for both players to be ready.';
+                    document.getElementById('ready-area').style.display = 'block';
+                    lastReceivedTime = Date.now();
+                    
+                    // Send a ping to confirm connection is working
+                    connection.send({
+                        type: 'ping',
+                        timestamp: Date.now()
+                    });
+                });
+                
+                connection.on('data', (data) => {
+                    // Add ping response
+                    if (data.type === 'ping') {
+                        connection.send({
+                            type: 'pong',
+                            timestamp: data.timestamp
+                        });
+                        return;
+                    }
+                    
+                    if (data.type === 'pong') {
+                        const latency = Date.now() - data.timestamp;
+                        document.getElementById('mp-status').textContent = `Connected! Latency: ${latency}ms`;
+                        return;
+                    }
+                    
+                    handleConnectionData(data);
+                });
+                
+                // Other event handlers...
+            }, 500); // Give the connection time to stabilize
         }
         
         function handleConnectionData(data) {
@@ -960,14 +1003,30 @@
                 const playerType = isHost ? 'host' : 'client';
                 playersReady[playerType] = true;
                 
-                connection.send({
-                    type: 'playerReady',
-                    player: playerType
-                });
+                // Send ready state multiple times to ensure it's received
+                const sendReady = () => {
+                    connection.send({
+                        type: 'playerReady',
+                        player: playerType
+                    });
+                };
+                
+                // Send immediately and then a few more times with delays
+                sendReady();
+                setTimeout(sendReady, 300);
+                setTimeout(sendReady, 600);
                 
                 document.getElementById('ready-btn').disabled = true;
                 document.getElementById('ready-btn').textContent = 'READY ✓';
                 document.getElementById('mp-status').textContent = 'You are ready! Waiting for other player...';
+                
+                // If both players are ready locally, start the game
+                if (playersReady.host && playersReady.client) {
+                    document.getElementById('mp-status').textContent = 'Both players ready! Starting game...';
+                    setTimeout(() => {
+                        init(true);
+                    }, 1000);
+                }
             }
         }
         
@@ -1050,6 +1109,23 @@
         });
 
         document.getElementById('restart-button').addEventListener('click', () => init(isMultiplayer));
+
+        // Add this function to attempt reconnection
+        function attemptReconnect() {
+            if (isHost) {
+                document.getElementById('mp-status').textContent = 'Connection lost. Waiting for player to reconnect...';
+                // Host just waits for new connection
+            } else {
+                document.getElementById('mp-status').textContent = 'Connection lost. Attempting to reconnect...';
+                // Client tries to reconnect
+                if (peer && gameCode) {
+                    connection = peer.connect(gameCode, {
+                        reliable: true
+                    });
+                    setupConnection();
+                }
+            }
+        }
     </script>
 </body>
 </html> 
