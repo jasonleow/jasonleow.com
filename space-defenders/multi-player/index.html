@@ -172,7 +172,6 @@
             border-radius: 3px;
         }
     </style>
-    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
 </head>
 <body>
     <div id="game-container">
@@ -277,23 +276,38 @@
         const SHIELD_SEGMENTS = 12;
         const SHIELD_SEGMENT_SIZE = 10;
         
-        // Multiplayer constants
-        const ICE_SERVERS = {
+        // Multiplayer variables
+        let isMultiplayer = false;
+        let isHost = false;
+        let peerConnection = null;
+        let dataChannel = null;
+        let gameCode = '';
+        let otherPlayer = null;
+        let playersReady = { host: false, client: false };
+        let lastSyncTime = 0;
+        let lastReceivedTime = 0;
+        
+        // WebRTC configuration
+        const ICE_CONFIGURATION = {
             iceServers: [
                 { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:stun1.l.google.com:19302' },
-                { urls: 'stun:stun2.l.google.com:19302' },
-                { urls: 'stun:stun3.l.google.com:19302' },
-                { urls: 'stun:stun4.l.google.com:19302' },
-                // Add a free TURN server (limited capacity but better than nothing)
-                {
-                    urls: 'turn:numb.viagenie.ca',
-                    credential: 'muazkh',
-                    username: 'webrtc@live.com'
-                }
+                { urls: 'stun:stun1.l.google.com:19302' }
             ]
         };
-        const RECONNECT_TIMEOUT = 5000; // ms to wait before considering disconnected
+        
+        // Debug mode
+        const DEBUG_MODE = true;
+        function debugLog(...args) {
+            if (DEBUG_MODE) {
+                console.log(...args);
+                const debugEl = document.getElementById('mp-status');
+                debugEl.innerHTML += `<br>${args.join(' ')}`;
+                const lines = debugEl.innerHTML.split('<br>');
+                if (lines.length > 5) {
+                    debugEl.innerHTML = lines.slice(lines.length - 5).join('<br>');
+                }
+            }
+        }
         
         // Game variables
         let canvas, ctx;
@@ -310,36 +324,6 @@
         let alienMoveDownTimer = 0;
         let lastTime = 0;
         let keys = {};
-        
-        // Multiplayer variables
-        let isMultiplayer = false;
-        let isHost = false;
-        let peer = null;
-        let connection = null;
-        let gameCode = '';
-        let otherPlayer = null;
-        let playersReady = { host: false, client: false };
-        let lastSyncTime = 0;
-        let lastReceivedTime = 0;
-        
-        // Add a debug mode toggle
-        const DEBUG_MODE = true;
-        
-        // Replace console.log with this function
-        function debugLog(...args) {
-            if (DEBUG_MODE) {
-                console.log(...args);
-                
-                // Also display in UI for easier debugging
-                const debugEl = document.getElementById('mp-status');
-                debugEl.innerHTML += `<br>${args.join(' ')}`;
-                // Keep only the last 5 lines
-                const lines = debugEl.innerHTML.split('<br>');
-                if (lines.length > 5) {
-                    debugEl.innerHTML = lines.slice(lines.length - 5).join('<br>');
-                }
-            }
-        }
         
         // Initialize the game
         function init(multiplayer = false) {
@@ -660,7 +644,7 @@
             }
             
             // Sync multiplayer state
-            if (isMultiplayer && connection && connection.open) {
+            if (isMultiplayer && dataChannel && dataChannel.readyState === 'open') {
                 const now = Date.now();
                 
                 // Send player position and bullets regularly
@@ -673,8 +657,11 @@
                         bullets: playerBullets.map(b => ({ x: b.x, y: b.y }))
                     };
                     
-                    console.log('Sending player data:', playerData);
-                    connection.send(playerData);
+                    try {
+                        dataChannel.send(JSON.stringify(playerData));
+                    } catch (err) {
+                        debugLog('Error sending player data:', err);
+                    }
                     
                     // If host, also send game state
                     if (isHost) {
@@ -685,27 +672,31 @@
                             score: score
                         };
                         
-                        connection.send(gameData);
+                        try {
+                            dataChannel.send(JSON.stringify(gameData));
+                        } catch (err) {
+                            debugLog('Error sending game state:', err);
+                        }
+                    }
+                }
+                
+                // Update connection status indicator
+                if (isMultiplayer) {
+                    const statusEl = document.getElementById('connection-status');
+                    statusEl.style.display = 'block';
+                    if (dataChannel && dataChannel.readyState === 'open') {
+                        const latency = Date.now() - lastSyncTime;
+                        statusEl.textContent = `Connected (${latency}ms)`;
+                        statusEl.style.color = latency < 100 ? '#33ff33' : latency < 200 ? '#ffff33' : '#ff3333';
+                    } else {
+                        statusEl.textContent = 'Disconnected';
+                        statusEl.style.color = '#ff3333';
                     }
                 }
                 
                 // Check for timeout (disconnection)
-                if (now - lastReceivedTime > RECONNECT_TIMEOUT) {
+                if (now - lastReceivedTime > 5000) { // 5 second timeout
                     handleDisconnect();
-                }
-            }
-            
-            // Update connection status indicator
-            if (isMultiplayer) {
-                const statusEl = document.getElementById('connection-status');
-                statusEl.style.display = 'block';
-                if (connection && connection.open) {
-                    const latency = Date.now() - lastSyncTime;
-                    statusEl.textContent = `Connected (${latency}ms)`;
-                    statusEl.style.color = latency < 100 ? '#33ff33' : latency < 200 ? '#ffff33' : '#ff3333';
-                } else {
-                    statusEl.textContent = 'Disconnected';
-                    statusEl.style.color = '#ff3333';
                 }
             }
         }
@@ -823,8 +814,8 @@
             document.getElementById('host-area').querySelector('button').style.display = 'none';
             document.getElementById('join-area').style.display = 'none';
             
-            // Initialize PeerJS as host
-            initializePeerJS(true);
+            // Initialize WebRTC as host
+            initializeWebRTC(true);
         }
         
         function joinGame() {
@@ -837,172 +828,214 @@
             gameCode = code;
             isHost = false;
             
-            document.getElementById('mp-status').textContent = 'Connecting to game...';
+            document.getElementById('mp-status').textContent = 'Setting up connection...';
             document.getElementById('host-area').style.display = 'none';
             document.getElementById('join-area').style.display = 'none';
             
-            // Initialize PeerJS as client
-            initializePeerJS(false);
+            // Initialize WebRTC as client
+            initializeWebRTC(false);
         }
         
-        function initializePeerJS(isInitiator) {
-            document.getElementById('mp-status').textContent = 'Setting up connection...';
+        function initializeWebRTC(isInitiator) {
+            // Create connection area if it doesn't exist
+            if (!document.getElementById('connection-data-area')) {
+                const connectionArea = document.createElement('div');
+                connectionArea.id = 'connection-data-area';
+                connectionArea.style.margin = '20px 0';
+                connectionArea.innerHTML = `
+                    <h3>Connection Data</h3>
+                    <p>Share this with the other player:</p>
+                    <textarea id="connection-data" rows="5" cols="40" readonly></textarea>
+                    <button id="copy-data" class="mp-button">Copy to Clipboard</button>
+                    
+                    <h3>Enter Connection Data</h3>
+                    <p>Paste the other player's connection data here:</p>
+                    <textarea id="connection-data-input" rows="5" cols="40"></textarea>
+                    <button id="submit-connection-data" class="mp-button">Connect</button>
+                `;
+                document.getElementById('mp-status').parentNode.insertBefore(connectionArea, document.getElementById('ready-area'));
+                
+                // Add event listeners for the new buttons
+                document.getElementById('copy-data').addEventListener('click', () => {
+                    const dataField = document.getElementById('connection-data');
+                    dataField.select();
+                    document.execCommand('copy');
+                    alert('Connection data copied to clipboard!');
+                });
+                
+                document.getElementById('submit-connection-data').addEventListener('click', processConnectionData);
+            }
             
-            // Create Peer with more robust configuration
-            const peerOptions = {
-                debug: 2,
-                host: 'peerjs-server.herokuapp.com', // Use a different server
-                secure: true,
-                port: 443,
-                config: {
-                    'iceServers': [
-                        { urls: 'stun:stun.l.google.com:19302' },
-                        { urls: 'stun:stun1.l.google.com:19302' },
-                        { urls: 'stun:stun2.l.google.com:19302' },
-                        { urls: 'stun:stun3.l.google.com:19302' },
-                        { urls: 'stun:stun4.l.google.com:19302' },
-                        {
-                            urls: 'turn:numb.viagenie.ca',
-                            credential: 'muazkh',
-                            username: 'webrtc@live.com'
-                        }
-                    ]
+            document.getElementById('connection-data-area').style.display = 'block';
+            
+            try {
+                // Create RTCPeerConnection
+                peerConnection = new RTCPeerConnection(ICE_CONFIGURATION);
+                
+                // Set up ICE candidate handling
+                peerConnection.onicecandidate = event => {
+                    if (event.candidate) {
+                        updateConnectionData();
+                    }
+                };
+                
+                // Connection state changes
+                peerConnection.onconnectionstatechange = () => {
+                    debugLog('Connection state:', peerConnection.connectionState);
+                    document.getElementById('mp-status').textContent = `Connection state: ${peerConnection.connectionState}`;
+                    
+                    if (peerConnection.connectionState === 'connected') {
+                        document.getElementById('mp-status').textContent = 'Connected! Both players must be ready to start.';
+                        document.getElementById('ready-area').style.display = 'block';
+                        document.getElementById('connection-data-area').style.display = 'none';
+                    } else if (peerConnection.connectionState === 'disconnected' || 
+                               peerConnection.connectionState === 'failed' ||
+                               peerConnection.connectionState === 'closed') {
+                        handleDisconnect();
+                    }
+                };
+                
+                if (isInitiator) {
+                    // Create data channel as host
+                    dataChannel = peerConnection.createDataChannel('gameData');
+                    setupDataChannel();
+                    
+                    // Create offer
+                    peerConnection.createOffer()
+                        .then(offer => peerConnection.setLocalDescription(offer))
+                        .then(() => {
+                            debugLog('Created offer');
+                            updateConnectionData();
+                        })
+                        .catch(err => {
+                            debugLog('Error creating offer:', err);
+                            document.getElementById('mp-status').textContent = `Error creating offer: ${err.message}`;
+                        });
+                } else {
+                    // Set up data channel event for client
+                    peerConnection.ondatachannel = event => {
+                        debugLog('Received data channel');
+                        dataChannel = event.channel;
+                        setupDataChannel();
+                    };
                 }
+            } catch (err) {
+                debugLog('Error setting up WebRTC:', err);
+                document.getElementById('mp-status').textContent = `Error setting up connection: ${err.message}`;
+            }
+        }
+        
+        function updateConnectionData() {
+            if (!peerConnection) return;
+            
+            const connectionData = {
+                type: isHost ? 'offer' : 'answer',
+                sdp: peerConnection.localDescription,
+                candidates: []
             };
             
-            try {
-                peer = new Peer(isInitiator ? gameCode : null, peerOptions);
-                
-                peer.on('open', (id) => {
-                    debugLog('Peer connection established. ID:', id);
-                    document.getElementById('mp-status').textContent = `Peer connection established. Your ID: ${id}`;
-                    
-                    if (!isInitiator) {
-                        // Client connects to host
-                        connectToPeer(gameCode);
-                    }
-                });
-                
-                peer.on('connection', (conn) => {
-                    debugLog('Received connection from peer');
-                    // Host receives connection from client
-                    connection = conn;
-                    setupConnection();
-                });
-                
-                peer.on('error', (err) => {
-                    debugLog('Peer error:', err);
-                    document.getElementById('mp-status').textContent = `Connection error: ${err.type}`;
-                    
-                    if (err.type === 'peer-unavailable') {
-                        document.getElementById('mp-status').textContent = 'Game not found. Check the code and try again.';
-                        // Reset UI for retry
-                        document.getElementById('host-area').style.display = 'block';
-                        document.getElementById('join-area').style.display = 'block';
-                    } else if (err.type === 'network' || err.type === 'server-error') {
-                        document.getElementById('mp-status').textContent = 'Network or server error. Please try again.';
-                        // Add a retry button
-                        const retryBtn = document.createElement('button');
-                        retryBtn.textContent = 'Retry Connection';
-                        retryBtn.className = 'mp-button';
-                        retryBtn.style.marginTop = '10px';
-                        retryBtn.onclick = () => {
-                            document.getElementById('mp-status').textContent = '';
-                            retryBtn.remove();
-                            if (isInitiator) {
-                                createGame();
-                            } else {
-                                joinGame();
+            // Get all ICE candidates
+            const transceivers = peerConnection.getTransceivers();
+            if (transceivers && transceivers.length > 0) {
+                for (const transceiver of transceivers) {
+                    const sender = transceiver.sender;
+                    if (sender && sender.transport) {
+                        const transport = sender.transport;
+                        if (transport && transport.iceTransport) {
+                            const candidates = transport.iceTransport.getLocalCandidates();
+                            if (candidates) {
+                                connectionData.candidates = connectionData.candidates.concat(candidates);
                             }
-                        };
-                        document.getElementById('mp-status').appendChild(retryBtn);
-                    }
-                });
-                
-                // Add a timeout to detect if peer connection fails to establish
-                setTimeout(() => {
-                    if (peer && !peer.id) {
-                        debugLog('Peer connection timed out');
-                        document.getElementById('mp-status').textContent = 'Connection timed out. Please try again.';
-                        if (peer) {
-                            peer.destroy();
-                            peer = null;
                         }
                     }
-                }, 10000);
-                
-            } catch (err) {
-                debugLog('Error creating peer:', err);
-                document.getElementById('mp-status').textContent = `Error creating connection: ${err.message}`;
+                }
             }
+            
+            document.getElementById('connection-data').value = JSON.stringify(connectionData);
         }
         
-        function connectToPeer(peerId) {
-            document.getElementById('mp-status').textContent = `Connecting to game ${peerId}...`;
+        function processConnectionData() {
+            const dataInput = document.getElementById('connection-data-input').value.trim();
+            if (!dataInput) {
+                alert('Please enter the connection data from the other player');
+                return;
+            }
             
             try {
-                debugLog('Attempting to connect to peer:', peerId);
-                connection = peer.connect(peerId, {
-                    reliable: true,
-                    serialization: 'json' // Explicitly set serialization
-                });
+                const connectionData = JSON.parse(dataInput);
                 
-                // Set a timeout for connection attempt
-                const connectionTimeout = setTimeout(() => {
-                    if (connection && !connection.open) {
-                        debugLog('Connection attempt timed out');
-                        document.getElementById('mp-status').textContent = 'Connection attempt timed out. Please try again.';
-                        if (connection) {
-                            connection.close();
-                            connection = null;
+                if (!connectionData.sdp) {
+                    alert('Invalid connection data');
+                    return;
+                }
+                
+                const remoteDesc = new RTCSessionDescription(connectionData.sdp);
+                
+                peerConnection.setRemoteDescription(remoteDesc)
+                    .then(() => {
+                        debugLog('Set remote description');
+                        
+                        // Add ICE candidates
+                        if (connectionData.candidates && connectionData.candidates.length > 0) {
+                            for (const candidate of connectionData.candidates) {
+                                peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
+                                    .catch(err => debugLog('Error adding ICE candidate:', err));
+                            }
                         }
-                    }
-                }, 10000);
-                
-                // Clear timeout if connection succeeds
-                connection.on('open', () => {
-                    clearTimeout(connectionTimeout);
-                });
-                
-                setupConnection();
+                        
+                        // If we're the answerer (client), create an answer
+                        if (!isHost && peerConnection.signalingState === 'have-remote-offer') {
+                            return peerConnection.createAnswer()
+                                .then(answer => peerConnection.setLocalDescription(answer))
+                                .then(() => {
+                                    debugLog('Created answer');
+                                    updateConnectionData();
+                                });
+                        }
+                    })
+                    .catch(err => {
+                        debugLog('Error setting remote description:', err);
+                        document.getElementById('mp-status').textContent = `Error connecting: ${err.message}`;
+                    });
             } catch (err) {
-                debugLog('Error connecting to peer:', err);
-                document.getElementById('mp-status').textContent = `Error connecting: ${err.message}`;
+                debugLog('Error processing connection data:', err);
+                alert('Invalid connection data format');
             }
         }
         
-        function setupConnection() {
-            if (!connection) return;
+        function setupDataChannel() {
+            if (!dataChannel) return;
             
-            // Set up event handlers immediately (don't wait for timeout)
-            connection.on('open', () => {
-                debugLog('Connection opened');
+            dataChannel.onopen = () => {
+                debugLog('Data channel opened');
                 document.getElementById('mp-status').textContent = 'Connected! Waiting for both players to be ready.';
                 document.getElementById('ready-area').style.display = 'block';
+                document.getElementById('connection-data-area').style.display = 'none';
                 lastReceivedTime = Date.now();
                 
-                // Send a ping to confirm connection is working
+                // Send a ping to confirm connection
                 try {
-                    connection.send({
+                    dataChannel.send(JSON.stringify({
                         type: 'ping',
                         timestamp: Date.now()
-                    });
+                    }));
                 } catch (err) {
                     debugLog('Error sending ping:', err);
                 }
-            });
+            };
             
-            connection.on('data', (data) => {
+            dataChannel.onmessage = event => {
                 try {
+                    const data = JSON.parse(event.data);
                     debugLog('Received data:', data);
                     lastReceivedTime = Date.now();
                     
-                    // Add ping response
+                    // Handle ping/pong
                     if (data.type === 'ping') {
-                        connection.send({
+                        dataChannel.send(JSON.stringify({
                             type: 'pong',
                             timestamp: data.timestamp
-                        });
+                        }));
                         return;
                     }
                     
@@ -1014,21 +1047,19 @@
                     
                     handleConnectionData(data);
                 } catch (error) {
-                    debugLog('Error handling data:', error);
+                    debugLog('Error handling message:', error);
                 }
-            });
+            };
             
-            connection.on('close', () => {
-                debugLog('Connection closed');
-                document.getElementById('mp-status').textContent = 'Connection closed.';
+            dataChannel.onclose = () => {
+                debugLog('Data channel closed');
                 handleDisconnect();
-            });
+            };
             
-            connection.on('error', (err) => {
-                debugLog('Connection error:', err);
-                document.getElementById('mp-status').textContent = `Connection error: ${err}`;
+            dataChannel.onerror = (err) => {
+                debugLog('Data channel error:', err);
                 handleDisconnect();
-            });
+            };
         }
         
         function handleConnectionData(data) {
@@ -1093,16 +1124,16 @@
         }
         
         function playerReady() {
-            if (connection && connection.open) {
+            if (dataChannel && dataChannel.readyState === 'open') {
                 const playerType = isHost ? 'host' : 'client';
                 playersReady[playerType] = true;
                 
                 // Send ready state multiple times to ensure it's received
                 const sendReady = () => {
-                    connection.send({
+                    dataChannel.send(JSON.stringify({
                         type: 'playerReady',
                         player: playerType
-                    });
+                    }));
                 };
                 
                 // Send immediately and then a few more times with delays
@@ -1125,14 +1156,14 @@
         }
         
         function handleDisconnect() {
-            if (connection) {
-                connection.close();
-                connection = null;
+            if (dataChannel) {
+                dataChannel.close();
+                dataChannel = null;
             }
             
-            if (peer) {
-                peer.destroy();
-                peer = null;
+            if (peerConnection) {
+                peerConnection.close();
+                peerConnection = null;
             }
             
             if (gameActive) {
@@ -1140,6 +1171,7 @@
                 document.getElementById('mp-status').textContent = 'Disconnected from game.';
                 document.getElementById('multiplayer-ui').style.display = 'flex';
                 document.getElementById('ready-area').style.display = 'none';
+                document.getElementById('connection-data-area').style.display = 'none';
                 document.getElementById('host-area').style.display = 'block';
                 document.getElementById('join-area').style.display = 'block';
                 document.getElementById('host-area').querySelector('button').style.display = 'block';
@@ -1203,23 +1235,6 @@
         });
 
         document.getElementById('restart-button').addEventListener('click', () => init(isMultiplayer));
-
-        // Add this function to attempt reconnection
-        function attemptReconnect() {
-            if (isHost) {
-                document.getElementById('mp-status').textContent = 'Connection lost. Waiting for player to reconnect...';
-                // Host just waits for new connection
-            } else {
-                document.getElementById('mp-status').textContent = 'Connection lost. Attempting to reconnect...';
-                // Client tries to reconnect
-                if (peer && gameCode) {
-                    connection = peer.connect(gameCode, {
-                        reliable: true
-                    });
-                    setupConnection();
-                }
-            }
-        }
     </script>
 </body>
 </html> 
