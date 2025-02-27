@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Defenders - Multiplayer</title>
+  
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="Space Defenders" />
+    <meta name="description" content="Space Defenders – Fight the aliens! A game made by Jason Leow @jasonleowsg" />
+  
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://jasonleow.com/space-defenders/" />
+    <meta property="og:title" content="Space Defenders" />
+    <meta property="og:description" content="Space Defenders – Fight the aliens! A game made by Jason Leow @jasonleowsg" />
+    <meta property="og:image" content="/space-defenders/space-defenders-ogimage.png" />
+  
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://jasonleow.com/space-defenders/" />
+    <meta property="twitter:title" content="Space Defenders" />
+    <meta property="twitter:description" content="Space Defenders – Fight the aliens! A game made by Jason Leow @jasonleowsg" />
+    <meta property="twitter:image" content="/space-defenders/space-defenders-ogimage.png" />
+  
+    <link rel="canonical" href="https://jasonleow.com/space-defenders/">
+  
+    <!-- Mobile app icon -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Space Defenders" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/space-defenders/space-defenders-thumbnail.png" />
+  
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/space-defenders/space-defenders-favicon.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/space-defenders/space-defenders-favicon.png" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: #fff;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: auto;
+        }
+        
+        #game-container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            border: 2px solid #33ff33;
+            box-shadow: 0 0 10px #33ff33;
+        }
+        
+        #game-canvas {
+            background-color: #000;
+            width: 100%;
+            height: 100%;
+        }
+        
+        #start-screen, #game-over-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 10;
+        }
+        
+        #game-over-screen {
+            display: none;
+        }
+        
+        h1 {
+            color: #33ff33;
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 0 0 10px #33ff33;
+        }
+        
+        .instructions {
+            margin: 20px 0;
+            text-align: center;
+            line-height: 1.5;
+        }
+        
+        button {
+            background-color: #33ff33;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            font-family: 'Courier New', Courier, monospace;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+        
+        button:hover {
+            background-color: #fff;
+        }
+        
+        .score-display {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 20px;
+            color: #33ff33;
+        }
+        
+        .lives-display {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            color: #33ff33;
+        }
+        
+        .paused-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            color: #33ff33;
+            display: none;
+            z-index: 5;
+            text-shadow: 0 0 10px #33ff33;
+        }
+        
+        .mp-button {
+            background-color: #33ff33;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 5px;
+            border-radius: 5px;
+        }
+        
+        .mp-button:hover {
+            background-color: #fff;
+        }
+        
+        #multiplayer-ui {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .connection-status {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 12px;
+            color: #33ff33;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 5px;
+            border-radius: 3px;
+        }
+    </style>
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="game-canvas"></canvas>
+        
+        <div id="start-screen">
+            <h1>SPACE DEFENDERS</h1>
+            <h2>MULTIPLAYER MODE</h2>
+            <div class="instructions">
+                <p>Use LEFT/RIGHT ARROW KEYS or A/D to move</p>
+                <p>Press SPACEBAR to shoot</p>
+                <p>Press P to pause the game</p>
+                <p>Destroy all aliens before they reach Earth!</p>
+            </div>
+            <button id="show-multiplayer-btn" class="mp-button">START MULTIPLAYER</button>
+        </div>
+        
+        <!-- Add multiplayer UI -->
+        <div id="multiplayer-ui" style="display: none;">
+            <h1>MULTIPLAYER MODE</h1>
+            <div id="connection-area">
+                <div id="host-area">
+                    <h2>CREATE GAME</h2>
+                    <button id="create-game-btn" class="mp-button">CREATE GAME</button>
+                    <div id="game-code-display" style="display: none;">
+                        <p>Share this code with your friend:</p>
+                        <h3 id="game-code"></h3>
+                        <p id="waiting-message">Waiting for player to join...</p>
+                    </div>
+                </div>
+                <div id="join-area">
+                    <h2>JOIN GAME</h2>
+                    <input type="text" id="join-code" placeholder="Enter game code">
+                    <button id="join-game-btn" class="mp-button">JOIN GAME</button>
+                </div>
+            </div>
+            <div id="mp-status" style="margin-top: 20px;"></div>
+            <div id="ready-area" style="display: none; margin-top: 20px;">
+                <button id="ready-btn" class="mp-button">READY</button>
+            </div>
+            <button id="back-to-menu" class="mp-button" style="margin-top: 20px;">BACK TO MENU</button>
+        </div>
+        
+        <div id="game-over-screen">
+            <h1>GAME OVER</h1>
+            <div id="final-score">Score: 0</div>
+            <button id="restart-button">PLAY AGAIN</button>
+        </div>
+        
+        <div class="score-display">Score: <span id="score">0</span></div>
+        <div class="lives-display">Lives: <span id="lives">3</span></div>
+        <div class="paused-indicator" id="paused">PAUSED</div>
+        <div id="connection-status" class="connection-status" style="display: none;"></div>
+    </div>
+
+    <script>
+        // Check if user is on mobile
+        function isMobileDevice() {
+            return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
+        }
+
+        // Display warning for mobile users
+        if (isMobileDevice()) {
+            const mobileWarning = document.createElement('div');
+            mobileWarning.style.position = 'fixed';
+            mobileWarning.style.top = '0';
+            mobileWarning.style.left = '0';
+            mobileWarning.style.width = '100%';
+            mobileWarning.style.padding = '10px';
+            mobileWarning.style.backgroundColor = '#ff3333';
+            mobileWarning.style.color = 'white';
+            mobileWarning.style.textAlign = 'center';
+            mobileWarning.style.zIndex = '1000';
+            mobileWarning.innerHTML = 'This game requires a keyboard. Please use a desktop or laptop computer for the best experience.';
+            document.body.appendChild(mobileWarning);
+        }
+
+        // Game constants
+        const CANVAS_WIDTH = 800;
+        const CANVAS_HEIGHT = 600;
+        const PLAYER_WIDTH = 40;
+        const PLAYER_HEIGHT = 30;
+        const PLAYER_SPEED = 5;
+        const BULLET_WIDTH = 3;
+        const BULLET_HEIGHT = 15;
+        const BULLET_SPEED = 12;
+        const MAX_PLAYER_BULLETS = 10;
+        const ALIEN_WIDTH = 40;
+        const ALIEN_HEIGHT = 30;
+        const ALIEN_ROWS = 5;
+        const ALIEN_COLS = 11;
+        const ALIEN_HORIZONTAL_SPACING = 15;
+        const ALIEN_VERTICAL_SPACING = 15;
+        const ALIEN_HORIZONTAL_PADDING = 50;
+        const ALIEN_VERTICAL_PADDING = 50;
+        const ALIEN_MOVE_SPEED = 1;
+        const ALIEN_DROP_DISTANCE = 20;
+        const ALIEN_FIRE_RATE = 0.005; // Probability of an alien firing per frame
+        const SHIELD_BLOCKS = 4;
+        const SHIELD_BLOCK_WIDTH = 80;
+        const SHIELD_BLOCK_HEIGHT = 60;
+        const SHIELD_SEGMENTS = 12;
+        const SHIELD_SEGMENT_SIZE = 10;
+        
+        // Multiplayer constants
+        const ICE_SERVERS = {
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' }
+            ]
+        };
+        const RECONNECT_TIMEOUT = 5000; // ms to wait before considering disconnected
+        
+        // Game variables
+        let canvas, ctx;
+        let player, playerBullets = [];
+        let aliens = [];
+        let alienBullets = [];
+        let shields = [];
+        let score = 0;
+        let lives = 3;
+        let gameActive = false;
+        let gameOver = false;
+        let paused = false;
+        let alienDirection = 1; // 1 for right, -1 for left
+        let alienMoveDownTimer = 0;
+        let lastTime = 0;
+        let keys = {};
+        
+        // Multiplayer variables
+        let isMultiplayer = false;
+        let isHost = false;
+        let peer = null;
+        let connection = null;
+        let gameCode = '';
+        let otherPlayer = null;
+        let playersReady = { host: false, client: false };
+        let lastSyncTime = 0;
+        let lastReceivedTime = 0;
+        
+        // Initialize the game
+        function init(multiplayer = false) {
+            canvas = document.getElementById('game-canvas');
+            ctx = canvas.getContext('2d');
+            canvas.width = CANVAS_WIDTH;
+            canvas.height = CANVAS_HEIGHT;
+            
+            isMultiplayer = multiplayer;
+            
+            // Create player
+            player = {
+                x: CANVAS_WIDTH / 2 - PLAYER_WIDTH / 2,
+                y: CANVAS_HEIGHT - PLAYER_HEIGHT - 20,
+                width: PLAYER_WIDTH,
+                height: PLAYER_HEIGHT,
+                speed: PLAYER_SPEED,
+                id: isHost ? 'host' : 'client'
+            };
+            
+            if (isMultiplayer) {
+                otherPlayer = {
+                    x: CANVAS_WIDTH / 2 - PLAYER_WIDTH / 2,
+                    y: CANVAS_HEIGHT - PLAYER_HEIGHT - 20,
+                    width: PLAYER_WIDTH,
+                    height: PLAYER_HEIGHT,
+                    bullets: []
+                };
+            } else {
+                otherPlayer = null;
+            }
+            
+            playerBullets = [];
+            
+            // Create aliens
+            createAliens();
+            
+            // Create shields
+            createShields();
+            
+            // Reset game state
+            score = 0;
+            lives = 3;
+            gameActive = true;
+            gameOver = false;
+            paused = false;
+            alienDirection = 1;
+            alienMoveDownTimer = 0;
+            alienBullets = [];
+            
+            // Update UI
+            document.getElementById('score').textContent = score;
+            document.getElementById('lives').textContent = lives;
+            
+            // Hide screens
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('multiplayer-ui').style.display = 'none';
+            document.getElementById('game-over-screen').style.display = 'none';
+            
+            // Start game loop
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Create alien formation
+        function createAliens() {
+            aliens = [];
+            
+            for (let row = 0; row < ALIEN_ROWS; row++) {
+                for (let col = 0; col < ALIEN_COLS; col++) {
+                    aliens.push({
+                        x: ALIEN_HORIZONTAL_PADDING + col * (ALIEN_WIDTH + ALIEN_HORIZONTAL_SPACING),
+                        y: ALIEN_VERTICAL_PADDING + row * (ALIEN_HEIGHT + ALIEN_VERTICAL_SPACING),
+                        width: ALIEN_WIDTH,
+                        height: ALIEN_HEIGHT,
+                        type: row, // Different types for different rows (for visuals)
+                        alive: true
+                    });
+                }
+            }
+        }
+        
+        // Create defensive shields
+        function createShields() {
+            shields = [];
+            
+            const shieldPositionY = CANVAS_HEIGHT - 150;
+            const spacing = (CANVAS_WIDTH - (SHIELD_BLOCKS * SHIELD_BLOCK_WIDTH)) / (SHIELD_BLOCKS + 1);
+            
+            for (let i = 0; i < SHIELD_BLOCKS; i++) {
+                const shieldX = spacing + i * (SHIELD_BLOCK_WIDTH + spacing);
+                
+                // Create shield segments
+                const segments = [];
+                const segmentsPerRow = SHIELD_BLOCK_WIDTH / SHIELD_SEGMENT_SIZE;
+                const segmentsPerCol = SHIELD_BLOCK_HEIGHT / SHIELD_SEGMENT_SIZE;
+                
+                for (let row = 0; row < segmentsPerCol; row++) {
+                    for (let col = 0; col < segmentsPerRow; col++) {
+                        // Create a gap in the bottom center of each shield
+                        if (row >= segmentsPerCol - 2 && col >= segmentsPerRow / 2 - 1 && col <= segmentsPerRow / 2 + 1) {
+                            continue;
+                        }
+                        
+                        segments.push({
+                            x: shieldX + col * SHIELD_SEGMENT_SIZE,
+                            y: shieldPositionY + row * SHIELD_SEGMENT_SIZE,
+                            width: SHIELD_SEGMENT_SIZE,
+                            height: SHIELD_SEGMENT_SIZE,
+                            health: 3 // Shield segments can take multiple hits
+                        });
+                    }
+                }
+                
+                shields.push({
+                    x: shieldX,
+                    y: shieldPositionY,
+                    width: SHIELD_BLOCK_WIDTH,
+                    height: SHIELD_BLOCK_HEIGHT,
+                    segments: segments
+                });
+            }
+        }
+        
+        // Main game loop
+        function gameLoop(timestamp) {
+            if (!gameActive) return;
+            
+            // Calculate delta time
+            const deltaTime = timestamp - lastTime;
+            lastTime = timestamp;
+            
+            if (!paused) {
+                update(deltaTime);
+            }
+            
+            render();
+            
+            if (!gameOver) {
+                requestAnimationFrame(gameLoop);
+            }
+        }
+        
+        // Update game state
+        function update(deltaTime) {
+            // Move player
+            if (keys['ArrowLeft'] || keys['a'] || keys['A']) {
+                player.x -= player.speed;
+                if (player.x < 0) player.x = 0;
+            }
+            if (keys['ArrowRight'] || keys['d'] || keys['D']) {
+                player.x += player.speed;
+                if (player.x > CANVAS_WIDTH - player.width) player.x = CANVAS_WIDTH - player.width;
+            }
+            
+            // Update player bullets
+            for (let i = playerBullets.length - 1; i >= 0; i--) {
+                const bullet = playerBullets[i];
+                bullet.y -= BULLET_SPEED;
+                
+                // Check if bullet is off screen
+                if (bullet.y < 0) {
+                    playerBullets.splice(i, 1);
+                    continue;
+                }
+                
+                // In multiplayer, only host checks collisions
+                if (!isMultiplayer || isHost) {
+                    // Check collision with aliens
+                    let hitAlien = false;
+                    for (let j = 0; j < aliens.length; j++) {
+                        const alien = aliens[j];
+                        if (alien.alive && checkCollision(bullet, alien)) {
+                            alien.alive = false;
+                            playerBullets.splice(i, 1);
+                            hitAlien = true;
+                            
+                            // Add score based on alien row (higher rows = more points)
+                            score += (ALIEN_ROWS - alien.type) * 10;
+                            document.getElementById('score').textContent = score;
+                            
+                            // Check if all aliens are defeated
+                            if (aliens.every(a => !a.alive)) {
+                                // Level complete, create new wave
+                                createAliens();
+                            }
+                            
+                            break;
+                        }
+                    }
+                    
+                    // Skip shield check if already hit an alien
+                    if (hitAlien) continue;
+                    
+                    // Check collision with shield segments
+                    for (const shield of shields) {
+                        let hitShield = false;
+                        for (let j = 0; j < shield.segments.length; j++) {
+                            const segment = shield.segments[j];
+                            if (segment.health > 0 && checkCollision(bullet, segment)) {
+                                segment.health--;
+                                playerBullets.splice(i, 1);
+                                hitShield = true;
+                                break;
+                            }
+                        }
+                        if (hitShield) break;
+                    }
+                }
+            }
+            
+            // In multiplayer, only host updates aliens
+            if (!isMultiplayer || isHost) {
+                // Move aliens
+                let moveDown = false;
+                let alienSpeed = ALIEN_MOVE_SPEED * (1 + (1 - aliens.filter(a => a.alive).length / (ALIEN_ROWS * ALIEN_COLS)) * 2);
+                
+                // Find leftmost and rightmost aliens
+                let leftmost = CANVAS_WIDTH;
+                let rightmost = 0;
+                
+                aliens.forEach(alien => {
+                    if (alien.alive) {
+                        leftmost = Math.min(leftmost, alien.x);
+                        rightmost = Math.max(rightmost, alien.x + alien.width);
+                    }
+                });
+                
+                // Check if aliens need to change direction
+                if (rightmost >= CANVAS_WIDTH - 10 && alienDirection > 0) {
+                    alienDirection = -1;
+                    moveDown = true;
+                } else if (leftmost <= 10 && alienDirection < 0) {
+                    alienDirection = 1;
+                    moveDown = true;
+                }
+                
+                // Move aliens
+                aliens.forEach(alien => {
+                    if (alien.alive) {
+                        alien.x += alienSpeed * alienDirection;
+                        
+                        if (moveDown) {
+                            alien.y += ALIEN_DROP_DISTANCE;
+                            
+                            // Check if aliens reached the bottom
+                            if (alien.y + alien.height >= player.y) {
+                                endGame();
+                            }
+                        }
+                        
+                        // Random chance for alien to fire
+                        if (Math.random() < ALIEN_FIRE_RATE) {
+                            // Only allow bottom-most aliens in each column to fire
+                            const column = Math.round((alien.x - ALIEN_HORIZONTAL_PADDING) / (ALIEN_WIDTH + ALIEN_HORIZONTAL_SPACING));
+                            const isBottomMost = !aliens.some(a => 
+                                a.alive && 
+                                Math.round((a.x - ALIEN_HORIZONTAL_PADDING) / (ALIEN_WIDTH + ALIEN_HORIZONTAL_SPACING)) === column && 
+                                a.y > alien.y
+                            );
+                            
+                            if (isBottomMost) {
+                                alienBullets.push({
+                                    x: alien.x + alien.width / 2 - BULLET_WIDTH / 2,
+                                    y: alien.y + alien.height,
+                                    width: BULLET_WIDTH,
+                                    height: BULLET_HEIGHT
+                                });
+                            }
+                        }
+                    }
+                });
+                
+                // Update alien bullets
+                for (let i = alienBullets.length - 1; i >= 0; i--) {
+                    const bullet = alienBullets[i];
+                    bullet.y += BULLET_SPEED;
+                    
+                    // Check if bullet is off screen
+                    if (bullet.y > CANVAS_HEIGHT) {
+                        alienBullets.splice(i, 1);
+                        continue;
+                    }
+                    
+                    // Check collision with player
+                    if (checkCollision(bullet, player)) {
+                        alienBullets.splice(i, 1);
+                        lives--;
+                        document.getElementById('lives').textContent = lives;
+                        
+                        if (lives <= 0) {
+                            endGame();
+                        }
+                        continue;
+                    }
+                    
+                    // In multiplayer, check collision with other player too
+                    if (isMultiplayer && otherPlayer && checkCollision(bullet, otherPlayer)) {
+                        alienBullets.splice(i, 1);
+                        // In a real implementation, you'd sync this with the other player
+                        continue;
+                    }
+                    
+                    // Check collision with shield segments
+                    let shieldHit = false;
+                    for (const shield of shields) {
+                        for (let j = 0; j < shield.segments.length; j++) {
+                            const segment = shield.segments[j];
+                            if (segment.health > 0 && checkCollision(bullet, segment)) {
+                                segment.health--;
+                                alienBullets.splice(i, 1);
+                                shieldHit = true;
+                                break;
+                            }
+                        }
+                        if (shieldHit) break;
+                    }
+                }
+            }
+            
+            // Sync multiplayer state
+            if (isMultiplayer && connection && connection.open) {
+                const now = Date.now();
+                
+                // Send player position and bullets regularly
+                if (now - lastSyncTime > 50) { // 50ms sync interval
+                    lastSyncTime = now;
+                    
+                    const playerData = {
+                        type: 'playerUpdate',
+                        x: player.x,
+                        bullets: playerBullets.map(b => ({ x: b.x, y: b.y }))
+                    };
+                    
+                    console.log('Sending player data:', playerData);
+                    connection.send(playerData);
+                    
+                    // If host, also send game state
+                    if (isHost) {
+                        const gameData = {
+                            type: 'gameState',
+                            aliens: aliens.map(a => ({ x: a.x, y: a.y, alive: a.alive })),
+                            alienBullets: alienBullets.map(b => ({ x: b.x, y: b.y })),
+                            score: score
+                        };
+                        
+                        connection.send(gameData);
+                    }
+                }
+                
+                // Check for timeout (disconnection)
+                if (now - lastReceivedTime > RECONNECT_TIMEOUT) {
+                    handleDisconnect();
+                }
+            }
+            
+            // Update connection status indicator
+            if (isMultiplayer) {
+                const statusEl = document.getElementById('connection-status');
+                statusEl.style.display = 'block';
+                if (connection && connection.open) {
+                    const latency = Date.now() - lastSyncTime;
+                    statusEl.textContent = `Connected (${latency}ms)`;
+                    statusEl.style.color = latency < 100 ? '#33ff33' : latency < 200 ? '#ffff33' : '#ff3333';
+                } else {
+                    statusEl.textContent = 'Disconnected';
+                    statusEl.style.color = '#ff3333';
+                }
+            }
+        }
+        
+        // Render game
+        function render() {
+            // Clear canvas
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            
+            // Draw player
+            ctx.fillStyle = '#33ff33';
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+            
+            // Draw player cannon
+            ctx.fillRect(player.x + player.width / 2 - 2, player.y - 10, 4, 10);
+            
+            // Draw other player in multiplayer
+            if (isMultiplayer && otherPlayer) {
+                ctx.fillStyle = '#3399ff'; // Different color to distinguish from main player
+                ctx.fillRect(otherPlayer.x, otherPlayer.y, otherPlayer.width, otherPlayer.height);
+                ctx.fillRect(otherPlayer.x + otherPlayer.width / 2 - 2, otherPlayer.y - 10, 4, 10);
+                
+                // Draw other player bullets
+                ctx.fillStyle = '#99ccff';
+                otherPlayer.bullets.forEach(bullet => {
+                    ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+                });
+            }
+            
+            // Draw player bullets
+            ctx.fillStyle = '#fff';
+            playerBullets.forEach(bullet => {
+                ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+            });
+            
+            // Draw aliens
+            aliens.forEach(alien => {
+                if (alien.alive) {
+                    // Different colors for different alien types
+                    switch(alien.type) {
+                        case 0: ctx.fillStyle = '#ff5555'; break; // Top row (red)
+                        case 1:
+                        case 2: ctx.fillStyle = '#55ff55'; break; // Middle rows (green)
+                        default: ctx.fillStyle = '#5555ff'; break; // Bottom rows (blue)
+                    }
+                    
+                    // Draw alien body
+                    ctx.fillRect(alien.x, alien.y, alien.width, alien.height);
+                    
+                    // Draw alien features (eyes and mouth)
+                    ctx.fillStyle = '#000';
+                    // Eyes
+                    ctx.fillRect(alien.x + 8, alien.y + 8, 6, 6);
+                    ctx.fillRect(alien.x + alien.width - 14, alien.y + 8, 6, 6);
+                    // Mouth
+                    ctx.fillRect(alien.x + 10, alien.y + 20, alien.width - 20, 4);
+                }
+            });
+            
+            // Draw alien bullets
+            ctx.fillStyle = '#ff5555';
+            alienBullets.forEach(bullet => {
+                ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+            });
+            
+            // Draw shields
+            shields.forEach(shield => {
+                shield.segments.forEach(segment => {
+                    if (segment.health > 0) {
+                        // Color based on health
+                        switch(segment.health) {
+                            case 3: ctx.fillStyle = '#33ff33'; break; // Full health (green)
+                            case 2: ctx.fillStyle = '#ffff33'; break; // Medium health (yellow)
+                            case 1: ctx.fillStyle = '#ff3333'; break; // Low health (red)
+                        }
+                        ctx.fillRect(segment.x, segment.y, segment.width, segment.height);
+                    }
+                });
+            });
+            
+            // Draw paused indicator if game is paused
+            if (paused) {
+                document.getElementById('paused').style.display = 'block';
+            } else {
+                document.getElementById('paused').style.display = 'none';
+            }
+        }
+        
+        // Check collision between two objects
+        function checkCollision(obj1, obj2) {
+            return obj1.x < obj2.x + obj2.width &&
+                   obj1.x + obj1.width > obj2.x &&
+                   obj1.y < obj2.y + obj2.height &&
+                   obj1.y + obj1.height > obj2.y;
+        }
+        
+        // End the game
+        function endGame() {
+            gameActive = false;
+            gameOver = true;
+            
+            document.getElementById('final-score').textContent = `Score: ${score}`;
+            document.getElementById('game-over-screen').style.display = 'flex';
+        }
+        
+        // Multiplayer functions
+        function createGame() {
+            // Generate a random game code
+            gameCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+            isHost = true;
+            
+            document.getElementById('game-code').textContent = gameCode;
+            document.getElementById('game-code-display').style.display = 'block';
+            document.getElementById('host-area').querySelector('button').style.display = 'none';
+            document.getElementById('join-area').style.display = 'none';
+            
+            // Initialize PeerJS as host
+            initializePeerJS(true);
+        }
+        
+        function joinGame() {
+            const code = document.getElementById('join-code').value.trim().toUpperCase();
+            if (code.length < 4) {
+                alert('Please enter a valid game code');
+                return;
+            }
+            
+            gameCode = code;
+            isHost = false;
+            
+            document.getElementById('mp-status').textContent = 'Connecting to game...';
+            document.getElementById('host-area').style.display = 'none';
+            document.getElementById('join-area').style.display = 'none';
+            
+            // Initialize PeerJS as client
+            initializePeerJS(false);
+        }
+        
+        function initializePeerJS(isInitiator) {
+            document.getElementById('mp-status').textContent = 'Setting up connection...';
+            
+            // Create Peer
+            peer = new Peer(isInitiator ? gameCode : null, {
+                debug: 2,
+                config: {
+                    'iceServers': [
+                        { urls: 'stun:stun.l.google.com:19302' },
+                        { urls: 'stun:stun1.l.google.com:19302' }
+                    ]
+                }
+            });
+            
+            peer.on('open', (id) => {
+                document.getElementById('mp-status').textContent = `Peer connection established. Your ID: ${id}`;
+                
+                if (!isInitiator) {
+                    // Client connects to host
+                    connectToPeer(gameCode);
+                }
+            });
+            
+            peer.on('connection', (conn) => {
+                // Host receives connection from client
+                connection = conn;
+                setupConnection();
+            });
+            
+            peer.on('error', (err) => {
+                console.error('Peer error:', err);
+                document.getElementById('mp-status').textContent = `Connection error: ${err.type}`;
+                
+                if (err.type === 'peer-unavailable') {
+                    document.getElementById('mp-status').textContent = 'Game not found. Check the code and try again.';
+                    // Reset UI for retry
+                    document.getElementById('host-area').style.display = 'block';
+                    document.getElementById('join-area').style.display = 'block';
+                }
+            });
+        }
+        
+        function connectToPeer(peerId) {
+            document.getElementById('mp-status').textContent = `Connecting to game ${peerId}...`;
+            
+            connection = peer.connect(peerId, {
+                reliable: true
+            });
+            
+            setupConnection();
+        }
+        
+        function setupConnection() {
+            if (!connection) return;
+            
+            connection.on('open', () => {
+                document.getElementById('mp-status').textContent = 'Connected! Waiting for both players to be ready.';
+                document.getElementById('ready-area').style.display = 'block';
+                lastReceivedTime = Date.now();
+            });
+            
+            connection.on('data', (data) => {
+                handleConnectionData(data);
+            });
+            
+            connection.on('close', () => {
+                document.getElementById('mp-status').textContent = 'Connection closed.';
+                handleDisconnect();
+            });
+            
+            connection.on('error', (err) => {
+                console.error('Connection error:', err);
+                document.getElementById('mp-status').textContent = `Connection error: ${err}`;
+                handleDisconnect();
+            });
+        }
+        
+        function handleConnectionData(data) {
+            try {
+                console.log('Received data:', data);
+                lastReceivedTime = Date.now();
+                
+                switch (data.type) {
+                    case 'playerReady':
+                        playersReady[data.player] = true;
+                        document.getElementById('mp-status').textContent = `${data.player === 'host' ? 'Host' : 'Player'} is ready!`;
+                        
+                        // Check if both players are ready
+                        if (playersReady.host && playersReady.client) {
+                            document.getElementById('mp-status').textContent = 'Both players ready! Starting game...';
+                            setTimeout(() => {
+                                init(true);
+                            }, 1000);
+                        }
+                        break;
+                        
+                    case 'playerUpdate':
+                        if (otherPlayer) {
+                            otherPlayer.x = data.x;
+                            otherPlayer.bullets = data.bullets.map(b => ({
+                                x: b.x,
+                                y: b.y,
+                                width: BULLET_WIDTH,
+                                height: BULLET_HEIGHT
+                            }));
+                        }
+                        break;
+                        
+                    case 'gameState':
+                        if (!isHost) {
+                            // Update aliens
+                            data.aliens.forEach((a, i) => {
+                                if (i < aliens.length) {
+                                    aliens[i].x = a.x;
+                                    aliens[i].y = a.y;
+                                    aliens[i].alive = a.alive;
+                                }
+                            });
+                            
+                            // Update alien bullets
+                            alienBullets = data.alienBullets.map(b => ({
+                                x: b.x,
+                                y: b.y,
+                                width: BULLET_WIDTH,
+                                height: BULLET_HEIGHT
+                            }));
+                            
+                            // Update score
+                            score = data.score;
+                            document.getElementById('score').textContent = score;
+                        }
+                        break;
+                }
+            } catch (error) {
+                console.error('Error handling data:', error);
+            }
+        }
+        
+        function playerReady() {
+            if (connection && connection.open) {
+                const playerType = isHost ? 'host' : 'client';
+                playersReady[playerType] = true;
+                
+                connection.send({
+                    type: 'playerReady',
+                    player: playerType
+                });
+                
+                document.getElementById('ready-btn').disabled = true;
+                document.getElementById('ready-btn').textContent = 'READY ✓';
+                document.getElementById('mp-status').textContent = 'You are ready! Waiting for other player...';
+            }
+        }
+        
+        function handleDisconnect() {
+            if (connection) {
+                connection.close();
+                connection = null;
+            }
+            
+            if (peer) {
+                peer.destroy();
+                peer = null;
+            }
+            
+            if (gameActive) {
+                gameActive = false;
+                document.getElementById('mp-status').textContent = 'Disconnected from game.';
+                document.getElementById('multiplayer-ui').style.display = 'flex';
+                document.getElementById('ready-area').style.display = 'none';
+                document.getElementById('host-area').style.display = 'block';
+                document.getElementById('join-area').style.display = 'block';
+                document.getElementById('host-area').querySelector('button').style.display = 'block';
+                document.getElementById('game-code-display').style.display = 'none';
+                
+                // Reset multiplayer state
+                isMultiplayer = false;
+                isHost = false;
+                gameCode = '';
+                otherPlayer = null;
+                playersReady = { host: false, client: false };
+            }
+        }
+        
+        // Event listeners
+        document.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            
+            // Shoot with spacebar
+            if (e.key === ' ' && gameActive && !paused) {
+                // Only allow shooting if we haven't reached the maximum number of bullets
+                if (playerBullets.length < MAX_PLAYER_BULLETS) {
+                    playerBullets.push({
+                        x: player.x + player.width / 2 - BULLET_WIDTH / 2,
+                        y: player.y - BULLET_HEIGHT,
+                        width: BULLET_WIDTH,
+                        height: BULLET_HEIGHT
+                    });
+                }
+            }
+            
+            // Pause game with P
+            if (e.key === 'p' || e.key === 'P') {
+                if (gameActive && !gameOver) {
+                    paused = !paused;
+                }
+            }
+            
+            // Prevent default for game keys
+            if (['ArrowLeft', 'ArrowRight', ' ', 'a', 'A', 'd', 'D', 'p', 'P'].includes(e.key)) {
+                e.preventDefault();
+            }
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+        
+        // Multiplayer buttons
+        document.getElementById('show-multiplayer-btn').addEventListener('click', function() {
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('multiplayer-ui').style.display = 'block';
+        });
+        
+        document.getElementById('create-game-btn').addEventListener('click', createGame);
+        document.getElementById('join-game-btn').addEventListener('click', joinGame);
+        document.getElementById('ready-btn').addEventListener('click', playerReady);
+        
+        document.getElementById('back-to-menu').addEventListener('click', function() {
+            window.location.href = '../index.html';
+        });
+
+        document.getElementById('restart-button').addEventListener('click', () => init(isMultiplayer));
+    </script>
+</body>
+</html> 
