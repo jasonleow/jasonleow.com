@@ -197,9 +197,8 @@
                     <h2>CREATE GAME</h2>
                     <button id="create-game-btn" class="mp-button">CREATE GAME</button>
                     <div id="game-code-display" style="display: none;">
-                        <p>Share this code with your friend:</p>
-                        <h3 id="game-code"></h3>
-                        <p id="waiting-message">Waiting for player to join...</p>
+                        <p>Your game code: <span id="game-code"></span></p>
+                        <p id="waiting-message">Generating connection data...</p>
                     </div>
                 </div>
                 <div id="join-area">
@@ -213,6 +212,9 @@
                 <button id="ready-btn" class="mp-button">READY</button>
             </div>
             <button id="back-to-menu" class="mp-button" style="margin-top: 20px;">BACK TO MENU</button>
+            <div class="privacy-notice" style="font-size: 12px; color: #999; margin-top: 20px;">
+                <p>Note: When playing multiplayer, your IP address may be shared with the other player.</p>
+            </div>
         </div>
         
         <div id="game-over-screen">
@@ -288,7 +290,7 @@
         let lastReceivedTime = 0;
         
         // WebRTC configuration
-        const ICE_CONFIGURATION = {
+        const peerConnectionConfig = {
             iceServers: [
                 { urls: 'stun:stun.l.google.com:19302' },
                 { urls: 'stun:stun1.l.google.com:19302' }
@@ -805,12 +807,14 @@
         
         // Multiplayer functions
         function createGame() {
-            // Generate a random game code
+            // Generate a random game code (still useful as a session identifier)
             gameCode = Math.random().toString(36).substring(2, 8).toUpperCase();
             isHost = true;
             
+            // Update UI to reflect the new connection process
             document.getElementById('game-code').textContent = gameCode;
             document.getElementById('game-code-display').style.display = 'block';
+            document.getElementById('waiting-message').textContent = 'Generating connection data...';
             document.getElementById('host-area').querySelector('button').style.display = 'none';
             document.getElementById('join-area').style.display = 'none';
             
@@ -820,8 +824,8 @@
         
         function joinGame() {
             const code = document.getElementById('join-code').value.trim().toUpperCase();
-            if (code.length < 4) {
-                alert('Please enter a valid game code');
+            if (!/^[A-Z0-9]{4,8}$/.test(code)) {
+                alert('Please enter a valid game code (4-8 alphanumeric characters)');
                 return;
             }
             
@@ -870,7 +874,7 @@
             
             try {
                 // Create RTCPeerConnection
-                peerConnection = new RTCPeerConnection(ICE_CONFIGURATION);
+                peerConnection = new RTCPeerConnection(peerConnectionConfig);
                 
                 // Set up ICE candidate handling
                 peerConnection.onicecandidate = event => {
@@ -1026,7 +1030,18 @@
             
             dataChannel.onmessage = event => {
                 try {
+                    // Validate that the data is a string and not too large
+                    if (typeof event.data !== 'string' || event.data.length > 10000) {
+                        throw new Error('Invalid data format');
+                    }
+                    
                     const data = JSON.parse(event.data);
+                    
+                    // Validate data structure
+                    if (!data || typeof data !== 'object' || !data.type) {
+                        throw new Error('Invalid data structure');
+                    }
+                    
                     debugLog('Received data:', data);
                     lastReceivedTime = Date.now();
                     
@@ -1064,59 +1079,71 @@
         
         function handleConnectionData(data) {
             try {
-                console.log('Received data:', data);
-                lastReceivedTime = Date.now();
-                
-                switch (data.type) {
-                    case 'playerReady':
-                        playersReady[data.player] = true;
-                        document.getElementById('mp-status').textContent = `${data.player === 'host' ? 'Host' : 'Player'} is ready!`;
-                        
-                        // Check if both players are ready
-                        if (playersReady.host && playersReady.client) {
-                            document.getElementById('mp-status').textContent = 'Both players ready! Starting game...';
-                            setTimeout(() => {
-                                init(true);
-                            }, 1000);
+                // Validate data based on type
+                if (data.type === 'playerReady') {
+                    // Validate player type
+                    if (data.player !== 'host' && data.player !== 'client') {
+                        return; // Invalid player type
+                    }
+                    
+                    playersReady[data.player] = true;
+                    document.getElementById('mp-status').textContent = `${data.player === 'host' ? 'Host' : 'Player'} is ready!`;
+                    
+                    // Check if both players are ready
+                    if (playersReady.host && playersReady.client) {
+                        document.getElementById('mp-status').textContent = 'Both players ready! Starting game...';
+                        setTimeout(() => {
+                            init(true);
+                        }, 1000);
+                    }
+                } 
+                else if (data.type === 'playerUpdate') {
+                    // Position validation already done in the calling function
+                    if (otherPlayer) {
+                        otherPlayer.x = data.x;
+                        otherPlayer.bullets = data.bullets.map(b => ({
+                            x: b.x,
+                            y: b.y,
+                            width: BULLET_WIDTH,
+                            height: BULLET_HEIGHT
+                        }));
+                    }
+                } 
+                else if (data.type === 'gameState') {
+                    if (!isHost) {
+                        // Validate aliens array
+                        if (!Array.isArray(data.aliens) || data.aliens.length !== ALIEN_ROWS * ALIEN_COLS) {
+                            return; // Invalid aliens data
                         }
-                        break;
                         
-                    case 'playerUpdate':
-                        if (otherPlayer) {
-                            otherPlayer.x = data.x;
-                            otherPlayer.bullets = data.bullets.map(b => ({
-                                x: b.x,
-                                y: b.y,
-                                width: BULLET_WIDTH,
-                                height: BULLET_HEIGHT
-                            }));
+                        // Validate alien bullets
+                        if (!Array.isArray(data.alienBullets)) {
+                            return; // Invalid alien bullets data
                         }
-                        break;
                         
-                    case 'gameState':
-                        if (!isHost) {
-                            // Update aliens
-                            data.aliens.forEach((a, i) => {
-                                if (i < aliens.length) {
-                                    aliens[i].x = a.x;
-                                    aliens[i].y = a.y;
-                                    aliens[i].alive = a.alive;
-                                }
-                            });
-                            
-                            // Update alien bullets
-                            alienBullets = data.alienBullets.map(b => ({
-                                x: b.x,
-                                y: b.y,
-                                width: BULLET_WIDTH,
-                                height: BULLET_HEIGHT
-                            }));
-                            
-                            // Update score
+                        // Update aliens
+                        data.aliens.forEach((a, i) => {
+                            if (i < aliens.length) {
+                                aliens[i].x = a.x;
+                                aliens[i].y = a.y;
+                                aliens[i].alive = a.alive;
+                            }
+                        });
+                        
+                        // Update alien bullets
+                        alienBullets = data.alienBullets.map(b => ({
+                            x: b.x,
+                            y: b.y,
+                            width: BULLET_WIDTH,
+                            height: BULLET_HEIGHT
+                        }));
+                        
+                        // Update score
+                        if (typeof data.score === 'number') {
                             score = data.score;
                             document.getElementById('score').textContent = score;
                         }
-                        break;
+                    }
                 }
             } catch (error) {
                 console.error('Error handling data:', error);
