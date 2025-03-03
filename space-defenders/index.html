@@ -271,7 +271,7 @@
         // Get script URL from Netlify environment
         async function getScriptUrl() {
             try {
-                const response = await fetch('/api/get-script-url', {
+                const response = await fetch('/get-script-url', {
                     method: 'POST',
                 });
                 
