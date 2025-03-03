@@ -23,3 +23,7 @@
 [[edge_functions]]
   path = "/github-data"
   function = "github-data"
+
+[[edge_functions]]
+  path = "/google-sheet"
+  function = "google-sheet" 
