@@ -161,9 +161,54 @@
         </div>
         
         <div id="game-over-screen">
-            <h1>GAME OVER</h1>
-            <div id="final-score">Score: 0</div>
-            <button id="restart-button">PLAY AGAIN</button>
+            <h1 style="margin: 10px 0;">GAME OVER</h1>
+            <div style="display: flex; align-items: center; gap: 20px; margin: 10px 0;">
+                <div id="final-score">Score: 0</div>
+                <div id="high-score-input">
+                    <input type="text" id="player-name" placeholder="Enter your name" 
+                           style="padding: 8px; font-family: 'Courier New', Courier, monospace; margin-right: 10px;">
+                    <button id="save-score-button">SAVE SCORE</button>
+                </div>
+            </div>
+            <div id="leaderboard" style="margin: 10px 0; width: 100%; max-width: 400px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                    <h2 style="color: #33ff33; font-size: 20px; margin: 0;">TOP 10</h2>
+                    <button id="view-all-scores" style="margin: 0; padding: 5px 10px; font-size: 14px;">SEE ALL SCORES</button>
+                </div>
+                <table id="score-table" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th style="color: #33ff33; padding: 4px 8px; text-align: left; font-size: 14px;">Rank</th>
+                            <th style="color: #33ff33; padding: 4px 8px; text-align: left; font-size: 14px;">Player</th>
+                            <th style="color: #33ff33; padding: 4px 8px; text-align: right; font-size: 14px;">Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="score-list"></tbody>
+                </table>
+            </div>
+            <button id="restart-button" style="margin: 10px 0;">PLAY AGAIN</button>
+        </div>
+        
+        <!-- Add modal for all scores -->
+        <div id="all-scores-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background-color: rgba(0, 0, 0, 0.9); z-index: 100; overflow-y: auto;">
+            <div style="max-width: 600px; margin: 40px auto; padding: 20px; background-color: #000; border: 2px solid #33ff33; box-shadow: 0 0 10px #33ff33;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="color: #33ff33; font-size: 24px; margin: 0;">ALL HIGH SCORES</h2>
+                    <button id="close-modal" style="margin: 0;">CLOSE</button>
+                </div>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th style="color: #33ff33; padding: 8px; text-align: left;">Rank</th>
+                            <th style="color: #33ff33; padding: 8px; text-align: left;">Player</th>
+                            <th style="color: #33ff33; padding: 8px; text-align: right;">Score</th>
+                            <th style="color: #33ff33; padding: 8px; text-align: right;">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="all-scores-list"></tbody>
+                </table>
+            </div>
         </div>
         
         <div class="score-display">Score: <span id="score">0</span></div>
@@ -222,6 +267,86 @@
         let alienMoveDownTimer = 0;
         let lastTime = 0;
         let keys = {};
+        
+        // Add these functions before the init() function
+        function sendRequest(url, method, data) {
+            return new Promise((resolve, reject) => {
+                fetch('/google-sheet', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.text())
+                .then(resolve)
+                .catch(reject);
+            });
+        }
+
+        function saveHighScore() {
+            const playerName = document.getElementById('player-name').value.trim();
+            if (!playerName) {
+                alert('Please enter your name!');
+                return;
+            }
+
+            document.getElementById('save-score-button').disabled = true;
+            
+            sendRequest(SCRIPT_URL, "POST", {
+                action: "create",
+                playerName: playerName,
+                highScore: score
+            })
+            .then(response => {
+                document.getElementById('save-score-button').style.display = 'none';
+                document.getElementById('player-name').style.display = 'none';
+                loadHighScores();
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                document.getElementById('save-score-button').disabled = false;
+            });
+        }
+
+        function loadHighScores() {
+            sendRequest(SCRIPT_URL, "GET", { action: "read" })
+                .then(response => {
+                    const items = JSON.parse(response);
+                    items.sort((a, b) => b[3] - a[3]); // Sort by score descending
+
+                    // Update top 10 list
+                    const scoreList = document.getElementById('score-list');
+                    scoreList.innerHTML = '';
+
+                    items.slice(0, 10).forEach((item, index) => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td style="color: #fff; padding: 4px 8px; font-size: 14px;">#${index + 1}</td>
+                            <td style="color: #fff; padding: 4px 8px; font-size: 14px;">${item[2]}</td>
+                            <td style="color: #fff; padding: 4px 8px; text-align: right; font-size: 14px;">${item[3]}</td>
+                        `;
+                        scoreList.appendChild(row);
+                    });
+
+                    // Update all scores list
+                    const allScoresList = document.getElementById('all-scores-list');
+                    allScoresList.innerHTML = '';
+
+                    items.forEach((item, index) => {
+                        const row = document.createElement('tr');
+                        const date = new Date(item[1]).toLocaleDateString();
+                        row.innerHTML = `
+                            <td style="color: #fff; padding: 8px;">#${index + 1}</td>
+                            <td style="color: #fff; padding: 8px;">${item[2]}</td>
+                            <td style="color: #fff; padding: 8px; text-align: right;">${item[3]}</td>
+                            <td style="color: #fff; padding: 8px; text-align: right;">${date}</td>
+                        `;
+                        allScoresList.appendChild(row);
+                    });
+                })
+                .catch(error => console.error("Error:", error));
+        }
         
         // Initialize the game
         function init() {
@@ -600,35 +725,50 @@
             
             document.getElementById('final-score').textContent = `Score: ${score}`;
             document.getElementById('game-over-screen').style.display = 'flex';
+            
+            // Reset high score input
+            document.getElementById('player-name').value = '';
+            document.getElementById('player-name').style.display = '';
+            document.getElementById('save-score-button').style.display = '';
+            document.getElementById('save-score-button').disabled = false;
+            
+            // Load high scores
+            loadHighScores();
         }
         
         // Event listeners
         document.addEventListener('keydown', (e) => {
-            keys[e.key] = true;
+            // Check if we're typing in the input field
+            const isTyping = document.activeElement.tagName === 'INPUT';
             
-            // Shoot with spacebar
-            if (e.key === ' ' && gameActive && !paused) {
-                // Only allow shooting if we haven't reached the maximum number of bullets
-                if (playerBullets.length < MAX_PLAYER_BULLETS) {
-                    playerBullets.push({
-                        x: player.x + player.width / 2 - BULLET_WIDTH / 2,
-                        y: player.y - BULLET_HEIGHT,
-                        width: BULLET_WIDTH,
-                        height: BULLET_HEIGHT
-                    });
+            // Only handle game controls if not typing
+            if (!isTyping) {
+                keys[e.key] = true;
+                
+                // Shoot with spacebar
+                if (e.key === ' ' && gameActive && !paused) {
+                    // Only allow shooting if we haven't reached the maximum number of bullets
+                    if (playerBullets.length < MAX_PLAYER_BULLETS) {
+                        playerBullets.push({
+                            x: player.x + player.width / 2 - BULLET_WIDTH / 2,
+                            y: player.y - BULLET_HEIGHT,
+                            width: BULLET_WIDTH,
+                            height: BULLET_HEIGHT
+                        });
+                    }
                 }
-            }
-            
-            // Pause game with P
-            if (e.key === 'p' || e.key === 'P') {
-                if (gameActive && !gameOver) {
-                    paused = !paused;
+                
+                // Pause game with P
+                if (e.key === 'p' || e.key === 'P') {
+                    if (gameActive && !gameOver) {
+                        paused = !paused;
+                    }
                 }
-            }
-            
-            // Prevent default for game keys
-            if (['ArrowLeft', 'ArrowRight', ' ', 'a', 'A', 'd', 'D', 'p', 'P'].includes(e.key)) {
-                e.preventDefault();
+                
+                // Prevent default for game keys only when not typing
+                if (['ArrowLeft', 'ArrowRight', ' ', 'a', 'A', 'd', 'D', 'p', 'P'].includes(e.key)) {
+                    e.preventDefault();
+                }
             }
         });
         
@@ -639,6 +779,36 @@
         // Start and restart buttons
         document.getElementById('start-button').addEventListener('click', init);
         document.getElementById('restart-button').addEventListener('click', init);
+        
+        // Add event listener for save score button after other event listeners
+        document.getElementById('save-score-button').addEventListener('click', saveHighScore);
+
+        // Add modal control functions
+        function showAllScores() {
+            document.getElementById('all-scores-modal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('all-scores-modal').style.display = 'none';
+        }
+
+        // Add event listeners for modal controls
+        document.getElementById('view-all-scores').addEventListener('click', showAllScores);
+        document.getElementById('close-modal').addEventListener('click', closeModal);
+
+        // Close modal when clicking outside
+        document.getElementById('all-scores-modal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('all-scores-modal')) {
+                closeModal();
+            }
+        });
+
+        // Add ESC key handler for modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('all-scores-modal').style.display === 'block') {
+                closeModal();
+            }
+        });
     </script>
 </body>
 </html> 
