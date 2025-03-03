@@ -25,5 +25,5 @@
   function = "github-data"
 
 [[edge_functions]]
-  path = "/google-sheet"
-  function = "google-sheet" 
+  path = "/get-script-url"
+  function = "get-script-url"
