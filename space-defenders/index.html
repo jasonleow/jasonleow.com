@@ -252,6 +252,9 @@
         const SHIELD_SEGMENTS = 12;
         const SHIELD_SEGMENT_SIZE = 10;
         
+        // Add these constants at the top with other game constants
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzr_GiEfUf_I5_djHw2KsQwUmSU0SIWuxE58AutLKs7oXS5qdC5prhjCsZXGU80w-q-Cg/exec";
+        
         // Game variables
         let canvas, ctx;
         let player, playerBullets = [];
@@ -271,27 +274,12 @@
         // Add these functions before the init() function
         function sendRequest(url, method, data) {
             return new Promise((resolve, reject) => {
-                fetch('/google-sheet', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                })
-                .then(async response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    const text = await response.text();
-                    try {
-                        return JSON.parse(text); // Try to parse as JSON
-                    } catch (e) {
-                        console.error('Failed to parse response as JSON:', text);
-                        throw new Error('Invalid JSON response from server');
-                    }
-                })
-                .then(resolve)
-                .catch(reject);
+                const xhr = new XMLHttpRequest();
+                xhr.open(method, url + (method === "GET" ? "?" + new URLSearchParams(data).toString() : ""));
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhr.onload = () => xhr.status === 200 ? resolve(xhr.response) : reject(xhr.statusText);
+                xhr.onerror = () => reject(xhr.statusText);
+                xhr.send(method === "POST" ? new URLSearchParams(data).toString() : null);
             });
         }
 
@@ -304,7 +292,7 @@
 
             document.getElementById('save-score-button').disabled = true;
             
-            sendRequest('/google-sheet', 'POST', {
+            sendRequest(SCRIPT_URL, "POST", {
                 action: "create",
                 playerName: playerName,
                 highScore: score
@@ -321,13 +309,9 @@
         }
 
         function loadHighScores() {
-            sendRequest('/google-sheet', 'POST', { action: "read" })
-                .then(items => {
-                    if (!Array.isArray(items)) {
-                        console.error('Unexpected response format:', items);
-                        return;
-                    }
-
+            sendRequest(SCRIPT_URL, "GET", { action: "read" })
+                .then(response => {
+                    const items = JSON.parse(response);
                     items.sort((a, b) => b[3] - a[3]); // Sort by score descending
 
                     // Update top 10 list
@@ -360,10 +344,7 @@
                         allScoresList.appendChild(row);
                     });
                 })
-                .catch(error => {
-                    console.error("Error loading high scores:", error);
-                    // Optionally show an error message to the user
-                });
+                .catch(error => console.error("Error:", error));
         }
         
         // Initialize the game
