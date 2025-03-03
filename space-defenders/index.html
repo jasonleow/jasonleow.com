@@ -278,7 +278,18 @@
                     },
                     body: JSON.stringify(data)
                 })
-                .then(response => response.text())
+                .then(async response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const text = await response.text();
+                    try {
+                        return JSON.parse(text); // Try to parse as JSON
+                    } catch (e) {
+                        console.error('Failed to parse response as JSON:', text);
+                        throw new Error('Invalid JSON response from server');
+                    }
+                })
                 .then(resolve)
                 .catch(reject);
             });
@@ -311,8 +322,12 @@
 
         function loadHighScores() {
             sendRequest('/google-sheet', 'POST', { action: "read" })
-                .then(response => {
-                    const items = JSON.parse(response);
+                .then(items => {
+                    if (!Array.isArray(items)) {
+                        console.error('Unexpected response format:', items);
+                        return;
+                    }
+
                     items.sort((a, b) => b[3] - a[3]); // Sort by score descending
 
                     // Update top 10 list
@@ -345,7 +360,10 @@
                         allScoresList.appendChild(row);
                     });
                 })
-                .catch(error => console.error("Error:", error));
+                .catch(error => {
+                    console.error("Error loading high scores:", error);
+                    // Optionally show an error message to the user
+                });
         }
         
         // Initialize the game
