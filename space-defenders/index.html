@@ -293,7 +293,7 @@
 
             document.getElementById('save-score-button').disabled = true;
             
-            sendRequest(SCRIPT_URL, "POST", {
+            sendRequest('/google-sheet', 'POST', {
                 action: "create",
                 playerName: playerName,
                 highScore: score
@@ -310,7 +310,7 @@
         }
 
         function loadHighScores() {
-            sendRequest(SCRIPT_URL, "GET", { action: "read" })
+            sendRequest('/google-sheet', 'POST', { action: "read" })
                 .then(response => {
                     const items = JSON.parse(response);
                     items.sort((a, b) => b[3] - a[3]); // Sort by score descending
