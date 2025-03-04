@@ -1,3 +1,10 @@
+// Add score verification
+function verifyScoreChecksum(score, checksum) {
+    const gameSecret = 'space-defenders-v1';
+    const expectedChecksum = btoa(`${score}-${gameSecret}`);
+    return checksum === expectedChecksum;
+}
+
 export default async function handler(request) {
   // Only allow POST requests
   if (request.method !== 'POST') {
@@ -26,6 +33,25 @@ export default async function handler(request) {
   try {
     // Get the request data
     const requestData = await request.text();
+    const params = new URLSearchParams(requestData);
+    
+    if (params.get('action') === 'create') {
+      const score = parseInt(params.get('highScore'));
+      const checksum = params.get('checksum');
+
+      // Verify the score hasn't been tampered with
+      if (!verifyScoreChecksum(score, checksum)) {
+        return new Response(JSON.stringify({ error: 'Invalid score detected' }), {
+          status: 400,
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST',
+          }
+        });
+      }
+    }
+
     console.log('Edge function received request data:', requestData);
 
     // Forward the request to Google Apps Script
