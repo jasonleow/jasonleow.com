@@ -26,6 +26,7 @@ export default async function handler(request) {
   try {
     // Get the request data
     const requestData = await request.text();
+    console.log('Edge function received request data:', requestData);
 
     // Forward the request to Google Apps Script
     const response = await fetch(scriptUrl, {
@@ -36,15 +37,21 @@ export default async function handler(request) {
       body: requestData,
     });
 
+    // Log response status and headers
+    console.log('Google Apps Script response status:', response.status);
+    
     if (!response.ok) {
       throw new Error(`Google Apps Script responded with status: ${response.status}`);
     }
 
     // Get response data and verify it's JSON
     const responseData = await response.text();
+    console.log('Google Apps Script raw response:', responseData);
+    
     try {
       JSON.parse(responseData); // Verify it's valid JSON
     } catch (e) {
+      console.error('JSON parse error:', e);
       throw new Error('Invalid JSON response from Google Apps Script');
     }
 
@@ -57,10 +64,15 @@ export default async function handler(request) {
       },
     });
   } catch (error) {
-    console.error('Edge function error:', error);
+    console.error('Edge function detailed error:', {
+      message: error.message,
+      stack: error.stack,
+    });
+    
     return new Response(JSON.stringify({ 
       error: 'Failed to process request',
-      details: error.message
+      details: error.message,
+      timestamp: new Date().toISOString()
     }), { 
       status: 500,
       headers: {
