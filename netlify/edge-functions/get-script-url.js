@@ -5,112 +5,129 @@ function verifyScoreChecksum(score, checksum) {
     return checksum === expectedChecksum;
 }
 
+// Add input validation functions
+function sanitizeName(name) {
+    if (typeof name !== 'string') return '';
+    return name
+        .trim()
+        .replace(/[^\w\s-]/g, '')  // Only allow alphanumeric, spaces, hyphens
+        .substring(0, 20);         // Max 20 chars
+}
+
+function validateScore(score) {
+    // Convert to number and validate
+    const numScore = parseInt(score);
+    
+    // Game scoring logic:
+    // - Each alien gives (ALIEN_ROWS - type) * 10 points
+    // - Each wave has 55 aliens (5 rows * 11 cols)
+    // - Players can complete multiple waves
+    // - Let's set a reasonable limit of 100 waves
+    // Max per wave: (50 + 40 + 30 + 20 + 10) * 11 = 1650 points
+    const MAX_POINTS_PER_WAVE = 1650;
+    const MAX_REASONABLE_WAVES = 100;
+    const MAX_POSSIBLE_SCORE = MAX_POINTS_PER_WAVE * MAX_REASONABLE_WAVES; // 165,000
+
+    return !isNaN(numScore) && 
+           numScore >= 0 && 
+           numScore <= MAX_POSSIBLE_SCORE && 
+           Number.isInteger(numScore);
+}
+
+// Add common headers used throughout responses
+const commonHeaders = {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST',
+};
+
+// Helper function for error responses
+function errorResponse(message, status = 400) {
+    return new Response(JSON.stringify({ error: message }), {
+        status,
+        headers: commonHeaders
+    });
+}
+
 export default async function handler(request) {
-  // Only allow POST requests
-  if (request.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-      status: 405,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST',
-      }
-    });
-  }
-
-  const scriptUrl = Deno.env.get('GOOGLE_SCRIPT_URL');
-  if (!scriptUrl) {
-    return new Response(JSON.stringify({ error: 'Script URL not configured' }), {
-      status: 500,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST',
-      }
-    });
-  }
-
-  try {
-    // Get the request data
-    const requestData = await request.text();
-    const params = new URLSearchParams(requestData);
-    
-    if (params.get('action') === 'create') {
-      const score = parseInt(params.get('highScore'));
-      const checksum = params.get('checksum');
-
-      // Verify the score hasn't been tampered with
-      if (!verifyScoreChecksum(score, checksum)) {
-        return new Response(JSON.stringify({ error: 'Invalid score detected' }), {
-          status: 400,
-          headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'POST',
-          }
-        });
-      }
+    // Only allow POST requests
+    if (request.method !== 'POST') {
+        return errorResponse('Method not allowed', 405);
     }
 
-    console.log('Edge function received request data:', requestData);
-
-    // Forward the request to Google Apps Script
-    const response = await fetch(scriptUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: requestData,
-    });
-
-    // Log response status and headers
-    console.log('Google Apps Script response status:', response.status);
-    
-    if (!response.ok) {
-      throw new Error(`Google Apps Script responded with status: ${response.status}`);
+    const scriptUrl = Deno.env.get('GOOGLE_SCRIPT_URL');
+    if (!scriptUrl) {
+        return errorResponse('Script URL not configured', 500);
     }
 
-    // Get response data and verify it's JSON
-    const responseData = await response.text();
-    console.log('Google Apps Script raw response:', responseData);
-    
     try {
-      JSON.parse(responseData); // Verify it's valid JSON
-    } catch (e) {
-      console.error('JSON parse error:', e);
-      throw new Error('Invalid JSON response from Google Apps Script');
-    }
+        const requestData = await request.text();
+        const params = new URLSearchParams(requestData);
+        
+        if (params.get('action') === 'create') {
+            const score = parseInt(params.get('highScore'));
+            const playerName = params.get('playerName');
+            const checksum = params.get('checksum');
 
-    // Return the response from Google Apps Script
-    return new Response(responseData, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST',
-      },
-    });
-  } catch (error) {
-    console.error('Edge function detailed error:', {
-      message: error.message,
-      stack: error.stack,
-    });
-    
-    return new Response(JSON.stringify({ 
-      error: 'Failed to process request',
-      details: error.message,
-      timestamp: new Date().toISOString()
-    }), { 
-      status: 500,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST',
-      }
-    });
-  }
+            // Validate all required fields
+            if (!playerName || !score || !checksum) {
+                return errorResponse('Missing required fields');
+            }
+
+            // Validate and sanitize player name
+            const sanitizedName = sanitizeName(playerName);
+            if (!sanitizedName) {
+                return errorResponse('Invalid player name');
+            }
+
+            // Validate score
+            if (!validateScore(score)) {
+                return errorResponse('Invalid score value');
+            }
+
+            // Verify checksum
+            if (!verifyScoreChecksum(score, checksum)) {
+                return errorResponse('Score verification failed');
+            }
+
+            // Create sanitized request
+            requestData = new URLSearchParams({
+                action: 'create',
+                playerName: sanitizedName,
+                highScore: score
+            }).toString();
+        }
+
+        // Forward the request to Google Apps Script
+        const response = await fetch(scriptUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: requestData,
+        });
+
+        if (!response.ok) {
+            throw new Error(`Google Apps Script responded with status: ${response.status}`);
+        }
+
+        const responseData = await response.text();
+        
+        try {
+            JSON.parse(responseData); // Verify it's valid JSON
+        } catch (e) {
+            throw new Error('Invalid JSON response from Google Apps Script');
+        }
+
+        return new Response(responseData, { headers: commonHeaders });
+        
+    } catch (error) {
+        console.error('Edge function error:', error);
+        return errorResponse(error.message, 500);
+    }
 }
 
 // Configure the function to handle specific paths
 export const config = {
-  path: "/get-script-url"
+    path: "/get-script-url"
 };
