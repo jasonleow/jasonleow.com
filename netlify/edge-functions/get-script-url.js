@@ -64,6 +64,9 @@ export default async function handler(request) {
         const requestData = await request.text();
         const params = new URLSearchParams(requestData);
         
+        // Initialize variable for the data we'll send to Google Apps Script
+        let dataToSend = requestData;  // Default to original request data
+
         if (params.get('action') === 'create') {
             const score = parseInt(params.get('highScore'));
             const playerName = params.get('playerName');
@@ -91,7 +94,7 @@ export default async function handler(request) {
             }
 
             // Create sanitized request
-            requestData = new URLSearchParams({
+            dataToSend = new URLSearchParams({
                 action: 'create',
                 playerName: sanitizedName,
                 highScore: score
@@ -104,7 +107,7 @@ export default async function handler(request) {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: requestData,
+            body: dataToSend,  // Use the potentially sanitized data
         });
 
         if (!response.ok) {
