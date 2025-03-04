@@ -1,12 +1,26 @@
 export default async function handler(request) {
-  // Allow both GET and POST requests
-  if (request.method !== 'GET' && request.method !== 'POST') {
-    return new Response('Method not allowed', { status: 405 });
+  // Only allow POST requests
+  if (request.method !== 'POST') {
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+      status: 405,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST',
+      }
+    });
   }
 
   const scriptUrl = Deno.env.get('GOOGLE_SCRIPT_URL');
   if (!scriptUrl) {
-    return new Response('Script URL not configured', { status: 500 });
+    return new Response(JSON.stringify({ error: 'Script URL not configured' }), {
+      status: 500,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST',
+      }
+    });
   }
 
   try {
@@ -14,28 +28,46 @@ export default async function handler(request) {
     const requestData = await request.text();
 
     // Forward the request to Google Apps Script
-    const response = await fetch(scriptUrl + (request.method === 'GET' ? '?' + requestData : ''), {
-      method: request.method,
+    const response = await fetch(scriptUrl, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: request.method === 'POST' ? requestData : null,
+      body: requestData,
     });
 
-    const data = await response.text();
+    if (!response.ok) {
+      throw new Error(`Google Apps Script responded with status: ${response.status}`);
+    }
+
+    // Get response data and verify it's JSON
+    const responseData = await response.text();
+    try {
+      JSON.parse(responseData); // Verify it's valid JSON
+    } catch (e) {
+      throw new Error('Invalid JSON response from Google Apps Script');
+    }
 
     // Return the response from Google Apps Script
-    return new Response(data, {
+    return new Response(responseData, {
       headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, GET',
+        'Access-Control-Allow-Methods': 'POST',
       },
     });
   } catch (error) {
-    return new Response(JSON.stringify({ error: 'Failed to process request' }), { 
+    console.error('Edge function error:', error);
+    return new Response(JSON.stringify({ 
+      error: 'Failed to process request',
+      details: error.message
+    }), { 
       status: 500,
-      headers: { 'Content-Type': 'application/json' }
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST',
+      }
     });
   }
 }
