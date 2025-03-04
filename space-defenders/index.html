@@ -819,8 +819,18 @@
 
         // Update modal control functions
         async function showAllScores() {
-            await loadHighScores(); // Load scores before showing modal
+            // Show modal immediately with loading state
             document.getElementById('all-scores-modal').style.display = 'block';
+            document.getElementById('all-scores-list').innerHTML = `
+                <tr>
+                    <td colspan="4" style="color: #33ff33; text-align: center; padding: 20px;">
+                        Loading scores...
+                    </td>
+                </tr>
+            `;
+            
+            // Then load the scores
+            await loadHighScores();
         }
 
         function closeModal() {
