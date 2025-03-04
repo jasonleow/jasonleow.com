@@ -158,6 +158,7 @@
                 <p>Destroy all aliens before they reach Earth!</p>
             </div>
             <button id="start-button">START GAME</button>
+            <button id="view-all-scores-landing" style="background-color: transparent; border: 2px solid #33ff33; color: #33ff33;">VIEW ALL SCORES</button>
         </div>
         
         <div id="game-over-screen">
@@ -842,6 +843,9 @@
                 closeModal();
             }
         });
+
+        // Add event listener for "View All Scores" button on landing page
+        document.getElementById('view-all-scores-landing').addEventListener('click', showAllScores);
     </script>
 </body>
 </html> 
