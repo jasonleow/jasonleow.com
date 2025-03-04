@@ -268,15 +268,33 @@
         let lastTime = 0;
         let keys = {};
         
-        // Modify sendRequest function
+        // Update sendRequest function with better error handling
         async function sendRequest(method, data) {
             return new Promise((resolve, reject) => {
                 const xhr = new XMLHttpRequest();
-                xhr.open(method, '/get-script-url');
+                xhr.open('POST', '/get-script-url');
                 xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                xhr.onload = () => xhr.status === 200 ? resolve(xhr.response) : reject(xhr.statusText);
-                xhr.onerror = () => reject(xhr.statusText);
-                xhr.send(method === "POST" ? new URLSearchParams(data).toString() : new URLSearchParams(data).toString());
+                xhr.onload = () => {
+                    if (xhr.status !== 200) {
+                        try {
+                            const errorData = JSON.parse(xhr.response);
+                            reject(new Error(errorData.error || errorData.details || 'Request failed'));
+                        } catch (e) {
+                            reject(new Error(`Request failed with status ${xhr.status}`));
+                        }
+                        return;
+                    }
+                    
+                    try {
+                        // Verify response is valid JSON
+                        JSON.parse(xhr.response);
+                        resolve(xhr.response);
+                    } catch (e) {
+                        reject(new Error('Invalid JSON response from server'));
+                    }
+                };
+                xhr.onerror = () => reject(new Error('Network error'));
+                xhr.send(new URLSearchParams(data).toString());
             });
         }
 
@@ -306,11 +324,25 @@
             }
         }
 
-        // Update loadHighScores function
+        // Update loadHighScores function to use POST
         async function loadHighScores() {
             try {
-                const response = await sendRequest("GET", { action: "read" });
-                const items = JSON.parse(response);
+                const response = await sendRequest('POST', { action: "read" });
+                
+                // Validate response is JSON
+                let items;
+                try {
+                    items = JSON.parse(response);
+                } catch (e) {
+                    console.error('Invalid JSON response:', response);
+                    throw new Error('Invalid response from server');
+                }
+
+                if (!Array.isArray(items)) {
+                    console.error('Unexpected response format:', items);
+                    throw new Error('Invalid data format from server');
+                }
+
                 items.sort((a, b) => b[3] - a[3]); // Sort by score descending
 
                 // Update top 10 list
@@ -343,7 +375,9 @@
                     allScoresList.appendChild(row);
                 });
             } catch (error) {
-                console.error("Error:", error);
+                console.error("Error loading scores:", error);
+                const scoreList = document.getElementById('score-list');
+                scoreList.innerHTML = '<tr><td colspan="3" style="color: #ff5555; text-align: center; padding: 10px;">Failed to load scores. Please try again later.</td></tr>';
             }
         }
         
