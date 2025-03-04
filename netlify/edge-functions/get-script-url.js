@@ -1,6 +1,6 @@
 export default async function handler(request) {
-  // Only allow POST requests
-  if (request.method !== 'POST') {
+  // Allow both GET and POST requests
+  if (request.method !== 'GET' && request.method !== 'POST') {
     return new Response('Method not allowed', { status: 405 });
   }
 
