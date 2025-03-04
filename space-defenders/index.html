@@ -817,8 +817,9 @@
         // Add event listener for save score button after other event listeners
         document.getElementById('save-score-button').addEventListener('click', saveHighScore);
 
-        // Add modal control functions
-        function showAllScores() {
+        // Update modal control functions
+        async function showAllScores() {
+            await loadHighScores(); // Load scores before showing modal
             document.getElementById('all-scores-modal').style.display = 'block';
         }
 
