@@ -268,6 +268,7 @@
         let alienMoveDownTimer = 0;
         let lastTime = 0;
         let keys = {};
+        let legitimateScore = 0;
         
         // Update sendRequest function with better error handling
         async function sendRequest(method, data) {
@@ -299,7 +300,19 @@
             });
         }
 
-        // Update saveHighScore function with input sanitization
+        // Modify the score update logic in your game
+        function updateScore(points) {
+            score = points;
+            legitimateScore = points;  // Track legitimate score
+            document.getElementById('score').textContent = score;
+        }
+
+        // Use this whenever aliens are destroyed or points are earned
+        function addPoints(points) {
+            updateScore(score + points);
+        }
+
+        // Modify saveHighScore function to use legitimateScore
         async function saveHighScore() {
             const playerNameInput = document.getElementById('player-name').value.trim();
             if (!playerNameInput) {
@@ -307,13 +320,20 @@
                 return;
             }
 
-            // Sanitize the input: only allow alphanumeric characters and some basic punctuation
+            // Sanitize the input
             const sanitizedName = playerNameInput
-                .replace(/[^\w\s-]/g, '') // Remove any characters that aren't word chars, spaces, or hyphens
-                .substring(0, 20);        // Limit length to 20 characters
+                .replace(/[^\w\s-]/g, '')
+                .substring(0, 20);
 
             if (sanitizedName !== playerNameInput) {
                 alert('Your name was adjusted to remove special characters for security.');
+            }
+
+            // Compare current score with legitimate score
+            if (score !== legitimateScore) {
+                console.error('Score manipulation detected');
+                alert('Error: Invalid score detected');
+                return;
             }
 
             document.getElementById('save-score-button').disabled = true;
@@ -322,7 +342,8 @@
                 await sendRequest("POST", {
                     action: "create",
                     playerName: sanitizedName,
-                    highScore: score
+                    highScore: legitimateScore,  // Use legitimateScore instead of score
+                    checksum: generateScoreChecksum(legitimateScore)  // Add checksum
                 });
                 
                 document.getElementById('save-score-button').style.display = 'none';
@@ -332,6 +353,13 @@
                 console.error("Error:", error);
                 document.getElementById('save-score-button').disabled = false;
             }
+        }
+
+        // Add a checksum function
+        function generateScoreChecksum(score) {
+            // Simple checksum using a secret key (you can make this more complex)
+            const gameSecret = 'space-defenders-v1';
+            return btoa(`${score}-${gameSecret}`);
         }
 
         // Update loadHighScores function to use POST
@@ -549,8 +577,7 @@
                         hitAlien = true;
                         
                         // Add score based on alien row (higher rows = more points)
-                        score += (ALIEN_ROWS - alien.type) * 10;
-                        document.getElementById('score').textContent = score;
+                        addPoints((ALIEN_ROWS - alien.type) * 10);
                         
                         // Check if all aliens are defeated
                         if (aliens.every(a => !a.alive)) {
