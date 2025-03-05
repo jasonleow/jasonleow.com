@@ -758,6 +758,23 @@
       // Optionally, you can trigger any search update or other actions here
       // For example: triggerSearch();
     });
+
+    // ------------------------------------------------------ //
+    // ---------- ESC HOT KEY TO CLEAR SEARCH BAR ---------- //
+    // ---------------------------------------------------- //
+    document.addEventListener('keydown', handleKeyPress);
+
+    function handleKeyPress(event) {
+      if (event.key === 'Escape') {
+        clearSearch();
+      }
+    }
+
+    function clearSearch() {
+      const searchInput = document.getElementById('searchInput');
+      searchInput.value = '';
+      searchButtons("");
+    }
   </script>
 </body>
 
