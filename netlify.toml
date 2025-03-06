@@ -27,3 +27,7 @@
 [[edge_functions]]
   path = "/get-script-url"
   function = "get-script-url"
+
+[context.production.environment]
+  GAME_SECRET = ""
+  RATE_LIMIT = "10/h"  # Limit score submissions 
