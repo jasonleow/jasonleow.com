@@ -315,7 +315,11 @@
 
         // Use this whenever aliens are destroyed or points are earned
         function addPoints(points, alienType) {
+            // Update the Game object
             Game.addPoints(points, alienType);
+            
+            // Update the global score variable to stay in sync
+            score = Game.getScore();
         }
 
         // Update checksum generation to include gameplay data
@@ -457,10 +461,25 @@
         
         // Initialize the game
         function init() {
+            // Reset game state
+            gameActive = true;
+            gameOver = false;
+            paused = false;
+            lives = 3;
+            
+            // Initialize Game object first
+            Game.init();
+            
+            // Update UI
+            document.getElementById('lives').textContent = lives;
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('game-over-screen').style.display = 'none';
+            
+            // Set up canvas
             canvas = document.getElementById('game-canvas');
-            ctx = canvas.getContext('2d');
             canvas.width = CANVAS_WIDTH;
             canvas.height = CANVAS_HEIGHT;
+            ctx = canvas.getContext('2d');
             
             // Create player
             player = {
@@ -471,7 +490,9 @@
                 speed: PLAYER_SPEED
             };
             
+            // Reset bullets
             playerBullets = [];
+            alienBullets = [];
             
             // Create aliens
             createAliens();
@@ -479,29 +500,9 @@
             // Create shields
             createShields();
             
-            // Reset game state
-            score = 0;
-            lives = 3;
-            gameActive = true;
-            gameOver = false;
-            paused = false;
-            alienDirection = 1;
-            alienMoveDownTimer = 0;
-            alienBullets = [];
-            
-            // Update UI
-            document.getElementById('score').textContent = score;
-            document.getElementById('lives').textContent = lives;
-            
-            // Hide start screen
-            document.getElementById('start-screen').style.display = 'none';
-            document.getElementById('game-over-screen').style.display = 'none';
-            
             // Start game loop
+            lastTime = performance.now();
             requestAnimationFrame(gameLoop);
-            
-            // Initialize game state through Game object
-            Game.init();
         }
         
         // Create alien formation
@@ -832,7 +833,8 @@
             gameActive = false;
             gameOver = true;
             
-            document.getElementById('final-score').textContent = `Score: ${score}`;
+            // Use the Game score
+            document.getElementById('final-score').textContent = `Score: ${Game.getScore()}`;
             document.getElementById('game-over-screen').style.display = 'flex';
             
             // Reset high score input
