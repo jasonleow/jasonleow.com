@@ -310,30 +310,12 @@
 
         // Modify the score update logic in your game
         function updateScore(points, eventType) {
-            score = points;
-            legitimateScore = points;
-            document.getElementById('score').textContent = score;
-            
-            // Record game event
-            const now = Date.now();
-            if (!lastEventTime || (now - lastEventTime) >= MIN_EVENT_INTERVAL) {
-                gameEvents.push({
-                    sequence: eventSequence++,
-                    type: eventType,
-                    score: points,
-                    timestamp: now
-                });
-                lastEventTime = now;
-            }
+            Game.updateScore(points, eventType);
         }
 
         // Use this whenever aliens are destroyed or points are earned
         function addPoints(points, alienType) {
-            updateScore(score + points, {
-                action: 'alienKill',
-                alienType: alienType,
-                points: points
-            });
+            Game.addPoints(points, alienType);
         }
 
         // Update checksum generation to include gameplay data
@@ -382,16 +364,29 @@
                 // Get gameplay data from Game
                 const gameData = Game.getGameData();
                 
+                // Debug: Log what we're sending
+                console.log("Sending data:", {
+                    playerName: sanitizedName,
+                    highScore: Game.getScore(),
+                    gameData: gameData
+                });
+                
                 // Generate checksum with gameplay data
                 const checksum = await generateGameplayChecksum(gameData);
 
-                await sendRequest("POST", {
+                // Create request data
+                const requestData = {
                     action: "create",
                     playerName: sanitizedName,
                     highScore: Game.getScore(),
                     checksum: checksum,
                     gameData: JSON.stringify(gameData)
-                });
+                };
+                
+                // Debug: Log the final request
+                console.log("Final request:", requestData);
+
+                await sendRequest("POST", requestData);
                 
                 document.getElementById('save-score-button').style.display = 'none';
                 document.getElementById('player-name').style.display = 'none';
@@ -505,6 +500,7 @@
             // Start game loop
             requestAnimationFrame(gameLoop);
             
+            // Initialize game state through Game object
             Game.init();
         }
         
@@ -1034,6 +1030,14 @@
                 }
             };
         })();
+
+        // Make sure Game is initialized at the top of the script
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Game object
+            Game.init();
+            
+            // ... rest of initialization code ...
+        });
     </script>
 </body>
 </html>
