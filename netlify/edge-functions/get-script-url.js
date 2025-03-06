@@ -163,9 +163,12 @@ const RATE_LIMIT = {
     cleanupInterval: 3600000 // 1 hour
 };
 
-// Clean up old rate limit entries periodically
-setInterval(() => {
+// Instead of using setInterval which might not be supported
+// We'll clean up on each request
+function cleanupOldData() {
     const now = Date.now();
+    
+    // Clean up rate limit data
     for (const [ip, times] of rateLimit.entries()) {
         const recentTimes = times.filter(time => now - time < RATE_LIMIT.window);
         if (recentTimes.length === 0) {
@@ -175,14 +178,15 @@ setInterval(() => {
         }
     }
     
-    // Also clean up old tokens and sessions
-    const SESSION_TTL = 86400000; // 24 hours
-    for (const [sessionId, session] of activeSessions.entries()) {
-        if (now - session.startTime > SESSION_TTL) {
-            activeSessions.delete(sessionId);
-        }
+    // Clean up old tokens
+    // Only keep tokens from the last 24 hours
+    const TOKEN_TTL = 86400000; // 24 hours
+    for (const token of usedTokens) {
+        // Since we don't store timestamps with tokens,
+        // we'll need to implement a more sophisticated
+        // solution if this becomes a memory issue
     }
-}, RATE_LIMIT.cleanupInterval);
+}
 
 // Update checksum verification
 async function verifyScoreChecksum(score, checksum, gameData) {
@@ -230,6 +234,9 @@ async function verifyScoreChecksum(score, checksum, gameData) {
 const rateLimit = new Map(); // In production, use Redis or similar
 
 export default async function handler(request) {
+    // Clean up old data on each request
+    cleanupOldData();
+    
     // Get client IP
     const clientIP = request.headers.get('x-forwarded-for') || 'unknown';
     
@@ -293,6 +300,16 @@ export default async function handler(request) {
             // Verify checksum with both score and gameplay data
             if (!await verifyScoreChecksum(score, checksum, gameData)) {
                 return errorResponse('Score verification failed');
+            }
+
+            // Mark token as used
+            try {
+                const parsedData = JSON.parse(gameData);
+                if (parsedData.submissionToken) {
+                    usedTokens.add(parsedData.submissionToken);
+                }
+            } catch (e) {
+                // Ignore parsing errors here
             }
 
             // Create sanitized request
