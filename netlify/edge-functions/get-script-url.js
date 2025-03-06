@@ -1,10 +1,3 @@
-// Add score verification
-function verifyScoreChecksum(score, checksum) {
-    const gameSecret = 'space-defenders-v1';
-    const expectedChecksum = btoa(`${score}-${gameSecret}`);
-    return checksum === expectedChecksum;
-}
-
 // Add input validation functions
 function sanitizeName(name) {
     if (typeof name !== 'string') return '';
@@ -34,6 +27,118 @@ function validateScore(score) {
            Number.isInteger(numScore);
 }
 
+// Add game version validation
+const CURRENT_GAME_VERSION = '1.0.1';
+
+// Add session and token tracking
+const activeSessions = new Map();
+const usedTokens = new Set();
+
+// Add timestamp validation
+function validateTimestamps(data) {
+    const now = Date.now();
+    const MAX_SUBMISSION_DELAY = 60000; // 1 minute
+    
+    // Reject submissions that are too old
+    if (now - data.endTime > MAX_SUBMISSION_DELAY) {
+        return false;
+    }
+    
+    // Reject submissions from the future
+    if (data.endTime > now) {
+        return false;
+    }
+    
+    return true;
+}
+
+// Update gameplay validation
+function validateGameplay(gameData) {
+    try {
+        const data = JSON.parse(gameData);
+        
+        // Validate game version
+        if (data.gameVersion !== CURRENT_GAME_VERSION) {
+            return false;
+        }
+        
+        // Validate submission token hasn't been used
+        if (usedTokens.has(data.submissionToken)) {
+            return false;
+        }
+        
+        // Validate timestamps
+        if (!validateTimestamps(data)) {
+            return false;
+        }
+        
+        // Validate game duration
+        const gameDuration = data.endTime - data.startTime;
+        const MIN_GAME_DURATION = 10000;  // Minimum 10 seconds
+        const MAX_GAME_DURATION = 3600000; // Maximum 1 hour
+        if (gameDuration < MIN_GAME_DURATION || gameDuration > MAX_GAME_DURATION) {
+            return false;
+        }
+
+        // Validate events
+        if (!Array.isArray(data.events) || data.events.length === 0) {
+            return false;
+        }
+
+        // Validate event timestamps
+        let lastTimestamp = data.startTime;
+        let expectedScore = 0;
+        let lastSequence = -1;
+        
+        for (const event of data.events) {
+            if (event.timestamp < lastTimestamp || event.timestamp > data.endTime) {
+                return false;
+            }
+            lastTimestamp = event.timestamp;
+            
+            // Validate sequence numbers
+            if (event.sequence !== lastSequence + 1) {
+                return false;
+            }
+            lastSequence = event.sequence;
+            
+            // Validate alien kills match game rules
+            if (event.type.action === 'alienKill') {
+                const validAlienTypes = [0, 1, 2, 3, 4]; // Valid row numbers
+                if (!validAlienTypes.includes(event.type.alienType)) {
+                    return false;
+                }
+                
+                // Validate points calculation
+                const expectedPoints = (5 - event.type.alienType) * 10;
+                if (event.type.points !== expectedPoints) {
+                    return false;
+                }
+                expectedScore += expectedPoints;
+            }
+        }
+        
+        // Validate final score matches event history
+        return expectedScore === data.finalScore;
+    } catch (e) {
+        return false;
+    }
+}
+
+function calculateScoreFromEvents(events) {
+    return events.reduce((total, event) => {
+        if (event.type.action === 'alienKill') {
+            // Validate points based on alien type
+            const expectedPoints = (5 - event.type.alienType) * 10;
+            if (event.type.points !== expectedPoints) {
+                throw new Error('Invalid points for alien type');
+            }
+            return total + event.type.points;
+        }
+        return total;
+    }, 0);
+}
+
 // Add common headers used throughout responses
 const commonHeaders = {
     'Content-Type': 'application/json',
@@ -49,7 +154,98 @@ function errorResponse(message, status = 400) {
     });
 }
 
+// Update rate limiting to use persistent storage
+// Note: This is a simplified version. In production, use Deno.KV or similar
+const RATE_LIMIT = {
+    window: 3600000, // 1 hour in milliseconds
+    maxRequests: 10,
+    // Add a cleanup interval to prevent memory leaks
+    cleanupInterval: 3600000 // 1 hour
+};
+
+// Clean up old rate limit entries periodically
+setInterval(() => {
+    const now = Date.now();
+    for (const [ip, times] of rateLimit.entries()) {
+        const recentTimes = times.filter(time => now - time < RATE_LIMIT.window);
+        if (recentTimes.length === 0) {
+            rateLimit.delete(ip);
+        } else {
+            rateLimit.set(ip, recentTimes);
+        }
+    }
+    
+    // Also clean up old tokens and sessions
+    const SESSION_TTL = 86400000; // 24 hours
+    for (const [sessionId, session] of activeSessions.entries()) {
+        if (now - session.startTime > SESSION_TTL) {
+            activeSessions.delete(sessionId);
+        }
+    }
+}, RATE_LIMIT.cleanupInterval);
+
+// Update checksum verification
+async function verifyScoreChecksum(score, checksum, gameData) {
+    const gameSecret = Deno.env.get('GAME_SECRET');
+    if (!gameSecret) {
+        throw new Error('Game secret not configured');
+    }
+
+    const data = JSON.parse(gameData);
+    
+    // Include more data in the verification
+    const dataToVerify = JSON.stringify({
+        score,
+        sessionId: data.sessionId,
+        submissionToken: data.submissionToken,
+        gameVersion: data.gameVersion,
+        events: data.events,
+        startTime: data.startTime,
+        endTime: data.endTime
+    });
+
+    // Use HMAC for better security
+    const key = await crypto.subtle.importKey(
+        'raw',
+        new TextEncoder().encode(gameSecret),
+        { name: 'HMAC', hash: 'SHA-256' },
+        false,
+        ['sign']
+    );
+    
+    const signature = await crypto.subtle.sign(
+        'HMAC',
+        key,
+        new TextEncoder().encode(dataToVerify)
+    );
+
+    const expectedChecksum = Array.from(new Uint8Array(signature))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+
+    return checksum === expectedChecksum;
+}
+
+// Add to handler function
+const rateLimit = new Map(); // In production, use Redis or similar
+
 export default async function handler(request) {
+    // Get client IP
+    const clientIP = request.headers.get('x-forwarded-for') || 'unknown';
+    
+    // Check rate limit
+    const now = Date.now();
+    const userRequests = rateLimit.get(clientIP) || [];
+    const recentRequests = userRequests.filter(time => now - time < RATE_LIMIT.window);
+    
+    if (recentRequests.length >= RATE_LIMIT.maxRequests) {
+        return errorResponse('Too many score submissions. Please try again later.', 429);
+    }
+    
+    // Update rate limit tracking
+    recentRequests.push(now);
+    rateLimit.set(clientIP, recentRequests);
+
     // Only allow POST requests
     if (request.method !== 'POST') {
         return errorResponse('Method not allowed', 405);
@@ -70,11 +266,17 @@ export default async function handler(request) {
         if (params.get('action') === 'create') {
             const score = parseInt(params.get('highScore'));
             const playerName = params.get('playerName');
+            const gameData = params.get('gameData');
             const checksum = params.get('checksum');
 
             // Validate all required fields
-            if (!playerName || !score || !checksum) {
+            if (!playerName || !score || !gameData || !checksum) {
                 return errorResponse('Missing required fields');
+            }
+
+            // Validate gameplay data
+            if (!validateGameplay(gameData)) {
+                return errorResponse('Invalid gameplay data');
             }
 
             // Validate and sanitize player name
@@ -88,8 +290,8 @@ export default async function handler(request) {
                 return errorResponse('Invalid score value');
             }
 
-            // Verify checksum
-            if (!verifyScoreChecksum(score, checksum)) {
+            // Verify checksum with both score and gameplay data
+            if (!await verifyScoreChecksum(score, checksum, gameData)) {
                 return errorResponse('Score verification failed');
             }
 
@@ -97,7 +299,8 @@ export default async function handler(request) {
             dataToSend = new URLSearchParams({
                 action: 'create',
                 playerName: sanitizedName,
-                highScore: score
+                highScore: score,
+                gameData: gameData
             }).toString();
         }
 
