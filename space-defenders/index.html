@@ -308,26 +308,6 @@
             });
         }
 
-        // Modify the score update logic in your game
-        function updateScore(newTotalScore, eventType) {
-            // Update the score
-            legitimateScore = newTotalScore;
-            score = newTotalScore;
-            document.getElementById('score').textContent = score;
-            
-            // Record game event
-            const now = Date.now();
-            if (!lastEventTime || (now - lastEventTime) >= MIN_EVENT_INTERVAL) {
-                gameEvents.push({
-                    sequence: eventSequence++,
-                    type: eventType,
-                    points: eventType.points,
-                    timestamp: now
-                });
-                lastEventTime = now;
-            }
-        }
-
         // Use this whenever aliens are destroyed or points are earned
         function addPoints(points, alienType) {
             const eventType = {
@@ -345,7 +325,7 @@
             
             // We should be adding to the current score, not setting it
             const newScore = score + points;
-            this.updateScore(newScore, eventType);
+            Game.updateScore(newScore, eventType);
         }
 
         // Update checksum generation to match server verification
@@ -507,6 +487,7 @@
             
             // Initialize Game object first
             Game.init();
+            score = 0; // Reset global score
             
             // Update UI
             document.getElementById('lives').textContent = lives;
