@@ -322,19 +322,21 @@
             score = Game.getScore();
         }
 
-        // Update checksum generation to include gameplay data
+        // Update checksum generation to match server verification
         async function generateGameplayChecksum(gameData) {
-            // Create the data object that matches server verification
-            const dataToVerify = {
+            // Create the data object that matches server verification exactly
+            const dataToVerify = JSON.stringify({
                 score: gameData.finalScore,
-                gameData: gameData
-            };
-            
-            // Convert to string for hashing
-            const dataString = JSON.stringify(dataToVerify);
+                sessionId: gameData.sessionId,
+                submissionToken: gameData.submissionToken,
+                gameVersion: gameData.gameVersion,
+                events: gameData.events,
+                startTime: gameData.startTime,
+                endTime: gameData.endTime
+            });
             
             // Use SubtleCrypto for secure hashing
-            const msgBuffer = new TextEncoder().encode(dataString);
+            const msgBuffer = new TextEncoder().encode(dataToVerify);
             const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
             const hashArray = Array.from(new Uint8Array(hashBuffer));
             return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
