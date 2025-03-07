@@ -1020,22 +1020,19 @@
                     score = newTotalScore;
                     document.getElementById('score').textContent = score;
                     
-                    // Record game event
-                    const now = Date.now();
-                    if (!lastEventTime || (now - lastEventTime) >= MIN_EVENT_INTERVAL) {
-                        const event = {
-                            sequence: eventSequence++,
-                            type: eventType,
-                            points: eventType.points,
-                            timestamp: now
-                        };
-                        
-                        // Debug log the event
-                        console.log('Recording event:', event);
-                        
-                        gameEvents.push(event);
-                        lastEventTime = now;
-                    }
+                    // Always record the event, remove the time interval check
+                    const event = {
+                        sequence: eventSequence++,
+                        type: eventType,
+                        points: eventType.points,
+                        timestamp: Date.now()
+                    };
+                    
+                    // Debug log the event
+                    console.log('Recording event:', event);
+                    
+                    gameEvents.push(event);
+                    lastEventTime = event.timestamp;
                 },
                 
                 addPoints: function(points, alienType) {
