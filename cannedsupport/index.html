@@ -70,104 +70,106 @@
     </div>
   </div>
 
-  <div class="container md:max-w-7xl md:mx-auto p-6">
-    <div class="flex items-center justify-between">
-      <div class="flex items-center justify-start">
-        <!-- <img src="/cannedsupport-transparentbg.png" class="h-12 w-12 -mt-5 mr-3" /> -->
-        <img src="https://em-content.zobj.net/source/apple/391/canned-food_1f96b.png" class="h-12 w-12 -mt-5 mr-3" />
-        <div>
-          <div class="flex items-center">
-            <h1 class="text-3xl font-bold mb-1 text-gray-800 dark:text-gray-50">Canned Support App</h1>
-            <button id="onboardingInfoButton" class="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-            </button>
+  <div class="container md:max-w-7xl p-6">
+    <div class="resize overflow-auto min-h-[32rem] min-w-[50rem]">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center justify-start">
+          <!-- <img src="/cannedsupport-transparentbg.png" class="h-12 w-12 -mt-5 mr-3" /> -->
+          <img src="https://em-content.zobj.net/source/apple/391/canned-food_1f96b.png" class="h-12 w-12 -mt-5 mr-3" />
+          <div>
+            <div class="flex items-center">
+              <h1 class="text-3xl font-bold mb-1 text-gray-800 dark:text-gray-50">Canned Support App</h1>
+              <button id="onboardingInfoButton" class="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </button>
+            </div>
+            <p class="text-sm dark:text-white mb-6">A tool for customer support professionals to quickly preset and copy canned messages.</p>
           </div>
-          <p class="text-sm dark:text-white mb-6">A tool for customer support professionals to quickly preset and copy canned messages.</p>
         </div>
-      </div>
-      <div class="flex items-center space-x-2">
-        <button id="darkModeToggle" title="Toggle dark mode" class="mb-4 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition duration-300">
-          🌗
-        </button>
-        <button id="downloadJSON" title="Download a copy of all your canned replies in .JSON file format" class="mb-4 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition duration-300">
-          📥
-        </button>
-      </div>
-    </div>
-
-    <!-- Preview Window -->
-    <div id="previewContainer" class="sticky z-10 top-0 mb-4 bg-gray-100 dark:bg-gray-900">
-      <div class="relative">
-        <div class="w-fit absolute top-2 left-4 mb-3 text-xs rounded text-gray-200 bg-fuchsia-800 bg-opacity-100 px-2 py-1">Preview</div>
-        <div id="preview" class="bg-white dark:bg-gray-800 pt-10 pb-4 px-4 rounded-lg shadow-md mb-2 min-h-48 max-h-[70%] resize-y overflow-y-auto dark:text-gray-200"></div>
-      </div>
-      
-      <!-- Search Input -->
-      <div class="mb-4">
-        <div class="relative">
-          <input id="searchInput" type="text" placeholder="Search for text content in buttons..." class="w-full p-2 pl-10 pr-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500 dark:focus:ring-teal-500 focus:border-transparent">
-          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-            </svg>
-          </div>
-          <button id="clearButton" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-            </svg>
+        <div class="flex items-center space-x-2">
+          <button id="darkModeToggle" title="Toggle dark mode" class="mb-4 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition duration-300">
+            🌗
+          </button>
+          <button id="downloadJSON" title="Download a copy of all your canned replies in .JSON file format" class="mb-4 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition duration-300">
+            📥
           </button>
         </div>
       </div>
-      
-    </div>
-
-    <!-- Custom Button Modal -->
-    <div id="customBtnModal" class="fixed z-10 inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center">
-      <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg">
-        <h2 class="text-xl dark:text-white font-bold mb-2">Add Custom Button</h2>
-        <p class="text-sm dark:text-white mb-6">For now, this is saved locally in your browser.</p>
-        <input id="customBtnTitle" type="text" placeholder="Button Title" class="w-full mb-2 p-2 border rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:ring-teal-500 dark:focus:ring-teal-500 focus:border-teal-500 dark:focus:border-teal-500">
-        <textarea id="customBtnText" placeholder="Button Text" class="w-full mb-4 p-2 border rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:ring-teal-500 dark:focus:ring-teal-500 focus:border-teal-500 dark:focus:border-teal-500" rows="4"></textarea>
-        <div class="flex justify-between">
-          <button id="deleteCustomBtn" class="bg-red-500 text-white px-4 py-2 rounded mr-2 hover:bg-red-600 transition duration-300 hidden">Delete</button>
-          <div class="flex">
-            <button id="cancelCustomBtn" class="bg-gray-300 text-gray-800 px-4 py-2 rounded mr-2 hover:bg-gray-400 transition duration-300">Cancel</button>
-            <button id="saveCustomBtn" class="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 transition duration-300">Save</button>
+  
+      <!-- Preview Window -->
+      <div id="previewContainer" class="sticky z-10 top-0 mb-4 bg-gray-100 dark:bg-gray-900">
+        <div class="relative">
+          <div class="w-fit absolute top-2 left-4 mb-3 text-xs rounded text-gray-200 bg-fuchsia-800 bg-opacity-100 px-2 py-1">Preview</div>
+          <div id="preview" class="bg-white dark:bg-gray-800 pt-10 pb-4 px-4 rounded-lg shadow-md mb-2 min-h-48 max-h-[70%] resize-y overflow-y-auto dark:text-gray-200"></div>
+        </div>
+        
+        <!-- Search Input -->
+        <div class="mb-4">
+          <div class="relative">
+            <input id="searchInput" type="text" placeholder="Search for text content in buttons..." class="w-full p-2 pl-10 pr-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500 dark:focus:ring-teal-500 focus:border-transparent">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <button id="clearButton" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+              <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        
+      </div>
+  
+      <!-- Custom Button Modal -->
+      <div id="customBtnModal" class="fixed z-10 inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center">
+        <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg">
+          <h2 class="text-xl dark:text-white font-bold mb-2">Add Custom Button</h2>
+          <p class="text-sm dark:text-white mb-6">For now, this is saved locally in your browser.</p>
+          <input id="customBtnTitle" type="text" placeholder="Button Title" class="w-full mb-2 p-2 border rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:ring-teal-500 dark:focus:ring-teal-500 focus:border-teal-500 dark:focus:border-teal-500">
+          <textarea id="customBtnText" placeholder="Button Text" class="w-full mb-4 p-2 border rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:ring-teal-500 dark:focus:ring-teal-500 focus:border-teal-500 dark:focus:border-teal-500" rows="4"></textarea>
+          <div class="flex justify-between">
+            <button id="deleteCustomBtn" class="bg-red-500 text-white px-4 py-2 rounded mr-2 hover:bg-red-600 transition duration-300 hidden">Delete</button>
+            <div class="flex">
+              <button id="cancelCustomBtn" class="bg-gray-300 text-gray-800 px-4 py-2 rounded mr-2 hover:bg-gray-400 transition duration-300">Cancel</button>
+              <button id="saveCustomBtn" class="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 transition duration-300">Save</button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- Content -->
-    <div id="allContent" class="mb-4"></div>
-
-    <!-- Add Category Button -->
-    <button id="addCategoryBtn" class="bg-teal-500 bg-opacity-50 border border-teal-500 dark:text-white text-gray-600 py-2 px-4 rounded inline-flex items-center justify-between mr-4 mb-4 hover:bg-teal-600 hover:bg-opacity-20 transition duration-300">
-      <span class="flex items-center justify-center w-4 h-4 mr-2 bg-gray-200 rounded-full cursor-pointer hover:bg-green-400">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 hover:text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-        </svg>
-      </span>
-      Add Category
-    </button>
-
-    <!-- Add Category Modal -->
-    <div id="addCategoryModal" class="fixed z-10 inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center">
-      <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg">
-        <h2 class="text-xl dark:text-white font-bold mb-2">Add New Category</h2>
-        <input id="newCategoryName" type="text" placeholder="Category Name" class="w-full mb-4 p-2 border rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:ring-teal-500 dark:focus:ring-teal-500 focus:border-teal-500 dark:focus:border-teal-500">
-        <div class="flex justify-between">
-          <button id="deleteCategoryBtn" class="bg-red-500 text-white px-4 py-2 rounded mr-2 hover:bg-red-600 transition duration-300 hidden">Delete</button>
-          <div class="flex">
-            <button id="cancelAddCategory" class="bg-gray-300 text-gray-800 px-4 py-2 rounded mr-2 hover:bg-gray-400 transition duration-300">Cancel</button>
-            <button id="saveNewCategory" class="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 transition duration-300">Save</button>
+  
+      <!-- Content -->
+      <div id="allContent" class="mb-4"></div>
+  
+      <!-- Add Category Button -->
+      <button id="addCategoryBtn" class="bg-teal-500 bg-opacity-50 border border-teal-500 dark:text-white text-gray-600 py-2 px-4 rounded inline-flex items-center justify-between mr-4 mb-4 hover:bg-teal-600 hover:bg-opacity-20 transition duration-300">
+        <span class="flex items-center justify-center w-4 h-4 mr-2 bg-gray-200 rounded-full cursor-pointer hover:bg-green-400">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 hover:text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+        </span>
+        Add Category
+      </button>
+  
+      <!-- Add Category Modal -->
+      <div id="addCategoryModal" class="fixed z-10 inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center">
+        <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg">
+          <h2 class="text-xl dark:text-white font-bold mb-2">Add New Category</h2>
+          <input id="newCategoryName" type="text" placeholder="Category Name" class="w-full mb-4 p-2 border rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:ring-teal-500 dark:focus:ring-teal-500 focus:border-teal-500 dark:focus:border-teal-500">
+          <div class="flex justify-between">
+            <button id="deleteCategoryBtn" class="bg-red-500 text-white px-4 py-2 rounded mr-2 hover:bg-red-600 transition duration-300 hidden">Delete</button>
+            <div class="flex">
+              <button id="cancelAddCategory" class="bg-gray-300 text-gray-800 px-4 py-2 rounded mr-2 hover:bg-gray-400 transition duration-300">Cancel</button>
+              <button id="saveNewCategory" class="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 transition duration-300">Save</button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
+    </div>
   </div>
 
   <script>
