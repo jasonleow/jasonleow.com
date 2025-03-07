@@ -309,17 +309,43 @@
         }
 
         // Modify the score update logic in your game
-        function updateScore(points, eventType) {
-            Game.updateScore(points, eventType);
+        function updateScore(newTotalScore, eventType) {
+            // Update the score
+            legitimateScore = newTotalScore;
+            score = newTotalScore;
+            document.getElementById('score').textContent = score;
+            
+            // Record game event
+            const now = Date.now();
+            if (!lastEventTime || (now - lastEventTime) >= MIN_EVENT_INTERVAL) {
+                gameEvents.push({
+                    sequence: eventSequence++,
+                    type: eventType,
+                    points: eventType.points,
+                    timestamp: now
+                });
+                lastEventTime = now;
+            }
         }
 
         // Use this whenever aliens are destroyed or points are earned
         function addPoints(points, alienType) {
-            // Update the Game object
-            Game.addPoints(points, alienType);
+            const eventType = {
+                action: 'alienKill',
+                alienType: alienType,
+                points: points
+            };
             
-            // Update the global score variable to stay in sync
-            score = Game.getScore();
+            // Debug the points calculation
+            console.log('Adding points:', {
+                currentScore: score,
+                pointsToAdd: points,
+                alienType: alienType
+            });
+            
+            // We should be adding to the current score, not setting it
+            const newScore = score + points;
+            this.updateScore(newScore, eventType);
         }
 
         // Update checksum generation to match server verification
@@ -997,19 +1023,19 @@
                     return gameSession;
                 },
                 
-                updateScore: function(points, eventType) {
+                updateScore: function(newTotalScore, eventType) {
                     // Update the score
-                    legitimateScore = points;
-                    score = points;
+                    legitimateScore = newTotalScore;
+                    score = newTotalScore;
                     document.getElementById('score').textContent = score;
                     
-                    // Record game event with the correct score
+                    // Record game event
                     const now = Date.now();
                     if (!lastEventTime || (now - lastEventTime) >= MIN_EVENT_INTERVAL) {
                         gameEvents.push({
                             sequence: eventSequence++,
                             type: eventType,
-                            points: eventType.points, // Store points from the event
+                            points: eventType.points,
                             timestamp: now
                         });
                         lastEventTime = now;
@@ -1022,7 +1048,17 @@
                         alienType: alienType,
                         points: points
                     };
-                    this.updateScore(score + points, eventType);
+                    
+                    // Debug the points calculation
+                    console.log('Adding points:', {
+                        currentScore: score,
+                        pointsToAdd: points,
+                        alienType: alienType
+                    });
+                    
+                    // We should be adding to the current score, not setting it
+                    const newScore = score + points;
+                    this.updateScore(newScore, eventType);
                 },
                 
                 getScore: function() {
@@ -1047,8 +1083,23 @@
                 
                 validateScore: function() {
                     // Calculate score from events
-                    const calculatedScore = gameEvents.reduce((total, event) => 
-                        total + (event.type.points || 0), 0);
+                    const calculatedScore = gameEvents.reduce((total, event) => {
+                        // Debug log each event's contribution
+                        console.log('Validating event:', {
+                            event: event,
+                            currentTotal: total,
+                            points: event.type.points || 0
+                        });
+                        return total + (event.type.points || 0);
+                    }, 0);
+                    
+                    // Debug log final comparison
+                    console.log('Score validation:', {
+                        currentScore: score,
+                        calculatedScore: calculatedScore,
+                        matches: score === calculatedScore
+                    });
+                    
                     return score === calculatedScore;
                 }
             };
