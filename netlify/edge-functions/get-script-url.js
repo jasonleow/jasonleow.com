@@ -72,7 +72,19 @@ function validateGameplay(gameData) {
             }
         }
 
-        // Events validation - allow empty events array for zero scores
+        // Version check - critical for security
+        if (data.gameVersion !== CURRENT_GAME_VERSION) {
+            console.log("Version mismatch:", data.gameVersion, "!=", CURRENT_GAME_VERSION);
+            return false;
+        }
+
+        // Token check - critical for preventing replay attacks
+        if (usedTokens.has(data.submissionToken)) {
+            console.log("Token already used:", data.submissionToken);
+            return false;
+        }
+
+        // Events validation
         if (!Array.isArray(data.events)) {
             console.log("Events is not an array");
             return false;
