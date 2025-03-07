@@ -1,3 +1,10 @@
+// Add score verification
+function verifyScoreChecksum(score, checksum) {
+    const gameSecret = 'space-defenders-v1';
+    const expectedChecksum = btoa(`${score}-${gameSecret}`);
+    return checksum === expectedChecksum;
+}
+
 // Add input validation functions
 function sanitizeName(name) {
     if (typeof name !== 'string') return '';
@@ -27,157 +34,6 @@ function validateScore(score) {
            Number.isInteger(numScore);
 }
 
-// Add game version validation
-const CURRENT_GAME_VERSION = '1.0.1';
-
-// Add session and token tracking
-const activeSessions = new Map();
-const usedTokens = new Set();
-
-// Add timestamp validation
-function validateTimestamps(data) {
-    const now = Date.now();
-    const MAX_SUBMISSION_DELAY = 60000; // 1 minute
-    
-    // Reject submissions that are too old
-    if (now - data.endTime > MAX_SUBMISSION_DELAY) {
-        return false;
-    }
-    
-    // Reject submissions from the future
-    if (data.endTime > now) {
-        return false;
-    }
-    
-    return true;
-}
-
-// Update gameplay validation
-function validateGameplay(gameData) {
-    try {
-        const data = JSON.parse(gameData);
-        
-        // Basic data structure validation
-        if (!data || typeof data !== 'object') {
-            console.log("Invalid data structure");
-            return false;
-        }
-
-        // Required fields validation
-        const requiredFields = ['startTime', 'endTime', 'events', 'finalScore', 'sessionId', 'submissionToken', 'gameVersion'];
-        for (const field of requiredFields) {
-            if (!(field in data)) {
-                console.log("Missing required field:", field);
-                return false;
-            }
-        }
-
-        // Version check - critical for security
-        if (data.gameVersion !== CURRENT_GAME_VERSION) {
-            console.log("Version mismatch:", data.gameVersion, "!=", CURRENT_GAME_VERSION);
-            return false;
-        }
-
-        // Token check - critical for preventing replay attacks
-        if (usedTokens.has(data.submissionToken)) {
-            console.log("Token already used:", data.submissionToken);
-            return false;
-        }
-
-        // Events validation
-        if (!Array.isArray(data.events)) {
-            console.log("Events is not an array");
-            return false;
-        }
-
-        // Skip further validation if no events
-        if (data.events.length === 0) {
-            return data.finalScore === 0;
-        }
-
-        // Event sequence validation
-        let lastTimestamp = data.startTime;
-        let expectedScore = 0;
-        let lastSequence = -1;
-        
-        for (const event of data.events) {
-            // Validate event structure
-            if (!event.type || !event.timestamp || typeof event.sequence !== 'number') {
-                console.log("Invalid event structure:", event);
-                return false;
-            }
-            
-            if (event.sequence !== lastSequence + 1) {
-                console.log("Invalid sequence:", {
-                    expected: lastSequence + 1,
-                    got: event.sequence
-                });
-                return false;
-            }
-            
-            if (event.type.action === 'alienKill') {
-                if (!validateAlienKill(event, expectedScore)) {
-                    return false;
-                }
-                expectedScore += event.type.points;
-            }
-            
-            lastTimestamp = event.timestamp;
-            lastSequence = event.sequence;
-        }
-        
-        // Final score validation
-        if (expectedScore !== data.finalScore) {
-            console.log("Score mismatch:", {
-                expected: expectedScore,
-                got: data.finalScore
-            });
-            return false;
-        }
-        
-        return true;
-    } catch (e) {
-        console.error("Validation error:", e);
-        return false;
-    }
-}
-
-// Helper function to validate alien kill events
-function validateAlienKill(event, currentScore) {
-    const validAlienTypes = [0, 1, 2, 3, 4];
-    if (!validAlienTypes.includes(event.type.alienType)) {
-        console.log("Invalid alien type:", event.type.alienType);
-        return false;
-    }
-    
-    // Match client-side scoring: (ALIEN_ROWS - type) * 10
-    const expectedPoints = (5 - event.type.alienType) * 10;
-    if (event.type.points !== expectedPoints) {
-        console.log("Invalid points:", {
-            expected: expectedPoints,
-            got: event.type.points,
-            alienType: event.type.alienType
-        });
-        return false;
-    }
-    
-    return true;
-}
-
-function calculateScoreFromEvents(events) {
-    return events.reduce((total, event) => {
-        if (event.type.action === 'alienKill') {
-            // Validate points based on alien type
-            const expectedPoints = (5 - event.type.alienType) * 10;
-            if (event.type.points !== expectedPoints) {
-                throw new Error('Invalid points for alien type');
-            }
-            return total + event.type.points;
-        }
-        return total;
-    }, 0);
-}
-
 // Add common headers used throughout responses
 const commonHeaders = {
     'Content-Type': 'application/json',
@@ -193,105 +49,7 @@ function errorResponse(message, status = 400) {
     });
 }
 
-// Update rate limiting to use persistent storage
-// Note: This is a simplified version. In production, use Deno.KV or similar
-const RATE_LIMIT = {
-    window: 3600000, // 1 hour in milliseconds
-    maxRequests: 10,
-    // Add a cleanup interval to prevent memory leaks
-    cleanupInterval: 3600000 // 1 hour
-};
-
-// Instead of using setInterval which might not be supported
-// We'll clean up on each request
-function cleanupOldData() {
-    const now = Date.now();
-    
-    // Clean up rate limit data
-    for (const [ip, times] of rateLimit.entries()) {
-        const recentTimes = times.filter(time => now - time < RATE_LIMIT.window);
-        if (recentTimes.length === 0) {
-            rateLimit.delete(ip);
-        } else {
-            rateLimit.set(ip, recentTimes);
-        }
-    }
-    
-    // Clean up old tokens
-    // Only keep tokens from the last 24 hours
-    const TOKEN_TTL = 86400000; // 24 hours
-    for (const token of usedTokens) {
-        // Since we don't store timestamps with tokens,
-        // we'll need to implement a more sophisticated
-        // solution if this becomes a memory issue
-    }
-}
-
-// Update checksum verification
-async function verifyScoreChecksum(score, checksum, gameData) {
-    const gameSecret = Deno.env.get('GAME_SECRET');
-    if (!gameSecret) {
-        throw new Error('Game secret not configured');
-    }
-
-    const data = JSON.parse(gameData);
-    
-    // Include more data in the verification
-    const dataToVerify = JSON.stringify({
-        score,
-        sessionId: data.sessionId,
-        submissionToken: data.submissionToken,
-        gameVersion: data.gameVersion,
-        events: data.events,
-        startTime: data.startTime,
-        endTime: data.endTime
-    });
-
-    // Use HMAC for better security
-    const key = await crypto.subtle.importKey(
-        'raw',
-        new TextEncoder().encode(gameSecret),
-        { name: 'HMAC', hash: 'SHA-256' },
-        false,
-        ['sign']
-    );
-    
-    const signature = await crypto.subtle.sign(
-        'HMAC',
-        key,
-        new TextEncoder().encode(dataToVerify)
-    );
-
-    const expectedChecksum = Array.from(new Uint8Array(signature))
-        .map(b => b.toString(16).padStart(2, '0'))
-        .join('');
-
-    return checksum === expectedChecksum;
-}
-
-// Add to handler function
-const rateLimit = new Map(); // In production, use Redis or similar
-
 export default async function handler(request) {
-    // Clean up old data on each request
-    cleanupOldData();
-    
-    // Get client IP
-    const clientIP = request.headers.get('x-forwarded-for') || 'unknown';
-    
-    // Check rate limit
-    const now = Date.now();
-    const userRequests = rateLimit.get(clientIP) || [];
-    const recentRequests = userRequests.filter(time => now - time < RATE_LIMIT.window);
-    
-    if (recentRequests.length >= RATE_LIMIT.maxRequests) {
-        return errorResponse('Too many score submissions. Please try again later.', 429);
-    }
-    
-    // Update rate limit tracking
-    recentRequests.push(now);
-    rateLimit.set(clientIP, recentRequests);
-
     // Only allow POST requests
     if (request.method !== 'POST') {
         return errorResponse('Method not allowed', 405);
@@ -312,17 +70,11 @@ export default async function handler(request) {
         if (params.get('action') === 'create') {
             const score = parseInt(params.get('highScore'));
             const playerName = params.get('playerName');
-            const gameData = params.get('gameData');
             const checksum = params.get('checksum');
 
             // Validate all required fields
-            if (!playerName || !score || !gameData || !checksum) {
+            if (!playerName || !score || !checksum) {
                 return errorResponse('Missing required fields');
-            }
-
-            // Validate gameplay data
-            if (!validateGameplay(gameData)) {
-                return errorResponse('Invalid gameplay data');
             }
 
             // Validate and sanitize player name
@@ -336,27 +88,16 @@ export default async function handler(request) {
                 return errorResponse('Invalid score value');
             }
 
-            // Verify checksum with both score and gameplay data
-            if (!await verifyScoreChecksum(score, checksum, gameData)) {
+            // Verify checksum
+            if (!verifyScoreChecksum(score, checksum)) {
                 return errorResponse('Score verification failed');
-            }
-
-            // Mark token as used
-            try {
-                const parsedData = JSON.parse(gameData);
-                if (parsedData.submissionToken) {
-                    usedTokens.add(parsedData.submissionToken);
-                }
-            } catch (e) {
-                // Ignore parsing errors here
             }
 
             // Create sanitized request
             dataToSend = new URLSearchParams({
                 action: 'create',
                 playerName: sanitizedName,
-                highScore: score,
-                gameData: gameData
+                highScore: score
             }).toString();
         }
 
