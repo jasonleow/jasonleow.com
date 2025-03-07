@@ -269,14 +269,6 @@
         let lastTime = 0;
         let keys = {};
         let legitimateScore = 0;
-        let gameEvents = [];
-        let gameStartTime = null;
-        let lastEventTime = null;
-        let eventSequence = 0;
-        const GAME_VERSION = '1.0.1';
-        const MIN_EVENT_INTERVAL = 100;
-        let submissionToken = null;
-        const gameSession = crypto.randomUUID();
         
         // Update sendRequest function with better error handling
         async function sendRequest(method, data) {
@@ -308,49 +300,19 @@
             });
         }
 
-        // Fix the addPoints function in the global scope
-        function addPoints(points, alienType) {
-            const eventType = {
-                action: 'alienKill',
-                alienType: alienType,
-                points: points
-            };
-            
-            // Debug the points calculation
-            console.log('Adding points:', {
-                currentScore: Game.getScore(), // Use Game.getScore() instead of global score
-                pointsToAdd: points,
-                alienType: alienType
-            });
-            
-            // Call Game.addPoints instead of Game.updateScore
-            Game.addPoints(points, alienType);
-            
-            // Update the global score to stay in sync
-            score = Game.getScore();
+        // Modify the score update logic in your game
+        function updateScore(points) {
+            score = points;
+            legitimateScore = points;  // Track legitimate score
+            document.getElementById('score').textContent = score;
         }
 
-        // Update checksum generation to match server verification
-        async function generateGameplayChecksum(gameData) {
-            // Create the data object that matches server verification exactly
-            const dataToVerify = JSON.stringify({
-                score: gameData.finalScore,
-                sessionId: gameData.sessionId,
-                submissionToken: gameData.submissionToken,
-                gameVersion: gameData.gameVersion,
-                events: gameData.events,
-                startTime: gameData.startTime,
-                endTime: gameData.endTime
-            });
-            
-            // Use SubtleCrypto for secure hashing
-            const msgBuffer = new TextEncoder().encode(dataToVerify);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        // Use this whenever aliens are destroyed or points are earned
+        function addPoints(points) {
+            updateScore(score + points);
         }
 
-        // Modify saveHighScore function
+        // Modify saveHighScore function to use legitimateScore
         async function saveHighScore() {
             const playerNameInput = document.getElementById('player-name').value.trim();
             if (!playerNameInput) {
@@ -358,6 +320,7 @@
                 return;
             }
 
+            // Sanitize the input
             const sanitizedName = playerNameInput
                 .replace(/[^\w\s-]/g, '')
                 .substring(0, 20);
@@ -366,7 +329,8 @@
                 alert('Your name was adjusted to remove special characters for security.');
             }
 
-            if (!Game.validateScore()) {
+            // Compare current score with legitimate score
+            if (score !== legitimateScore) {
                 console.error('Score manipulation detected');
                 alert('Error: Invalid score detected');
                 return;
@@ -375,51 +339,27 @@
             document.getElementById('save-score-button').disabled = true;
             
             try {
-                // Get gameplay data from Game
-                const gameData = Game.getGameData();
-                
-                // More detailed debug logging
-                console.log("Game Events:", gameData.events);
-                console.log("Game Session:", gameData.sessionId);
-                console.log("Submission Token:", gameData.submissionToken);
-                console.log("Game Version:", gameData.gameVersion);
-                console.log("Start Time:", new Date(gameData.startTime).toISOString());
-                console.log("End Time:", new Date(gameData.endTime).toISOString());
-                console.log("Final Score:", gameData.finalScore);
-                
-                const checksum = await generateGameplayChecksum(gameData);
-                
-                // Log the exact data being used for checksum
-                console.log("Checksum Data:", JSON.stringify({
-                    score: gameData.finalScore,
-                    sessionId: gameData.sessionId,
-                    submissionToken: gameData.submissionToken,
-                    gameVersion: gameData.gameVersion,
-                    events: gameData.events,
-                    startTime: gameData.startTime,
-                    endTime: gameData.endTime
-                }, null, 2));
-
-                const requestData = {
+                await sendRequest("POST", {
                     action: "create",
                     playerName: sanitizedName,
-                    highScore: Game.getScore(),
-                    checksum: checksum,
-                    gameData: JSON.stringify(gameData)
-                };
-
-                console.log("Full Request:", requestData);
-                
-                await sendRequest("POST", requestData);
+                    highScore: legitimateScore,  // Use legitimateScore instead of score
+                    checksum: generateScoreChecksum(legitimateScore)  // Add checksum
+                });
                 
                 document.getElementById('save-score-button').style.display = 'none';
                 document.getElementById('player-name').style.display = 'none';
                 loadHighScores();
             } catch (error) {
-                console.error("Detailed Error:", error);
+                console.error("Error:", error);
                 document.getElementById('save-score-button').disabled = false;
-                alert('Failed to save score: ' + error.message);
             }
+        }
+
+        // Add a checksum function
+        function generateScoreChecksum(score) {
+            // Simple checksum using a secret key (you can make this more complex)
+            const gameSecret = 'space-defenders-v1';
+            return btoa(`${score}-${gameSecret}`);
         }
 
         // Update loadHighScores function to use POST
@@ -481,26 +421,10 @@
         
         // Initialize the game
         function init() {
-            // Reset game state
-            gameActive = true;
-            gameOver = false;
-            paused = false;
-            lives = 3;
-            
-            // Initialize Game object first
-            Game.init();
-            score = 0; // Reset global score
-            
-            // Update UI
-            document.getElementById('lives').textContent = lives;
-            document.getElementById('start-screen').style.display = 'none';
-            document.getElementById('game-over-screen').style.display = 'none';
-            
-            // Set up canvas
             canvas = document.getElementById('game-canvas');
+            ctx = canvas.getContext('2d');
             canvas.width = CANVAS_WIDTH;
             canvas.height = CANVAS_HEIGHT;
-            ctx = canvas.getContext('2d');
             
             // Create player
             player = {
@@ -511,9 +435,7 @@
                 speed: PLAYER_SPEED
             };
             
-            // Reset bullets
             playerBullets = [];
-            alienBullets = [];
             
             // Create aliens
             createAliens();
@@ -521,8 +443,25 @@
             // Create shields
             createShields();
             
+            // Reset game state
+            score = 0;
+            lives = 3;
+            gameActive = true;
+            gameOver = false;
+            paused = false;
+            alienDirection = 1;
+            alienMoveDownTimer = 0;
+            alienBullets = [];
+            
+            // Update UI
+            document.getElementById('score').textContent = score;
+            document.getElementById('lives').textContent = lives;
+            
+            // Hide start screen
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('game-over-screen').style.display = 'none';
+            
             // Start game loop
-            lastTime = performance.now();
             requestAnimationFrame(gameLoop);
         }
         
@@ -638,7 +577,7 @@
                         hitAlien = true;
                         
                         // Add score based on alien row (higher rows = more points)
-                        addPoints((ALIEN_ROWS - alien.type) * 10, alien.type);
+                        addPoints((ALIEN_ROWS - alien.type) * 10);
                         
                         // Check if all aliens are defeated
                         if (aliens.every(a => !a.alive)) {
@@ -854,8 +793,7 @@
             gameActive = false;
             gameOver = true;
             
-            // Use the Game score
-            document.getElementById('final-score').textContent = `Score: ${Game.getScore()}`;
+            document.getElementById('final-score').textContent = `Score: ${score}`;
             document.getElementById('game-over-screen').style.display = 'flex';
             
             // Reset high score input
@@ -976,133 +914,6 @@
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
         }
-
-        // Fix the Game object's score tracking
-        const Game = (function() {
-            let score = 0;
-            let legitimateScore = 0;
-            let gameEvents = [];
-            let gameStartTime = null;
-            let lastEventTime = null;
-            let eventSequence = 0;
-            let gameSession = null;
-            let submissionToken = null;
-            const GAME_VERSION = '1.0.1';
-            const MIN_EVENT_INTERVAL = 100;
-            
-            return {
-                init: function() {
-                    score = 0;
-                    legitimateScore = 0;
-                    gameEvents = [];
-                    gameStartTime = Date.now();
-                    lastEventTime = null;
-                    eventSequence = 0;
-                    gameSession = crypto.randomUUID();
-                    submissionToken = crypto.randomUUID();
-                    
-                    // Update UI
-                    document.getElementById('score').textContent = '0';
-                    
-                    return gameSession;
-                },
-                
-                updateScore: function(newTotalScore, eventType) {
-                    // Debug log
-                    console.log('Game.updateScore:', {
-                        oldScore: score,
-                        newScore: newTotalScore,
-                        eventType: eventType
-                    });
-                    
-                    // Update the score
-                    legitimateScore = newTotalScore;
-                    score = newTotalScore;
-                    document.getElementById('score').textContent = score;
-                    
-                    // Always record the event, remove the time interval check
-                    const event = {
-                        sequence: eventSequence++,
-                        type: eventType,
-                        points: eventType.points,
-                        timestamp: Date.now()
-                    };
-                    
-                    // Debug log the event
-                    console.log('Recording event:', event);
-                    
-                    gameEvents.push(event);
-                    lastEventTime = event.timestamp;
-                },
-                
-                addPoints: function(points, alienType) {
-                    const eventType = {
-                        action: 'alienKill',
-                        alienType: alienType,
-                        points: points
-                    };
-                    
-                    // Calculate new total score
-                    const newScore = score + points;
-                    
-                    // Debug log
-                    console.log('Game.addPoints:', {
-                        currentScore: score,
-                        pointsToAdd: points,
-                        newTotal: newScore,
-                        alienType: alienType
-                    });
-                    
-                    this.updateScore(newScore, eventType);
-                },
-                
-                getScore: function() {
-                    return legitimateScore;
-                },
-                
-                getGameData: function() {
-                    return {
-                        startTime: gameStartTime,
-                        endTime: Date.now(),
-                        events: gameEvents,
-                        finalScore: legitimateScore,
-                        sessionId: gameSession,
-                        submissionToken: submissionToken,
-                        gameVersion: GAME_VERSION
-                    };
-                },
-                
-                validateScore: function() {
-                    // Calculate score from events
-                    const calculatedScore = gameEvents.reduce((total, event) => {
-                        // Debug log each event's contribution
-                        console.log('Validating event:', {
-                            event: event,
-                            currentTotal: total,
-                            points: event.type.points || 0
-                        });
-                        return total + (event.type.points || 0);
-                    }, 0);
-                    
-                    // Debug log final comparison
-                    console.log('Score validation:', {
-                        currentScore: score,
-                        calculatedScore: calculatedScore,
-                        matches: score === calculatedScore
-                    });
-                    
-                    return score === calculatedScore;
-                }
-            };
-        })();
-
-        // Make sure Game is initialized at the top of the script
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize Game object
-            Game.init();
-            
-            // ... rest of initialization code ...
-        });
     </script>
 </body>
 </html>
