@@ -370,17 +370,28 @@
                 // Get gameplay data from Game
                 const gameData = Game.getGameData();
                 
-                // Debug: Log what we're sending
-                console.log("Sending data:", {
-                    playerName: sanitizedName,
-                    highScore: Game.getScore(),
-                    gameData: gameData
-                });
+                // More detailed debug logging
+                console.log("Game Events:", gameData.events);
+                console.log("Game Session:", gameData.sessionId);
+                console.log("Submission Token:", gameData.submissionToken);
+                console.log("Game Version:", gameData.gameVersion);
+                console.log("Start Time:", new Date(gameData.startTime).toISOString());
+                console.log("End Time:", new Date(gameData.endTime).toISOString());
+                console.log("Final Score:", gameData.finalScore);
                 
-                // Generate checksum with gameplay data
                 const checksum = await generateGameplayChecksum(gameData);
+                
+                // Log the exact data being used for checksum
+                console.log("Checksum Data:", JSON.stringify({
+                    score: gameData.finalScore,
+                    sessionId: gameData.sessionId,
+                    submissionToken: gameData.submissionToken,
+                    gameVersion: gameData.gameVersion,
+                    events: gameData.events,
+                    startTime: gameData.startTime,
+                    endTime: gameData.endTime
+                }, null, 2));
 
-                // Create request data
                 const requestData = {
                     action: "create",
                     playerName: sanitizedName,
@@ -388,17 +399,16 @@
                     checksum: checksum,
                     gameData: JSON.stringify(gameData)
                 };
-                
-                // Debug: Log the final request
-                console.log("Final request:", requestData);
 
+                console.log("Full Request:", requestData);
+                
                 await sendRequest("POST", requestData);
                 
                 document.getElementById('save-score-button').style.display = 'none';
                 document.getElementById('player-name').style.display = 'none';
                 loadHighScores();
             } catch (error) {
-                console.error("Error:", error);
+                console.error("Detailed Error:", error);
                 document.getElementById('save-score-button').disabled = false;
                 alert('Failed to save score: ' + error.message);
             }
