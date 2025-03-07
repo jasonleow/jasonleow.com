@@ -56,73 +56,115 @@ function validateTimestamps(data) {
 function validateGameplay(gameData) {
     try {
         const data = JSON.parse(gameData);
+        console.log("Validating gameplay data:", data);
         
-        // Validate game version
+        // Version check
         if (data.gameVersion !== CURRENT_GAME_VERSION) {
+            console.log("Version mismatch:", data.gameVersion, "!=", CURRENT_GAME_VERSION);
             return false;
         }
         
-        // Validate submission token hasn't been used
+        // Token check
         if (usedTokens.has(data.submissionToken)) {
+            console.log("Token already used:", data.submissionToken);
             return false;
         }
         
-        // Validate timestamps
+        // Timestamp validation
         if (!validateTimestamps(data)) {
+            console.log("Invalid timestamps:", {
+                start: new Date(data.startTime).toISOString(),
+                end: new Date(data.endTime).toISOString(),
+                now: new Date().toISOString()
+            });
             return false;
         }
         
-        // Validate game duration
+        // Game duration check
         const gameDuration = data.endTime - data.startTime;
         const MIN_GAME_DURATION = 10000;  // Minimum 10 seconds
         const MAX_GAME_DURATION = 3600000; // Maximum 1 hour
         if (gameDuration < MIN_GAME_DURATION || gameDuration > MAX_GAME_DURATION) {
+            console.log("Invalid duration:", gameDuration);
             return false;
         }
 
-        // Validate events
+        // Events validation
         if (!Array.isArray(data.events) || data.events.length === 0) {
+            console.log("Invalid events array:", data.events);
             return false;
         }
 
-        // Validate event timestamps
+        // Event sequence validation
         let lastTimestamp = data.startTime;
         let expectedScore = 0;
         let lastSequence = -1;
         
         for (const event of data.events) {
+            console.log("Validating event:", event);
+            
             if (event.timestamp < lastTimestamp || event.timestamp > data.endTime) {
+                console.log("Invalid event timestamp:", {
+                    eventTime: event.timestamp,
+                    lastTime: lastTimestamp,
+                    endTime: data.endTime
+                });
                 return false;
             }
-            lastTimestamp = event.timestamp;
             
-            // Validate sequence numbers
             if (event.sequence !== lastSequence + 1) {
+                console.log("Invalid sequence:", {
+                    expected: lastSequence + 1,
+                    got: event.sequence
+                });
                 return false;
             }
-            lastSequence = event.sequence;
             
-            // Validate alien kills match game rules
             if (event.type.action === 'alienKill') {
-                const validAlienTypes = [0, 1, 2, 3, 4]; // Valid row numbers
-                if (!validAlienTypes.includes(event.type.alienType)) {
+                if (!validateAlienKill(event, expectedScore)) {
                     return false;
                 }
-                
-                // Validate points calculation
-                const expectedPoints = (5 - event.type.alienType) * 10;
-                if (event.type.points !== expectedPoints) {
-                    return false;
-                }
-                expectedScore += expectedPoints;
+                expectedScore += event.type.points;
             }
+            
+            lastTimestamp = event.timestamp;
+            lastSequence = event.sequence;
         }
         
-        // Validate final score matches event history
-        return expectedScore === data.finalScore;
+        // Final score validation
+        if (expectedScore !== data.finalScore) {
+            console.log("Score mismatch:", {
+                expected: expectedScore,
+                got: data.finalScore
+            });
+            return false;
+        }
+        
+        return true;
     } catch (e) {
+        console.error("Validation error:", e);
         return false;
     }
+}
+
+// Helper function to validate alien kill events
+function validateAlienKill(event, currentScore) {
+    const validAlienTypes = [0, 1, 2, 3, 4];
+    if (!validAlienTypes.includes(event.type.alienType)) {
+        console.log("Invalid alien type:", event.type.alienType);
+        return false;
+    }
+    
+    const expectedPoints = (5 - event.type.alienType) * 10;
+    if (event.type.points !== expectedPoints) {
+        console.log("Invalid points:", {
+            expected: expectedPoints,
+            got: event.type.points
+        });
+        return false;
+    }
+    
+    return true;
 }
 
 function calculateScoreFromEvents(events) {
