@@ -998,17 +998,18 @@
                 },
                 
                 updateScore: function(points, eventType) {
-                    score = points;
+                    // Update the score
                     legitimateScore = points;
+                    score = points;
                     document.getElementById('score').textContent = score;
                     
-                    // Record game event
+                    // Record game event with the correct score
                     const now = Date.now();
                     if (!lastEventTime || (now - lastEventTime) >= MIN_EVENT_INTERVAL) {
                         gameEvents.push({
                             sequence: eventSequence++,
                             type: eventType,
-                            score: points,
+                            points: eventType.points, // Store points from the event
                             timestamp: now
                         });
                         lastEventTime = now;
@@ -1016,11 +1017,12 @@
                 },
                 
                 addPoints: function(points, alienType) {
-                    this.updateScore(score + points, {
+                    const eventType = {
                         action: 'alienKill',
                         alienType: alienType,
                         points: points
-                    });
+                    };
+                    this.updateScore(score + points, eventType);
                 },
                 
                 getScore: function() {
@@ -1028,11 +1030,15 @@
                 },
                 
                 getGameData: function() {
+                    // Calculate final score from events
+                    const calculatedScore = gameEvents.reduce((total, event) => 
+                        total + (event.type.points || 0), 0);
+                    
                     return {
                         startTime: gameStartTime,
                         endTime: Date.now(),
                         events: gameEvents,
-                        finalScore: legitimateScore,
+                        finalScore: calculatedScore, // Use calculated score
                         sessionId: gameSession,
                         submissionToken: submissionToken,
                         gameVersion: GAME_VERSION
@@ -1040,7 +1046,10 @@
                 },
                 
                 validateScore: function() {
-                    return score === legitimateScore;
+                    // Calculate score from events
+                    const calculatedScore = gameEvents.reduce((total, event) => 
+                        total + (event.type.points || 0), 0);
+                    return score === calculatedScore;
                 }
             };
         })();
