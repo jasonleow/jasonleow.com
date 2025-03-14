@@ -391,7 +391,7 @@
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td style="color: #fff; padding: 4px 8px; font-size: 14px;">#${index + 1}</td>
-                        <td style="color: #fff; padding: 4px 8px; font-size: 14px;">${escapeHtml(item[2])}</td>
+                        <td style="color: #fff; padding: 4px 8px; font-size: 14px;">${item[2]}</td>
                         <td style="color: #fff; padding: 4px 8px; text-align: right; font-size: 14px;">${item[3]}</td>
                     `;
                     scoreList.appendChild(row);
@@ -406,7 +406,7 @@
                     const date = new Date(item[1]).toLocaleDateString();
                     row.innerHTML = `
                         <td style="color: #fff; padding: 8px;">#${index + 1}</td>
-                        <td style="color: #fff; padding: 8px;">${escapeHtml(item[2])}</td>
+                        <td style="color: #fff; padding: 8px;">${item[2]}</td>
                         <td style="color: #fff; padding: 8px; text-align: right;">${item[3]}</td>
                         <td style="color: #fff; padding: 8px; text-align: right;">${date}</td>
                     `;
