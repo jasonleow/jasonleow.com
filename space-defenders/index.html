@@ -715,11 +715,7 @@
             ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
             
             // Draw player
-            ctx.fillStyle = '#33ff33';
-            ctx.fillRect(player.x, player.y, player.width, player.height);
-            
-            // Draw player cannon
-            ctx.fillRect(player.x + player.width / 2 - 2, player.y - 10, 4, 10);
+            drawPlayer();
             
             // Draw player bullets
             ctx.fillStyle = '#fff';
@@ -730,24 +726,39 @@
             // Draw aliens
             aliens.forEach(alien => {
                 if (alien.alive) {
-                    // Different colors for different alien types
+                    // More diverse color palette for different alien types
                     switch(alien.type) {
-                        case 0: ctx.fillStyle = '#ff5555'; break; // Top row (red)
-                        case 1:
-                        case 2: ctx.fillStyle = '#55ff55'; break; // Middle rows (green)
-                        default: ctx.fillStyle = '#5555ff'; break; // Bottom rows (blue)
+                        case 0: ctx.fillStyle = '#FF00FF'; break; // Top row (magenta)
+                        case 1: ctx.fillStyle = '#00FFFF'; break; // Second row (cyan)
+                        case 2: ctx.fillStyle = '#FFFF00'; break; // Middle row (yellow)
+                        case 3: ctx.fillStyle = '#FF5500'; break; // Fourth row (orange)
+                        default: ctx.fillStyle = '#00FF00'; break; // Bottom row (green)
                     }
                     
-                    // Draw alien body
-                    ctx.fillRect(alien.x, alien.y, alien.width, alien.height);
+                    // Clear the area first
+                    ctx.clearRect(alien.x, alien.y, alien.width, alien.height);
                     
-                    // Draw alien features (eyes and mouth)
+                    // Draw the main body
+                    ctx.fillRect(alien.x + 4, alien.y + 8, alien.width - 8, alien.height - 12);
+                    
+                    // Draw the antennas (top part)
+                    ctx.fillRect(alien.x + 4, alien.y + 4, 4, 4);
+                    ctx.fillRect(alien.x + alien.width - 8, alien.y + 4, 4, 4);
+                    
+                    // Draw the middle section (wider)
+                    ctx.fillRect(alien.x, alien.y + 12, alien.width, alien.height - 20);
+                    
+                    // Draw the bottom tentacles
+                    const tentacleY = alien.y + alien.height - 8;
+                    ctx.fillRect(alien.x + 4, tentacleY, 4, 8);
+                    ctx.fillRect(alien.x + 12, tentacleY, 4, 8);
+                    ctx.fillRect(alien.x + 24, tentacleY, 4, 8);
+                    ctx.fillRect(alien.x + 32, tentacleY, 4, 8);
+                    
+                    // Draw the eyes (black)
                     ctx.fillStyle = '#000';
-                    // Eyes
-                    ctx.fillRect(alien.x + 8, alien.y + 8, 6, 6);
-                    ctx.fillRect(alien.x + alien.width - 14, alien.y + 8, 6, 6);
-                    // Mouth
-                    ctx.fillRect(alien.x + 10, alien.y + 20, alien.width - 20, 4);
+                    ctx.fillRect(alien.x + 10, alien.y + 14, 6, 8);
+                    ctx.fillRect(alien.x + alien.width - 16, alien.y + 14, 6, 8);
                 }
             });
             
@@ -913,6 +924,65 @@
                 .replace(/>/g, "&gt;")
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
+        }
+
+        // Draw player - sleek triangular jet fighter
+        function drawPlayer() {
+            // Base color for the ship
+            ctx.fillStyle = '#33ff33';
+            
+            // Clear the area first
+            ctx.clearRect(player.x - 2, player.y - 2, player.width + 4, player.height + 4);
+            
+            // Main body - tall triangular shape
+            // Row 1 (sharp nose point)
+            ctx.fillRect(player.x + player.width/2 - 1, player.y, 2, 2);
+            
+            // Row 2 (still very narrow)
+            ctx.fillRect(player.x + player.width/2 - 2, player.y + 2, 4, 2);
+            
+            // Row 3 (slightly wider)
+            ctx.fillRect(player.x + player.width/2 - 3, player.y + 4, 6, 2);
+            
+            // Row 4 (cockpit area)
+            ctx.fillRect(player.x + player.width/2 - 4, player.y + 6, 8, 3);
+            
+            // Row 5 (mid-section)
+            ctx.fillRect(player.x + player.width/2 - 6, player.y + 9, 12, 3);
+            
+            // Row 6 (widening)
+            ctx.fillRect(player.x + player.width/2 - 8, player.y + 12, 16, 3);
+            
+            // Row 7 (wing start)
+            ctx.fillRect(player.x + player.width/2 - 12, player.y + 15, 24, 3);
+            
+            // Row 8 (full wings)
+            ctx.fillRect(player.x, player.y + 18, player.width, 3);
+            
+            // Row 9 (tapered back)
+            ctx.fillRect(player.x + 8, player.y + 21, player.width - 16, 3);
+            
+            // Row 10 (engines)
+            ctx.fillRect(player.x + 12, player.y + 24, 6, 2);
+            ctx.fillRect(player.x + player.width - 18, player.y + 24, 6, 2);
+            
+            // Wing tips (red)
+            ctx.fillStyle = '#ff3333';
+            ctx.fillRect(player.x, player.y + 18, 4, 3);
+            ctx.fillRect(player.x + player.width - 4, player.y + 18, 4, 3);
+            
+            // Cockpit (blue)
+            ctx.fillStyle = '#00ccff';
+            ctx.fillRect(player.x + player.width/2 - 3, player.y + 5, 6, 4);
+            
+            // Cockpit highlight
+            ctx.fillStyle = '#99ffff';
+            ctx.fillRect(player.x + player.width/2 - 1, player.y + 6, 2, 2);
+            
+            // Weapon mounts
+            ctx.fillStyle = '#3399ff';
+            ctx.fillRect(player.x + 6, player.y + 15, 3, 3);
+            ctx.fillRect(player.x + player.width - 9, player.y + 15, 3, 3);
         }
     </script>
 </body>
