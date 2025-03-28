@@ -794,6 +794,14 @@
       }
     });
 
+    // Auto focus search input when switch back to window/tab
+    document.addEventListener('visibilitychange', function() {
+      if (document.visibilityState === 'visible') {
+        const searchInput = document.getElementById('searchInput');
+        searchInput.focus();
+      }
+    });
+
   </script>
 </body>
 
