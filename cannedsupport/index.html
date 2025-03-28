@@ -765,7 +765,7 @@
     });
     
     // ------------------------------------------------------ //
-    // ---------- ESC HOT KEY TO CLEAR SEARCH BAR ---------- //
+    // ---------- HOT KEYS TO CLEAR OR FOCUS SEARCH BAR ---- //
     // ---------------------------------------------------- //
     document.addEventListener('keydown', handleKeyPress);
 
@@ -780,6 +780,19 @@
       searchInput.value = '';
       searchButtons("");
     }
+
+    // Add keyboard shortcut to focus search
+    document.addEventListener('keydown', function(event) {
+      // Check if it's Shift+Escape
+      if (event.shiftKey && event.key === 'Escape') {
+        // Prevent the default browser behavior
+        event.preventDefault();
+        
+        // Focus the search input
+        const searchInput = document.getElementById('searchInput');
+        searchInput.focus();
+      }
+    });
 
   </script>
 </body>
