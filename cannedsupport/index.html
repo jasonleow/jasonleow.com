@@ -64,9 +64,45 @@
         You can add custom buttons and categories to tailor the app to your needs. Happy supporting!
       </p>
       <hr class="border my-6">
+      <p class="text-gray-600 dark:text-gray-300 font-bold mb-3">
+        🔑 Hot key shortcuts:
+      </p>
+      <ul class="space-y-2">
+        <li class="flex items-center">
+          <span class="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 text-xs font-mono px-2 py-1 rounded mr-2">Esc</span>
+          <span class="text-gray-600 dark:text-gray-300">Clear search input</span>
+        </li>
+        <li class="flex items-center">
+          <span class="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 text-xs font-mono px-2 py-1 rounded mr-2">Shift + Esc</span>
+          <span class="text-gray-600 dark:text-gray-300">Set search input into focus</span>
+        </li>
+      </ul>
+      <hr class="border my-6">
       <p class="text-gray-600 dark:text-gray-300 font-bold">
         ⚠️ Note: The data you add is saved locally to your browser, and gets deleted when you clear the browser cache. So clear cache with care!
       </p>
+    </div>
+  </div>
+  
+  <!-- Hot keys Modal -->
+  <div id="hotKeysModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-md w-full relative">
+      <button id="closeHotKeysModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+      <h2 class="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">🔑 Hot key shortcuts:</h2>
+      <ul class="space-y-2">
+        <li class="flex items-center">
+          <span class="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 text-xs font-mono px-2 py-1 rounded mr-2">Esc</span>
+          <span class="text-gray-600 dark:text-gray-300">Clear search input</span>
+        </li>
+        <li class="flex items-center">
+          <span class="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 text-xs font-mono px-2 py-1 rounded mr-2">Shift + Esc</span>
+          <span class="text-gray-600 dark:text-gray-300">Set search input into focus</span>
+        </li>
+      </ul>
     </div>
   </div>
 
@@ -89,6 +125,9 @@
           </div>
         </div>
         <div class="flex items-center space-x-2">
+          <button id="hotKeys" onclick="openHotKeysModal()" title="Show hot keys" class="mb-4 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition duration-300">
+            🔑
+          </button>
           <button id="darkModeToggle" title="Toggle dark mode" class="mb-4 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition duration-300">
             🌗
           </button>
@@ -801,6 +840,56 @@
         searchInput.focus();
       }
     });
+    
+    // ------------------------------------------------------ //
+    // ---------- HOT KEYS MODAL ---- //
+    // ---------------------------------------------------- //
+    // Global variable to store the outside click event listener
+    let outsideClickListener;
+
+    // Function to close the modal
+    function closeHotKeysModal() {
+      const modal = document.getElementById('hotKeysModal');
+      modal.classList.add('hidden');
+      // Remove the outside click event listener when the modal is closed
+      if (outsideClickListener) {
+        document.removeEventListener('click', outsideClickListener);
+        outsideClickListener = null;
+      }
+    }
+
+    // Function to handle outside clicks
+    function handleOutsideClick(event) {
+      const modalContent = document.querySelector('#hotKeysModal > div');
+      if (!modalContent.contains(event.target)) {
+        closeHotKeysModal();
+      }
+    }
+
+    function openHotKeysModal() {
+      const modal = document.getElementById('hotKeysModal');
+
+      // Remove the 'hidden' class to show the modal
+      modal.classList.remove('hidden');
+
+      // Close modal when clicking the close button
+      const closeButton = document.getElementById('closeHotKeysModal');
+      closeButton.addEventListener('click', closeHotKeysModal);
+
+      // Remove any existing outside click listener
+      if (outsideClickListener) {
+        document.removeEventListener('click', outsideClickListener);
+      }
+
+      // Set up the new outside click listener
+      outsideClickListener = handleOutsideClick;
+
+      // Add a slight delay before adding the click event listener
+      // This prevents the modal from closing immediately when it's opened
+      setTimeout(() => {
+        document.addEventListener('click', outsideClickListener);
+      }, 0);
+    }
 
   </script>
 </body>
