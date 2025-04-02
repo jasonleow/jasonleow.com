@@ -49,6 +49,29 @@
             height: 100vh;
             overflow: hidden;
         }
+
+        /* Video background container */
+        #video-bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1; /* Place behind all other content */
+        }
+        
+        /* Styling the video to cover the entire screen */
+        #background-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            min-width: 100%;
+            min-height: 100%;
+            object-fit: cover; /* Ensures the video covers the screen */
+            z-index: -1;
+            pointer-events: none; /* Prevents interaction */
+        }
         
         #game-container {
             position: relative;
@@ -150,6 +173,14 @@
     </style>
 </head>
 <body>
+    <!-- Video Background -->
+    <div id="video-bg-container">
+        <video id="background-video" autoplay muted loop>
+            <source src="https://ik.imagekit.io/listskit/Space%20Defenders/space-defenders-bg-3s-compressed.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    
     <div id="game-container">
         <canvas id="game-canvas"></canvas>
         
@@ -305,6 +336,19 @@
                 xhr.send(new URLSearchParams(data).toString());
             });
         }
+
+        // Get references to the video and start button
+        const videoBg = document.getElementById('video-bg-container');
+        const startButton = document.getElementById('start-button');
+        
+        // Add event listener to the "START GAME" button
+        startButton.addEventListener('click', function () {
+            // Hide the video background when the game starts
+            videoBg.style.display = 'none';
+        
+            // Initialize the game
+            init();
+        });
 
         // Modify the score update logic in your game
         function updateScore(points) {
