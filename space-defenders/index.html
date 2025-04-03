@@ -485,6 +485,9 @@
             
             // Start game loop
             requestAnimationFrame(gameLoop);
+
+            // Replace gif bg with static bg
+            setBackgroundToStaticBg();
         }
         
         // Create alien formation
@@ -1005,6 +1008,18 @@
             ctx.fillStyle = '#3399ff';
             ctx.fillRect(player.x + 6, player.y + 15, 3, 3);
             ctx.fillRect(player.x + player.width - 9, player.y + 15, 3, 3);
+        }
+
+        // To replace gif bg with static bg
+        function setBackgroundToStaticBg() {
+            // Select the target element (e.g., body)
+            const element = document.querySelector('body');
+            
+            // Define URL2
+            const url2 = "https://ik.imagekit.io/listskit/Space%20Defenders/space-defenders-bg.png";
+            
+            // Set background to URL2
+            element.style.backgroundImage = `url("${url2}")`;
         }
     </script>
 </body>
