@@ -1014,8 +1014,8 @@
           graphWrapper.style.width = 'auto'
           graphWrapper.style.overflowX = 'visible'
 
-          const width = 1024
-          const height = 322
+          const width = 705
+          const height = 218
           const scaleFactor = Math.max(
             width / chartContainer.offsetWidth,
             height / chartContainer.offsetHeight,
@@ -1027,10 +1027,10 @@
           // Create canvas from the chart container
           const canvas = await domtoimage.toPng(chartContainer, {
             quality: 1,
-            width: 1024,
-						height: 322,
+            width: 705,
+	    height: 218,
             style: {
-              transform: 'scale(1.4)',
+              transform: 'scale(1)',
               transformOrigin: '0 0',
             },
             /* style: {
