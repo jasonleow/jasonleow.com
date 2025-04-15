@@ -24,6 +24,10 @@
       .navbar img {
         height: auto;
       }
+      
+      #logo {
+        width: 200px;
+      }
 
       /* Center Content */
       .center {
@@ -35,13 +39,43 @@
       .center img {
         height: auto;
       }
+      
+      /* Responsive Styles */
+      @media (max-width: 768px) {
+        /* Navbar adjustments */
+        .navbar {
+          flex-direction: column;
+          align-items: flex-start;
+          padding-left: 10px;
+          gap: 10px; 
+        }
+
+        .navbar a {
+          max-width: 70px; /* Adjust icon sizes for smaller screens */
+        }
+
+        /* Center content adjustments */
+        .center img {
+          max-width: 90%; /* Reduce image sizes on smaller screens */
+        }
+      }
+
+      @media (max-width: 480px) {
+        .navbar a {
+          max-width: 60px; /* Further reduce icon sizes for smaller screens */
+        }
+
+        .center img {
+          max-width: 80%;
+        }
+      }
     </style>
   </head>
   <body>
     <!-- Top Navigation Bar -->
     <div class="navbar">
       <a href="#logo">
-        <img src="https://i.postimg.cc/WbYBBZfn/fluffly-UI-fluffy-UI-removebg.png" alt="Home Icon" style="width: 200px" />
+        <img id="logo" src="https://i.postimg.cc/WbYBBZfn/fluffly-UI-fluffy-UI-removebg.png" alt="Home Icon" />
       </a>
       <a href="#home">
         <img src="https://i.postimg.cc/8k4Qb9Rx/fluffly-UI-home-icon-removebg.png" alt="Home Icon" style="width: 50px" />
