@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Semantic Tag Checker</title>
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="Tag Checker" />
+    <meta name="description" content="A tool to check the semantic HTML tags of your website - by Jason Leow @jasonleowsg" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body
+    class="bg-gray-100 min-h-screen flex flex-col items-center justify-center"
+  >
+    <div class="w-full max-w-3xl bg-white rounded-lg shadow-lg p-6 mt-8">
+      <h1 class="text-2xl font-bold text-center mb-4 text-blue-700">
+        Semantic HTML Tag Checker
+      </h1>
+      <div>
+        <label for="url-input" class="block mb-2 text-gray-700"
+          >Paste a URL:</label
+        >
+        <input
+          type="text"
+          id="url-input"
+          class="w-full border border-gray-300 rounded px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          placeholder="https://example.com"
+        />
+        <button
+          id="check-button"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded transition-colors font-semibold mb-2"
+        >
+          Check Tags
+        </button>
+      </div>
+      <div
+        id="error"
+        class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-2"
+      ></div>
+      <div id="loading" class="hidden flex flex-col items-center my-4">
+        <svg
+          class="animate-spin h-6 w-6 text-blue-600 mb-1"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          ></circle>
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8v8H4z"
+          ></path>
+        </svg>
+        <span class="text-blue-600">Loading...</span>
+      </div>
+      <div id="stats" class="hidden flex gap-4 justify-center mb-2">
+        <span
+          class="bg-blue-100 text-blue-700 text-sm px-3 py-1 rounded"
+          id="h1-count"
+        ></span>
+        <span
+          class="bg-purple-100 text-purple-700 text-sm px-3 py-1 rounded"
+          id="h2-count"
+        ></span>
+        <span
+          class="bg-pink-100 text-pink-700 text-sm px-3 py-1 rounded"
+          id="h3-count"
+        ></span>
+        <span
+          class="bg-green-100 text-green-700 text-sm px-3 py-1 rounded"
+          id="p-count"
+        ></span>
+      </div>
+      <div id="results"></div>
+    </div>
+    <script>
+      function showError(msg) {
+        const err = document.getElementById("error")
+        err.innerHTML = msg
+        err.classList.remove("hidden")
+        document.getElementById("loading").classList.add("hidden")
+        document.getElementById("stats").classList.add("hidden")
+      }
+
+      function hideError() {
+        document.getElementById("error").classList.add("hidden")
+      }
+
+      document.getElementById("check-button").onclick = () => {
+        hideError()
+        document.getElementById("results").innerHTML = ""
+        document.getElementById("stats").classList.add("hidden")
+        const url = document.getElementById("url-input").value.trim()
+        if (!url) return showError("Please enter a URL.")
+
+        document.getElementById("loading").classList.remove("hidden")
+        let fullUrl = url.match(/^https?:\/\//) ? url : "https://" + url
+        const proxyURL =
+          "https://api.allorigins.win/raw?url=" + encodeURIComponent(fullUrl)
+        fetch(proxyURL)
+          .then((resp) => {
+            if (!resp.ok) throw new Error("Network error")
+            return resp.text()
+          })
+          .then((html) => {
+            document.getElementById("loading").classList.add("hidden")
+            renderResults(html)
+          })
+          .catch((e) => {
+            showError(
+              "Could not fetch that URL (maybe it blocks scraping or external requests).<br><small>" +
+                (e.message || e) +
+                "</small>",
+            )
+          })
+      }
+
+      function renderResults(html) {
+        const parser = new DOMParser()
+        const doc = parser.parseFromString(html, "text/html")
+        const tags = []
+        ;["h1", "h2", "h3", "p"].forEach((tag) => {
+          doc.querySelectorAll(tag).forEach((el) => {
+            tags.push({ el, tag, position: getPositionInDom(el) })
+          })
+        })
+        tags.sort((a, b) => a.position - b.position)
+
+        if (!tags.length) {
+          document.getElementById("results").innerHTML =
+            '<div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-2 rounded mt-2">No h1, h2, h3, or p tags found.</div>'
+          return
+        }
+
+        // Update stats
+        document.getElementById("h1-count").textContent =
+          `h1: ${tags.filter((t) => t.tag === "h1").length}`
+        document.getElementById("h2-count").textContent =
+          `h2: ${tags.filter((t) => t.tag === "h2").length}`
+        document.getElementById("h3-count").textContent =
+          `h3: ${tags.filter((t) => t.tag === "h3").length}`
+        document.getElementById("p-count").textContent =
+          `p: ${tags.filter((t) => t.tag === "p").length}`
+        document.getElementById("stats").classList.remove("hidden")
+
+        // Show tags with indentation based on tag type
+        const results = tags
+          .map((item) => {
+            let color, indent
+
+            // Set color and indentation based on tag type
+            if (item.tag === "h1") {
+              color = "border-blue-500 bg-blue-50"
+              indent = "ml-0" // No indent
+            } else if (item.tag === "h2") {
+              color = "border-purple-500 bg-purple-50"
+              indent = "ml-6" // 1 level indent
+            } else if (item.tag === "h3") {
+              color = "border-pink-500 bg-pink-50"
+              indent = "ml-12" // 2 level indent
+            } else {
+              color = "border-green-500 bg-green-50"
+              indent = "ml-20" // 3 level indent (p tags)
+            }
+
+            return `<div class="mb-4 border-l-4 ${color} p-3 ${indent}">
+          <div class="font-bold text-sm mb-1 text-gray-700">&lt;${item.tag}&gt;</div>
+          <div class="text-gray-800 whitespace-pre-wrap text-base">${escapeHTML(item.el.textContent)}</div>
+        </div>`
+          })
+          .join("")
+        document.getElementById("results").innerHTML = results
+      }
+
+      // Get a DOM order position for sorting
+      function getPositionInDom(node) {
+        let walker = document.createTreeWalker(
+          node.ownerDocument.body,
+          NodeFilter.SHOW_ELEMENT,
+          {
+            acceptNode: (n) =>
+              ["H1", "H2", "H3", "P"].includes(n.tagName)
+                ? NodeFilter.FILTER_ACCEPT
+                : NodeFilter.FILTER_SKIP,
+          },
+        )
+        let index = 0,
+          currentNode
+        while ((currentNode = walker.nextNode())) {
+          if (currentNode === node) return index
+          index++
+        }
+        return index
+      }
+
+      // Escape HTML for safe rendering
+      function escapeHTML(str) {
+        return str.replace(/[&<>"']/g, function (m) {
+          return {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;",
+          }[m]
+        })
+      }
+
+      // Handle Enter key in input
+      document
+        .getElementById("url-input")
+        .addEventListener("keypress", function (e) {
+          if (e.key === "Enter") document.getElementById("check-button").click()
+        })
+    </script>
+  </body>
+</html>
