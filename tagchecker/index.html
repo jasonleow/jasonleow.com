@@ -3,11 +3,30 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Semantic Tag Checker</title>
+    <title>Tag Checker</title>
+    
     <!-- Primary Meta Tags -->
     <meta name="title" content="Tag Checker" />
     <meta name="description" content="A tool to check the semantic HTML tags of your website - by Jason Leow @jasonleowsg" />
 
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://jasonleow.com/tagchecker" />
+    <meta property="og:title" content="Tag Checker" />
+    <meta property="og:description" content="A tool to check the semantic HTML tags of your website - by Jason Leow @jasonleowsg" />
+    <meta property="og:image" content="https://i.postimg.cc/ht9xWT3f/og-image-tagchecker.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://jasonleow.com/tagchecker" />
+    <meta property="twitter:title" content="Tag Checker" />
+    <meta property="twitter:description" content="A tool to check the semantic HTML tags of your website - by Jason Leow @jasonleowsg" />
+    <meta property="twitter:image" content="https://i.postimg.cc/ht9xWT3f/og-image-tagchecker.png" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="https://i.postimg.cc/Rh4Vjpq0/favicon-32px-tagchecker.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://i.postimg.cc/Rh4Vjpq0/favicon-32px-tagchecker.png">
+    
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body
@@ -115,7 +134,7 @@
           })
           .catch((e) => {
             showError(
-              "Could not fetch that URL (maybe it blocks scraping or external requests).<br><small>" +
+              "Could not fetch that URL (maybe it blocks scraping or external requests). Please try again.<br><small>" +
                 (e.message || e) +
                 "</small>",
             )
