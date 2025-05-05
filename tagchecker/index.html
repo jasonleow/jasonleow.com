@@ -32,7 +32,7 @@
   <body
     class="bg-gray-100 min-h-screen flex flex-col items-center justify-center"
   >
-    <div class="w-full max-w-3xl bg-white rounded-lg shadow-lg p-6 mt-8">
+    <div class="w-full max-w-2xl bg-white rounded-lg shadow-lg p-6 mt-8">
       <h1 class="text-2xl font-bold text-center mb-4 text-blue-700">
         Semantic HTML Tag Checker
       </h1>
@@ -40,18 +40,20 @@
         <label for="url-input" class="block mb-2 text-gray-700"
           >Paste a URL:</label
         >
-        <input
-          type="text"
-          id="url-input"
-          class="w-full border border-gray-300 rounded px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          placeholder="https://example.com"
-        />
-        <button
-          id="check-button"
-          class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded transition-colors font-semibold mb-2"
-        >
-          Check Tags
-        </button>
+        <div class="flex items-center">
+          <input
+            type="text"
+            id="url-input"
+            class="w-full border border-gray-300 rounded px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="https://example.com"
+          />
+          <button
+            id="check-button"
+            class="whitespace-nowrap border border-blue-600 bg-blue-600 hover:bg-blue-700 text-white ml-3 px-3 py-2 rounded transition-colors font-semibold mb-2"
+          >
+            Check tags
+          </button>
+        </div>
       </div>
       <div
         id="error"
@@ -98,6 +100,14 @@
         ></span>
       </div>
       <div id="results"></div>
+    </div>
+    <div class="text-center text-sm mt-20 space-y-3">
+      <div class="mb-3">A project by <a href="https://jasonleow.com" target="_blank" class="text-blue-600 hover:text-blue-800">Jason Leow</a> <a href="https://x.com/jasonleowsg" target="_blank" class="text-blue-600 hover:text-blue-800">@jasonleowsg</a></div>
+      <a class="text-blue-600 hover:text-blue-800" href="https://jasonleow.com">jasonleow.com |</a>
+      <a class="text-blue-600 hover:text-blue-800" href="https://plugins.carrd.co">plugins.carrd.co |</a>
+      <a class="text-blue-600 hover:text-blue-800" href="https://commit365.dev">commit365.dev |</a>
+      <a class="text-blue-600 hover:text-blue-800" href="https://listskit.com">listskit.com |</a>
+      <a class="text-blue-600 hover:text-blue-800" href="https://golifelog.com">golifelog.com</a>
     </div>
     <script>
       function showError(msg) {
