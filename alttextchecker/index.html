@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alt Text Checker</title>
+  
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="Alt Text Checker" />
+    <meta name="description" content="Check web pages for missing alt text on images - by Jason Leow @jasonleowsg" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://jasonleow.com/altextchecker" />
+    <meta property="og:title" content="Alt Text Checker" />
+    <meta property="og:description" content="Check web pages for missing alt text on images - by Jason Leow @jasonleowsg" />
+    <meta property="og:image" content="https://i.postimg.cc/ht9xWT3f/og-image-tagchecker.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://jasonleow.com/altextchecker" />
+    <meta property="twitter:title" content="Alt Text Checker" />
+    <meta property="twitter:description" content="Check web pages for missing alt text on images - by Jason Leow @jasonleowsg" />
+    <meta property="twitter:image" content="https://i.postimg.cc/tCgcsjrV/ogimage-alttextchecker.png" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="https://i.postimg.cc/hjqvpMJV/favicon-32px-alttextchecker.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://i.postimg.cc/hjqvpMJV/favicon-32px-alttextchecker.png">
+  
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .loading {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen mt-10">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <!-- <img src="https://i.postimg.cc/8cZCkSZb/favicon-alttextchecker.png" /> -->
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">Alt Text Checker</h1>
+            <p class="text-lg text-gray-600">Check web pages for missing alt text on images</p>
+        </div>
+
+        <!-- Input Form -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div class="flex flex-col sm:flex-row gap-4">
+                <input 
+                    type="url" 
+                    id="urlInput" 
+                    placeholder="Enter URL to check (e.g., https://example.com)"
+                    class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                >
+                <button 
+                    id="checkBtn" 
+                    class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    <span id="btnText">Check Images</span>
+                    <div id="btnSpinner" class="loading w-5 h-5 border-2 border-white border-t-transparent rounded-full hidden ml-2 inline-block"></div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Status Messages -->
+        <div id="statusContainer" class="mb-6 hidden">
+            <div id="statusMessage" class="p-4 rounded-lg"></div>
+        </div>
+
+        <!-- Results Summary -->
+        <div id="summaryContainer" class="bg-white rounded-lg shadow-lg p-6 mb-6 hidden">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Analysis Summary</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="bg-blue-50 p-4 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-blue-600" id="totalImages">0</div>
+                    <div class="text-sm text-gray-600">Total Images</div>
+                </div>
+                <div class="bg-red-50 p-4 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-red-600" id="missingAltImages">0</div>
+                    <div class="text-sm text-gray-600">Missing Alt Text</div>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-green-600" id="hasAltImages">0</div>
+                    <div class="text-sm text-gray-600">Has Alt Text</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results List -->
+        <div id="resultsContainer" class="bg-white rounded-lg shadow-lg hidden">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-2xl font-bold text-gray-800">Images Missing Alt Text</h2>
+            </div>
+            <div id="resultsList" class="divide-y divide-gray-200"></div>
+            <div id="noResults" class="p-8 text-center text-gray-500 hidden">
+                <div class="text-6xl mb-4">🎉</div>
+                <h3 class="text-xl font-semibold text-gray-700 mb-2">Great Job!</h3>
+                <p>All images on this page have alt text.</p>
+            </div>
+        </div>
+    </div>
+  
+    <div class="text-center text-sm mt-20 mb-10 space-y-3">
+      <div class="mb-3">A project by <a href="https://jasonleow.com" target="_blank" class="text-blue-600 hover:text-blue-800">Jason Leow</a> <a href="https://x.com/jasonleowsg" target="_blank" class="text-blue-600 hover:text-blue-800">@jasonleowsg</a></div>
+      <a class="text-blue-600 hover:text-blue-800" href="https://jasonleow.com">jasonleow.com |</a>
+      <a class="text-blue-600 hover:text-blue-800" href="https://plugins.carrd.co">plugins.carrd.co |</a>
+      <a class="text-blue-600 hover:text-blue-800" href="https://commit365.dev">commit365.dev |</a>
+      <a class="text-blue-600 hover:text-blue-800" href="https://listskit.com">listskit.com |</a>
+      <a class="text-blue-600 hover:text-blue-800" href="https://golifelog.com">golifelog.com</a>
+    </div>
+
+    <script>
+        class AltTextChecker {
+            constructor() {
+                this.corsProxies = [
+                    'https://api.allorigins.win/raw?url=',
+                    'https://corsproxy.io/?',
+                    'https://cors-anywhere.herokuapp.com/',
+                    'https://thingproxy.freeboard.io/fetch/'
+                ];
+                this.currentProxyIndex = 0;
+                this.initEventListeners();
+            }
+
+            initEventListeners() {
+                const checkBtn = document.getElementById('checkBtn');
+                const urlInput = document.getElementById('urlInput');
+
+                checkBtn.addEventListener('click', () => this.checkImages());
+                urlInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.checkImages();
+                });
+            }
+
+            async checkImages() {
+                const url = document.getElementById('urlInput').value.trim();
+                
+                if (!url) {
+                    this.showStatus('Please enter a valid URL', 'error');
+                    return;
+                }
+
+                if (!this.isValidUrl(url)) {
+                    this.showStatus('Please enter a valid URL (must start with http:// or https://)', 'error');
+                    return;
+                }
+
+                this.setLoading(true);
+                this.hideResults();
+                
+                try {
+                    const html = await this.fetchPageContent(url);
+                    const images = this.parseImages(html, url);
+                    this.displayResults(images, url);
+                } catch (error) {
+                    console.error('Error checking images:', error);
+                    this.showStatus('Failed to fetch the page. The site might block cross-origin requests or the URL might be invalid.', 'error');
+                } finally {
+                    this.setLoading(false);
+                }
+            }
+
+            async fetchPageContent(url) {
+                let lastError;
+                
+                for (let i = 0; i < this.corsProxies.length; i++) {
+                    try {
+                        const proxyUrl = this.corsProxies[i] + encodeURIComponent(url);
+                        this.showStatus(`Trying to fetch page... (Proxy ${i + 1}/${this.corsProxies.length})`, 'info');
+                        
+                        const response = await fetch(proxyUrl);
+                        
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        }
+                        
+                        const text = await response.text();
+                        
+                        if (text.length < 100) {
+                            throw new Error('Response too short, likely an error page');
+                        }
+                        
+                        this.showStatus('Page fetched successfully! Analyzing images...', 'success');
+                        return text;
+                        
+                    } catch (error) {
+                        console.warn(`Proxy ${i + 1} failed:`, error);
+                        lastError = error;
+                        continue;
+                    }
+                }
+                
+                throw new Error(`All proxies failed. Last error: ${lastError.message}`);
+            }
+
+            parseImages(html, baseUrl) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const images = doc.querySelectorAll('img');
+                const results = [];
+
+                images.forEach((img, index) => {
+                    const src = img.getAttribute('src');
+                    const alt = img.getAttribute('alt');
+                    const title = img.getAttribute('title');
+                    
+                    if (!src) return; // Skip images without src
+
+                    const absoluteUrl = this.resolveUrl(src, baseUrl);
+                    const fileName = this.extractFileName(absoluteUrl);
+                    
+                    const imageData = {
+                        index: index + 1,
+                        src: absoluteUrl,
+                        alt: alt,
+                        title: title,
+                        fileName: fileName,
+                        hasMissingAlt: !alt || alt.trim() === ''
+                    };
+                    
+                    results.push(imageData);
+                });
+
+                return results;
+            }
+
+            resolveUrl(url, baseUrl) {
+                try {
+                    if (url.startsWith('http://') || url.startsWith('https://')) {
+                        return url;
+                    }
+                    
+                    const base = new URL(baseUrl);
+                    
+                    if (url.startsWith('//')) {
+                        return base.protocol + url;
+                    }
+                    
+                    if (url.startsWith('/')) {
+                        return base.origin + url;
+                    }
+                    
+                    return new URL(url, baseUrl).href;
+                } catch (error) {
+                    return url;
+                }
+            }
+
+            extractFileName(url) {
+                try {
+                    const urlObj = new URL(url);
+                    const pathname = urlObj.pathname;
+                    const fileName = pathname.split('/').pop();
+                    return fileName || 'Unknown';
+                } catch (error) {
+                    const parts = url.split('/');
+                    return parts[parts.length - 1] || 'Unknown';
+                }
+            }
+
+            displayResults(images, checkedUrl) {
+                const totalImages = images.length;
+                const missingAltImages = images.filter(img => img.hasMissingAlt);
+                const hasAltImages = images.filter(img => !img.hasMissingAlt);
+
+                // Update summary
+                document.getElementById('totalImages').textContent = totalImages;
+                document.getElementById('missingAltImages').textContent = missingAltImages.length;
+                document.getElementById('hasAltImages').textContent = hasAltImages.length;
+
+                // Show summary
+                document.getElementById('summaryContainer').classList.remove('hidden');
+
+                // Show results container
+                document.getElementById('resultsContainer').classList.remove('hidden');
+
+                const resultsList = document.getElementById('resultsList');
+                const noResults = document.getElementById('noResults');
+
+                if (missingAltImages.length === 0) {
+                    resultsList.innerHTML = '';
+                    noResults.classList.remove('hidden');
+                    this.showStatus(`Analysis complete! All ${totalImages} images have alt text. 🎉`, 'success');
+                } else {
+                    noResults.classList.add('hidden');
+                    this.renderImageList(missingAltImages, resultsList);
+                    this.showStatus(`Analysis complete! Found ${missingAltImages.length} images missing alt text out of ${totalImages} total images.`, 'warning');
+                }
+            }
+
+            renderImageList(images, container) {
+                container.innerHTML = '';
+                
+                images.forEach((image, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'p-6 hover:bg-gray-50 transition-colors';
+                    
+                    item.innerHTML = `
+                        <div class="flex flex-col lg:flex-row lg:items-start gap-4">
+                            <div class="flex-shrink-0">
+                                <img 
+                                    src="${this.escapeHtml(image.src)}" 
+                                    alt="Preview" 
+                                    class="w-24 h-24 object-cover rounded-lg border border-gray-200"
+                                    onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'96\\' height=\\'96\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'%23d1d5db\\' stroke-width=\\'1\\' stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\'%3E%3Crect x=\\'3\\' y=\\'3\\' width=\\'18\\' height=\\'18\\' rx=\\'2\\' ry=\\'2\\'/%3E%3Ccircle cx=\\'8.5\\' cy=\\'8.5\\' r=\\'1.5\\'/%3E%3Cpolyline points=\\'21,15 16,10 5,21\\'/%3E%3C/svg%3E'"
+                                >
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-start justify-between mb-2">
+                                    <h3 class="text-lg font-semibold text-gray-900">Image #${index + 1}</h3>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        Missing Alt Text
+                                    </span>
+                                </div>
+                                
+                                <div class="space-y-2 text-sm">
+                                    <div>
+                                        <span class="font-medium text-gray-700">File Name:</span>
+                                        <span class="text-gray-900 ml-2">${this.escapeHtml(image.fileName)}</span>
+                                    </div>
+                                    
+                                    <div>
+                                        <span class="font-medium text-gray-700">URL:</span>
+                                        <a href="${this.escapeHtml(image.src)}" 
+                                           target="_blank" 
+                                           class="text-blue-600 hover:text-blue-800 ml-2 break-all">
+                                            ${this.escapeHtml(image.src)}
+                                        </a>
+                                    </div>
+                                    
+                                    ${image.title ? `
+                                        <div>
+                                            <span class="font-medium text-gray-700">Title:</span>
+                                            <span class="text-gray-900 ml-2">${this.escapeHtml(image.title)}</span>
+                                        </div>
+                                    ` : `
+                                        <div class="text-gray-500 italic">No title attribute</div>
+                                    `}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    container.appendChild(item);
+                });
+            }
+
+            setLoading(loading) {
+                const btn = document.getElementById('checkBtn');
+                const btnText = document.getElementById('btnText');
+                const btnSpinner = document.getElementById('btnSpinner');
+                
+                btn.disabled = loading;
+                
+                if (loading) {
+                    btnText.textContent = 'Checking...';
+                    btnSpinner.classList.remove('hidden');
+                } else {
+                    btnText.textContent = 'Check Images';
+                    btnSpinner.classList.add('hidden');
+                }
+            }
+
+            showStatus(message, type) {
+                const container = document.getElementById('statusContainer');
+                const statusMessage = document.getElementById('statusMessage');
+                
+                container.classList.remove('hidden');
+                
+                // Reset classes
+                statusMessage.className = 'p-4 rounded-lg';
+                
+                // Add appropriate styling based on type
+                switch (type) {
+                    case 'success':
+                        statusMessage.className += ' bg-green-100 border border-green-400 text-green-700';
+                        break;
+                    case 'error':
+                        statusMessage.className += ' bg-red-100 border border-red-400 text-red-700';
+                        break;
+                    case 'warning':
+                        statusMessage.className += ' bg-yellow-100 border border-yellow-400 text-yellow-700';
+                        break;
+                    default:
+                        statusMessage.className += ' bg-blue-100 border border-blue-400 text-blue-700';
+                }
+                
+                statusMessage.textContent = message;
+            }
+
+            hideResults() {
+                document.getElementById('summaryContainer').classList.add('hidden');
+                document.getElementById('resultsContainer').classList.add('hidden');
+                document.getElementById('statusContainer').classList.add('hidden');
+            }
+
+            isValidUrl(string) {
+                try {
+                    const url = new URL(string);
+                    return url.protocol === 'http:' || url.protocol === 'https:';
+                } catch (_) {
+                    return false;
+                }
+            }
+
+            escapeHtml(text) {
+                const map = {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                };
+                return text.replace(/[&<>"']/g, (m) => map[m]);
+            }
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            new AltTextChecker();
+        });
+    </script>
+</body>
+</html>
