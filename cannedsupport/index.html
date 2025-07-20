@@ -216,17 +216,17 @@
   </div>
 
   <script>
-    let categories = ['FAQs'];
+    let categories = ['Category 01'];
     let buttons = {
-      FAQs: [{
-          title: 'FAQ 1',
-          text: 'This is the answer for FAQ 1.\nIt can have multiple lines.',
-          isSample: true
+      Category 01: [{
+          title: 'Reply 01',
+          isFAQ: true,
+          text: 'This is the canned reply for Category 01, and set as an FAQ.\nIt can have multiple lines.',
         },
         {
-          title: 'FAQ 2',
-          text: 'This is the answer for FAQ 2.\nAnother line here.',
-          isSample: true
+          title: 'Reply 02',
+          isFAQ: false,
+          text: 'This is the canned reply for Category 01.\nAnother line here.',
         },
         // Add more predefined buttons for the FAQs category
       ],
@@ -328,12 +328,49 @@
 
     function renderAllContent() {
       allContent.innerHTML = '';
+    
+      // 1. Construct the FAQs buttons list dynamically (as the very first section)
+      const allFAQButtons = [];
+      for (const [cat, btnArr] of Object.entries(buttons)) {
+        for (const btn of btnArr) {
+          if (btn.isFAQ) {
+            // You can still edit or delete the button in its real category, so we need category info!
+            allFAQButtons.push({ ...btn, category: cat });
+          }
+        }
+      }
+      if (allFAQButtons.length > 0) {
+        // Create the FAQs section (cannot be edited/deleted)
+        const faqsContainer = document.createElement('div');
+        faqsContainer.className = 'mb-5';
+        const faqsTitleContainer = document.createElement('div');
+        faqsTitleContainer.className = 'flex items-center mb-1';
+        const faqsTitle = document.createElement('h2');
+        faqsTitle.className = 'w-fit text-xs rounded text-white bg-gray-400 bg-opacity-100 px-2 py-1';
+        faqsTitle.textContent = 'FAQs';
+        faqsTitleContainer.appendChild(faqsTitle);
+        faqsContainer.appendChild(faqsTitleContainer);
+    
+        const buttonWrapper = document.createElement('div');
+        buttonWrapper.className = 'flex flex-wrap items-center bg-white dark:bg-gray-800 pt-3 px-3 rounded-lg shadow-md';
+        allFAQButtons.forEach(btn => {
+          // Note: pass true as isSample if you want to mark FAQ buttons
+          buttonWrapper.appendChild(
+            createButton(btn.title, btn.text, btn.category, btn.isCustom, btn.isSample)
+          );
+        });
+        faqsContainer.appendChild(buttonWrapper);
+        allContent.appendChild(faqsContainer);
+      }
+    
+      // 2. Now loop through the rest of your real (non-faqs) categories and display as usual!
       categories.forEach(category => {
-        // Make sure the category exists in the buttons object
+        // (Don't create a FAQs duplicate)
+        //if (category === 'FAQs') return;
+    
         if (!buttons[category]) {
           buttons[category] = [];
         }
-        // Create the category container
         const categoryContainer = document.createElement('div');
         categoryContainer.className = 'mb-5';
         const categoryTitleContainer = document.createElement('div');
@@ -343,22 +380,20 @@
         categoryTitle.textContent = category.charAt(0).toUpperCase() + category.slice(1);
         categoryTitleContainer.appendChild(categoryTitle);
         // Add edit button for all categories
-        const editCategoryBtn = createEditCategoryButton(category);
-        categoryTitleContainer.appendChild(editCategoryBtn);
+        categoryTitleContainer.appendChild(createEditCategoryButton(category));
         categoryContainer.appendChild(categoryTitleContainer);
+    
         const buttonWrapper = document.createElement('div');
         buttonWrapper.className = 'flex flex-wrap items-center bg-white dark:bg-gray-800 pt-3 px-3 rounded-lg shadow-md';
-        const addCustomBtnClone = createAddCustomButton(category);
-        buttonWrapper.appendChild(addCustomBtnClone);
+        buttonWrapper.appendChild(createAddCustomButton(category));
         buttons[category].forEach(btn => {
-          buttonWrapper.appendChild(createButton(btn.title, btn.text, category, btn.isCustom, btn.isSample));
+          buttonWrapper.appendChild(
+            createButton(btn.title, btn.text, category, btn.isCustom, btn.isSample)
+          );
         });
         categoryContainer.appendChild(buttonWrapper);
         allContent.appendChild(categoryContainer);
       });
-      // Debug: Log the current categories and buttons
-      console.log('Current categories:', categories);
-      console.log('Current buttons:', buttons);
     }
 
     function createEditCategoryButton(category) {
