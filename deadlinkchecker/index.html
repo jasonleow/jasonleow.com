@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dead Link Checker</title>
+  
+  <!-- Primary Meta Tags -->
+  <meta name="title" content="Dead Link Checker" />
+  <meta name="description" content="A tool to check for dead links in your website - by Jason Leow @jasonleowsg" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://jasonleow.com/deadlinkschecker" />
+  <meta property="og:title" content="Dead Link Checker" />
+  <meta property="og:description" content="A tool to check for dead links in your website - by Jason Leow @jasonleowsg" />
+  <meta property="og:image" content="" />
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="https://jasonleow.com/deadlinkschecker" />
+  <meta property="twitter:title" content="Dead Link Checker" />
+  <meta property="twitter:description" content="A tool to check for dead links in your website - by Jason Leow @jasonleowsg" />
+  <meta property="twitter:image" content="" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="https://i.postimg.cc/Rh4Vjpq0/favicon-32px-tagchecker.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://i.postimg.cc/Rh4Vjpq0/favicon-32px-tagchecker.png">
+  
+  <script src="https://cdn.tailwindcss.com/3.3.0"></script>
+</head>
+<body class="bg-gradient-to-br from-slate-100 to-slate-300 min-h-screen flex items-center justify-center">
+  <div class="bg-white/90 shadow-xl rounded-xl p-8 w-full max-w-2xl">
+    <h1 class="text-3xl font-bold text-indigo-700 mb-3 flex items-center gap-2">
+      <svg class="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" stroke-width="2"
+           viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round"
+           d="M13.828 10.172a4 4 0 0 1 0 5.656l-1.414 1.414a4 4 0 0 1-5.656 0 4 4 0 0 1 0-5.656l1.414-1.414m1.414 7.07a2.5 2.5 0 1 1 3.535-3.535m2.343-2.343a2.5 2.5 0 1 1-3.535-3.535"></path></svg>
+      Dead Link Checker
+    </h1>
+    <p class="mb-8 text-gray-700">
+      Enter a URL to check all its links for 404/dead pages.<br>
+      <span class="text-sm text-gray-500">Note: Due to browser security, this tool works best for pages that allow cross-origin access.<br>It uses a public CORS proxy; results may be slow or limited.</span>
+    </p>
+    <form id="mainForm" class="flex gap-3 items-center mb-4" autocomplete="off">
+      <input type="url" id="url" required placeholder="https://example.com"
+        class="flex-grow border border-gray-300 rounded-lg px-4 py-2 bg-slate-50 focus:ring-2 focus:ring-indigo-400 focus:outline-none text-lg shadow-sm"
+      >
+      <button type="submit"
+        class="bg-indigo-600 text-white px-6 py-2 rounded-lg shadow hover:bg-indigo-700 font-semibold transition">
+        Check Links
+      </button>
+    </form>
+    <div id="results" class="mt-6"></div>
+  </div>
+  <div class="text-center text-sm mt-20 mb-10 space-y-3">
+    <div class="">A project by <a href="https://jasonleow.com" target="_blank" class="text-blue-600 hover:text-blue-800">Jason Leow</a> <a href="https://x.com/jasonleowsg" target="_blank" class="text-blue-600 hover:text-blue-800">@jasonleowsg</a></div>
+    <div class="">Check your <span><a class="text-blue-600 hover:text-blue-800" href="https://jasonleow.com/alttextchecker/" target="_blank">images' alt text</a></span> too!</div>
+    <div>
+      <a class="text-blue-600 hover:text-blue-800" href="https://jasonleow.com">jasonleow.com |</a>
+      <a class="text-blue-600 hover:text-blue-800" href="https://plugins.carrd.co">plugins.carrd.co |</a>
+      <a class="text-blue-600 hover:text-blue-800" href="https://commit365.dev">commit365.dev |</a>
+      <a class="text-blue-600 hover:text-blue-800" href="https://listskit.com">listskit.com |</a>
+      <a class="text-blue-600 hover:text-blue-800" href="https://golifelog.com">golifelog.com</a>
+    </div>
+  </div>
+  <script>
+    const corsProxy = "https://corsproxy.io/?";
+    // Alternative: "https://api.allorigins.win/raw?url="
+
+    function getStatusBadge(status) {
+      if (status.includes("OK")) {
+        return `<span class="inline-block bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-bold">${status}</span>`;
+      }
+      if (status.includes("404") || status.includes('dead') || status === "Request Failed") {
+        return `<span class="inline-block bg-red-100 text-red-700 px-2 py-0.5 rounded text-xs font-bold">${status}</span>`;
+      }
+      if (status.includes("error") || status.includes("403")) {
+        return `<span class="inline-block bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded text-xs font-bold">${status}</span>`;
+      }
+      return `<span class="inline-block bg-gray-200 text-gray-700 px-2 py-0.5 rounded text-xs">${status}</span>`;
+    }
+
+    document.getElementById('mainForm').addEventListener('submit', async function(e){
+      e.preventDefault();
+      const url = document.getElementById('url').value.trim();
+      document.getElementById('results').innerHTML = `
+        <div class="flex flex-col items-center gap-2">
+          <svg class="animate-spin h-7 w-7 text-indigo-400 mt-2" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
+          <span class="text-gray-500">Fetching page...</span>
+        </div>`;
+      let html;
+      try {
+        const res = await fetch(corsProxy + encodeURIComponent(url));
+        if (!res.ok) throw new Error("Error fetching page: " + res.status);
+        html = await res.text();
+      } catch (err) {
+        document.getElementById('results').innerHTML = `<div class="bg-red-100 text-red-700 p-4 rounded-lg font-semibold">${err.message}</div>`;
+        return;
+      }
+
+      // Parse HTML for <a href>
+      let links = [];
+      try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, "text/html");
+        links = Array.from(doc.querySelectorAll('a[href]'))
+          .map(a => a.href)
+          .filter(href => href.startsWith('http'));
+        links = Array.from(new Set(links)); // unique
+      } catch {
+        document.getElementById('results').innerHTML = `<div class="bg-red-100 text-red-700 p-4 rounded-lg font-semibold">Failed to parse HTML!</div>`;
+        return;
+      }
+
+      if (!links.length) {
+        document.getElementById('results').innerHTML = `<div class="bg-yellow-50 text-yellow-700 p-4 rounded-lg font-semibold">No links found on page.</div>`;
+        return;
+      }
+      document.getElementById('results').innerHTML = `
+        <div class="flex flex-col items-center gap-2">
+          <svg class="animate-spin h-7 w-7 text-indigo-400 mt-2" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
+          <span class="text-gray-500">
+  Checking <span class="font-bold">${links.length}</span> links...
+</span>
+</div>`;
+
+      // Check all links, display results as soon as possible
+      let tableRows = '';
+      let checked = 0;
+      let results = Array(links.length).fill(null);
+
+      document.getElementById('results').innerHTML += `
+        <div id="progress" class="w-full bg-slate-200 rounded h-2 mt-3 overflow-hidden">
+          <div id="progressbar" class="bg-indigo-400 h-2 w-0 transition-all"></div>
+        </div>
+      `;
+
+      // For large link sets, check in parallel batches
+      const BATCH_SIZE = 5;
+      function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+      async function checkLink(lnk, idx) {
+        let status = "Checking...";
+        try {
+          const resp = await fetch(corsProxy + encodeURIComponent(lnk), {
+            method: 'HEAD',
+            mode: 'cors'
+          });
+          status = resp.status;
+          if (resp.status === 404) status = "404 (dead)";
+          else if (resp.status >= 400) status = `${resp.status} (error)`;
+          else status = `OK (${resp.status})`;
+        } catch {
+          try {
+            const resp = await fetch(corsProxy + encodeURIComponent(lnk), { method: 'GET', mode: 'cors' });
+            status = resp.status;
+            if (resp.status === 404) status = "404 (dead)";
+            else if (resp.status >= 400) status = `${resp.status} (error)`;
+            else status = `OK (${resp.status})`;
+          } catch {
+            status = "Request Failed";
+          }
+        }
+        results[idx] = { url: lnk, status };
+        checked++;
+        // Progress
+        let pct = Math.round(checked * 100 / links.length);
+        document.getElementById('progressbar').style.width = pct + "%";
+        // Render table incrementally
+        let out = `
+        <table class="min-w-full table-auto border mt-6 bg-white rounded-xl shadow">
+          <thead>
+            <tr class="bg-slate-50 text-slate-700">
+              <th class="px-4 py-2 text-left font-semibold">Link</th>
+              <th class="px-4 py-2 text-left font-semibold">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+        `;
+        for(let i=0; i<results.length; ++i){
+          const r = results[i];
+          if(!r) continue;
+          out += `
+            <tr class="hover:bg-slate-50">
+              <td class="px-4 py-2 break-all">
+                <a href="${r.url}" target="_blank" class="text-indigo-600 underline hover:text-indigo-900">${r.url}</a>
+              </td>
+              <td class="px-4 py-2">${getStatusBadge(r.status)}</td>
+            </tr>
+          `;
+        }
+        out += '</tbody></table>';
+        document.getElementById('results').querySelectorAll('table').forEach(tb => tb.remove());
+        document.getElementById('results').insertAdjacentHTML('beforeend', out);
+      }
+
+      // Run the batches
+      for(let i=0; i<links.length; i+=BATCH_SIZE){
+        await Promise.all(
+          links.slice(i, i+BATCH_SIZE).map((lnk, j) => checkLink(lnk, i+j))
+        );
+        await sleep(100); // avoid overloading the proxy/free API
+      }
+
+      // Remove spinner/progressbar after all done
+      document.getElementById('progress').remove();
+    });
+  </script>
+</body>
+</html>
