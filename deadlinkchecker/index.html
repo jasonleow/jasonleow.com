@@ -117,12 +117,15 @@
       }
       document.getElementById('results').innerHTML = `
         <div class="flex flex-col items-center gap-2">
-          <svg class="animate-spin h-7 w-7 text-indigo-400 mt-2" xmlns="http://www.w3.org/2000/svg" fill="none"
-            viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
+          <span class="flex space-x-2 my-4">
+            <span class="w-3 h-3 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+            <span class="w-3 h-3 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+            <span class="w-3 h-3 bg-blue-600 rounded-full animate-bounce"></span>
+          </span>
           <span class="text-gray-500">
-  Checking <span class="font-bold">${links.length}</span> links...
-</span>
-</div>`;
+            Checking <span class="font-bold">${links.length}</span> links...
+          </span>
+        </div>`;
 
       // Check all links, display results as soon as possible
       let tableRows = '';
