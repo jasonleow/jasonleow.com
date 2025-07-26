@@ -110,8 +110,14 @@
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, "text/html");
         links = Array.from(doc.querySelectorAll('a[href]'))
-          .map(a => a.href)
-          .filter(href => href.startsWith('http'));
+          .map(a => {
+            try {
+              return new URL(a.getAttribute('href'), url).href;
+            } catch (e) {
+              return null;
+            }
+          })
+          .filter(href => href && href.startsWith('http'));
         links = Array.from(new Set(links)); // unique
       } catch {
         document.getElementById('results').innerHTML = `<div class="bg-red-100 text-red-700 p-4 rounded-lg font-semibold">Failed to parse HTML!</div>`;
