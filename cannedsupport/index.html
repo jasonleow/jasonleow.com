@@ -231,9 +231,28 @@
       const rect = buttonEl.getBoundingClientRect();
       const scrollTop = window.scrollY || document.documentElement.scrollTop;
       const scrollLeft = window.scrollX || document.documentElement.scrollLeft;
-      modalBox.style.top = (rect.top + scrollTop + rect.height + 8) + 'px';
+      const modalHeight = modalBox.offsetHeight || 150; // Fallback height if hidden
+    
+      // Space calculations
+      const spaceBelow = window.innerHeight - (rect.bottom);
+      const spaceAbove = rect.top;
+    
+      let top;
+      if (spaceBelow > modalHeight + 24) {
+        // Enough space below: show below
+        top = rect.top + scrollTop + rect.height + 8;
+      } else if (spaceAbove > modalHeight + 24) {
+        // Enough space above: show above
+        top = rect.top + scrollTop - modalHeight - 8;
+      } else {
+        // Not enough space: clamp to fit within window
+        top = Math.max(scrollTop + 8, Math.min(rect.top + scrollTop + rect.height + 8, scrollTop + window.innerHeight - modalHeight - 8));
+      }
+      
+      modalBox.style.top = top + 'px';
       modalBox.style.left = (rect.left + scrollLeft) + 'px';
     }
+
     function hideButtonPreviewModal() {
       const modal = document.getElementById('buttonPreviewModal');
       const modalBox = document.getElementById('buttonPreviewModalBox');
