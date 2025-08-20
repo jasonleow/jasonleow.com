@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Auto-select Class 3 Motorcar (visible overlay)
+// @name         Auto-select Class 3 Motorcar (visible overlay + hotkey + click next button)
 // @namespace    http://tampermonkey.net/
-// @version      1.2
-// @description  Selects 'Class 3 Motorcar' and shows the selection in a visible corner overlay, then hard-refreshes after 1 minute
+// @version      1.4
+// @description  Select course, show overlay, hard-refresh, Esc hotkey, click next button after auto-select
 // @author       You
 // @match        *://*/*
 // @grant        none
@@ -30,39 +30,51 @@
             document.body.appendChild(overlay);
         }
         overlay.textContent = text;
-        // Automatically hide after 7 seconds
         setTimeout(function() {
             if (overlay) overlay.remove();
         }, 7000);
     }
 
+    // Try to click the "view available sessions" button with retries
+    function clickNextButton(attempt = 1) {
+        // ctl00_ContentPlaceHolder1_IBtnM2 is element ID for Sept calender icon
+        var btn = document.getElementById("ctl00_ContentPlaceHolder1_IBtnM2");
+        if (btn) {
+            btn.click();
+            showOverlay('Clicked: View Available Sessions');
+        } else if (attempt <= 5) {
+            // Try again in 400ms, up to 5 times
+            setTimeout(function() {
+                clickNextButton(attempt + 1);
+            }, 400);
+        } else {
+            showOverlay('🗓 Sept cal was not found after selection.');
+        }
+    }
+
     function selectCourse() {
         var select = document.getElementById("ctl00_ContentPlaceHolder1_ddlCourse");
         if (select) {
-            select.value = "MANUAL-C3           "; // exact value
+            select.value = "MANUAL-C3           ";
             select.dispatchEvent(new Event('change', { bubbles: true }));
             var selectedText = select.options[select.selectedIndex].text;
             showOverlay('Auto-selected: ' + selectedText);
 
-            // Hard refresh the page 1 minute after this function runs
+            // Try to click next button after short delay (page logic needs time to render it)
+            setTimeout(clickNextButton, 800);
+
             setTimeout(function() {
-                location.reload(); // location.reload(true) for hard refresh (force-reload), but it's deprecated
-            }, 60000); // 1 minute = 60000 ms
+                location.reload();
+            }, 60000);
         }
     }
 
     window.addEventListener('DOMContentLoaded', selectCourse);
-    setTimeout(selectCourse, 180000); // Set this 3min time interval to click on <select>
+    setTimeout(selectCourse, 180000);
 
-    // Add hotkey: ESC runs selectCourse()
+    // ESC hotkey
     window.addEventListener('keydown', function(e) {
-        if (
-            // For modern browsers
-            e.key === "Escape" ||
-            // For legacy browsers
-            e.key === "Esc" ||
-            e.keyCode === 27
-        ) {
+        if (e.key === "Escape" || e.key === "Esc" || e.keyCode === 27) {
             selectCourse();
         }
     });
