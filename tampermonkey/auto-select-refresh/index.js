@@ -2,15 +2,15 @@
 // @name         Auto-select Class 3 Motorcar (visible overlay)
 // @namespace    http://tampermonkey.net/
 // @version      1.2
-// @description  Selects 'Class 3 Motorcar' on bookingportal.cdc.com.sg and shows the selection in a visible corner overlay, then hard-refreshes after 1 minute. Cycles every 3min.
+// @description  Selects 'Class 3 Motorcar' and shows the selection in a visible corner overlay, then hard-refreshes after 1 minute
 // @author       You
 // @match        *://*/*
 // @grant        none
 // ==/UserScript==
- 
+
 (function() {
     'use strict';
- 
+
     function showOverlay(text) {
         let overlay = document.getElementById('tm-selected-course-info-overlay');
         if (!overlay) {
@@ -35,7 +35,7 @@
             if (overlay) overlay.remove();
         }, 7000);
     }
- 
+
     function selectCourse() {
         var select = document.getElementById("ctl00_ContentPlaceHolder1_ddlCourse");
         if (select) {
@@ -43,14 +43,27 @@
             select.dispatchEvent(new Event('change', { bubbles: true }));
             var selectedText = select.options[select.selectedIndex].text;
             showOverlay('Auto-selected: ' + selectedText);
- 
+
             // Hard refresh the page 1 minute after this function runs
             setTimeout(function() {
                 location.reload(); // location.reload(true) for hard refresh (force-reload), but it's deprecated
             }, 60000); // 1 minute = 60000 ms
         }
     }
- 
+
     window.addEventListener('DOMContentLoaded', selectCourse);
     setTimeout(selectCourse, 180000); // Set this 3min time interval to click on <select>
+
+    // Add hotkey: ESC runs selectCourse()
+    window.addEventListener('keydown', function(e) {
+        if (
+            // For modern browsers
+            e.key === "Escape" ||
+            // For legacy browsers
+            e.key === "Esc" ||
+            e.keyCode === 27
+        ) {
+            selectCourse();
+        }
+    });
 })();
