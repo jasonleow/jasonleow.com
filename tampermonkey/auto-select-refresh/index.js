@@ -72,10 +72,18 @@
     window.addEventListener('DOMContentLoaded', selectCourse);
     setTimeout(selectCourse, 180000);
 
-    // ESC hotkey
+    // ESC and BACKTICK (`) hotkeys
     window.addEventListener('keydown', function(e) {
+        // ESC triggers selectCourse()
         if (e.key === "Escape" || e.key === "Esc" || e.keyCode === 27) {
             selectCourse();
+        }
+        // BACKTICK ` reloads the page (key code 192, e.key === "`")
+        if (e.key === "`" || e.keyCode === 192) {
+            showOverlay('Page reloading by backtick hotkey...');
+            setTimeout(function() {
+                location.reload();
+            }, 300); // 0.3s to see overlay
         }
     });
 })();
