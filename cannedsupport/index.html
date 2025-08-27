@@ -888,9 +888,10 @@
 
     function clearSearch() {
       const searchInput = document.getElementById('searchInput');
-      searchInput.value = '';
-      searchButtons("");
       window.scrollTo({ top: 0, left: 0, behavior: "smooth" }); // scroll to top
+	    searchInput.value = '';
+      searchButtons("");
+	    searchInput.focus();
     }
 
     // Add keyboard shortcut to focus search
