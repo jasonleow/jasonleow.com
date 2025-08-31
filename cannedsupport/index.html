@@ -97,7 +97,7 @@
   <!-- Preview Modal (for canned replies on hover) -->
   <div id="buttonPreviewModal" class="fixed hidden z-50 top-0 left-0 w-full h-full pointer-events-none">
     <div id="buttonPreviewModalBox"
-         class="absolute pointer-events-auto bg-white border border-gray-300 dark:border-gray-600 dark:bg-gray-800 text-gray-900 dark:text-gray-50 px-5 py-3 rounded-lg shadow-xl max-w-lg"
+         class="absolute pointer-events-auto bg-white border border-gray-300 dark:border-gray-600 dark:bg-gray-800 text-gray-900 dark:text-gray-50 px-5 py-3 rounded-lg shadow-xl max-w-2xl"
          style="display:none;">
       <div class="whitespace-pre-line" id="buttonPreviewModalContent"></div>
     </div>
@@ -105,7 +105,7 @@
 
   <div class="container md:w-7xl md:max-w-full md:mx-auto p-10 flex justify-center">
     <div class="">
-      <div class="flex items-center justify-between mx-auto w-[60rem] max-w-[60rem]">
+      <div class="flex items-center justify-between">
         <div class="flex items-center justify-start">
           <img src="https://i.postimg.cc/Hxk5mwPM/cannedsupport-logo-transparent-compressed.png" class="h-20 w-20 -mt-5 mr-3" />
           <div>
@@ -120,27 +120,27 @@
             <p class="text-sm dark:text-white mb-6">A tool for customer support professionals to quickly preset and copy canned messages.</p>
           </div>
         </div>
-        <div class="flex items-center space-x-2">
+        <div class="flex items-center space-x-2 mr-5">
+          <!-- Search Input -->
+          <div class="w-[25rem] max-w-[25rem] ml-4 mb-4">
+            <div class="relative">
+              <input id="searchInput" type="text" placeholder="Search for text content in buttons..." class="w-full p-2 pl-10 pr-10 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500 dark:focus:ring-teal-500 focus:border-transparent">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <button id="clearButton" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          
           <button id="hotKeys" onclick="openHotKeysModal()" title="Show hot keys" class="mb-4 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition duration-300">🔑</button>
           <button id="darkModeToggle" title="Toggle dark mode" class="mb-4 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition duration-300">🌗</button>
           <button id="downloadJSON" title="Download a copy of all your canned replies in .JSON file format" class="mb-4 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition duration-300">📥</button>
-        </div>
-      </div>
-
-      <!-- Search Input -->
-      <div class="mx-auto w-[60rem] max-w-[60rem] mb-6">
-        <div class="relative">
-          <input id="searchInput" type="text" placeholder="Search for text content in buttons..." class="w-full p-2 pl-10 pr-10 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500 dark:focus:ring-teal-500 focus:border-transparent">
-          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
-            </svg>
-          </div>
-          <button id="clearButton" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-            </svg>
-          </button>
         </div>
       </div>
 
