@@ -506,19 +506,24 @@
       preview.innerHTML = '';
     }
 
-    function copyToClipboard(text, mainBtn) {
-      // Save the current innerHTML and class for restoration
-      const originalHTML = mainBtn.innerHTML;
-      const originalClass = mainBtn.className;
-
-      // Set "Copied" message, but keep split button shape (no rounded right)
-      mainBtn.innerHTML = '<span class="w-full text-center">Copied ✓</span>';
-      mainBtn.className = 'bg-teal-500 border border-teal-500 text-white text-xs py-1.5 pl-2.5 pr-2 rounded-l-lg rounded-r-none inline-flex items-center justify-center hover:bg-teal-600 transition duration-300 focus:z-10';
-
-      setTimeout(() => {
-        mainBtn.innerHTML = originalHTML;
-        mainBtn.className = originalClass;
-      }, 2000);
+    function copyToClipboard(text, button) {
+      navigator.clipboard.writeText(text).then(() => {
+        const originalContent = button.innerHTML;
+        const originalClasses = button.className;
+        const originalWidth = button.offsetWidth;
+        // Update button content and classes for Copied ✓
+        button.innerHTML = '<span class="flex items-center justify-center w-full">Copied ✓</span>';
+        button.className = 'bg-teal-500 border border-teal-500 text-white text-xs py-1.5 pl-2.5 pr-2 rounded-l-lg rounded-r-none inline-flex items-center justify-center hover:bg-teal-600 transition duration-300 focus:z-10';
+        button.style.width = `${originalWidth}px`;
+        setTimeout(() => {
+          button.innerHTML = originalContent;
+          button.className = originalClasses;
+          button.style.width = '';
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy text: ', err);
+        alert('Failed to copy text. Please try again (you may need HTTPS and/or to allow clipboard permissions).');
+      });
     }
 
     function saveToLocalStorage() {
