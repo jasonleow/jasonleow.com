@@ -198,20 +198,93 @@
   <!-- ======================= MAIN SCRIPT ======================= -->
   <script>
     // ------- The beginning section with your state variables and helpers --------
-    let categories = ['Category01'];
-    let buttons = {
-      Category01: [        {
-          title: 'Reply01',
-          isFAQ: true,
-          text: 'This is the canned reply for Category01, and set as an FAQ.\nIt can have multiple lines.',
-        },
-        {
-          title: 'Reply02',
-          isFAQ: false,
-          text: 'This is the canned reply for Category01.\nAnother line here.',
-        }
-      ]
-    };
+    let categories = ['Acknowledgement', 'Apology', 'Next Steps'];
+
+	let buttons = {
+	  Acknowledgement: [
+	    {
+	      title: 'Request Received',
+	      isFAQ: true,
+	      text: 'Hi [Customer Name],\n\nThanks for reaching out! We have received your request and are reviewing it. We will update you soon.',
+	    },
+	    {
+	      title: 'Ticket Logged',
+	      isFAQ: true,
+	      text: 'Hello [Customer Name],\n\nYour ticket #[Ticket Number] has been logged. Our team will get back to you as soon as possible.',
+	    },
+	    {
+	      title: 'Need More Info',
+	      isFAQ: false,
+	      text: 'Hi [Customer Name],\n\nCould you please provide more details about the issue so we can assist you better?',
+	    },
+	    {
+	      title: 'Request Under Review',
+	      isFAQ: false,
+	      text: 'Hello [Customer Name],\n\nWe’re currently reviewing your request and will keep you updated on progress.',
+	    },
+	    {
+	      title: 'Follow-up Reminder',
+	      isFAQ: false,
+	      text: 'Hi [Customer Name],\n\nJust checking in to see if you still need assistance on your request. Please let us know.',
+	    }
+	  ],
+	
+	  Apology: [
+	    {
+	      title: 'Apologize for Issue',
+	      isFAQ: true,
+	      text: 'Hi [Customer Name],\n\nWe’re sorry you encountered this issue. We’re working hard to fix it as soon as possible.',
+	    },
+	    {
+	      title: 'Delay Apology',
+	      isFAQ: false,
+	      text: 'Hello [Customer Name],\n\nApologies for the delay. We appreciate your patience and are doing our best to resolve this quickly.',
+	    },
+	    {
+	      title: 'Wrong Item Sent',
+	      isFAQ: false,
+	      text: 'Dear [Customer Name],\n\nWe apologize for the mistake. We will send the correct item immediately.',
+	    },
+	    {
+	      title: 'Technical Issue Apology',
+	      isFAQ: false,
+	      text: 'Hi [Customer Name],\n\nSorry for the inconvenience caused by the technical issue. Our team is on it and will update you soon.',
+	    },
+	    {
+	      title: 'Compensation Offer',
+	      isFAQ: false,
+	      text: 'Hello [Customer Name],\n\nWe apologize for the trouble and would like to offer you [discount/credit] as a token of goodwill.',
+	    }
+	  ],
+	
+	  NextSteps: [
+	    {
+	      title: 'What to Expect Next',
+	      isFAQ: true,
+	      text: 'Hi [Customer Name],\n\nHere’s what you can expect next: our team will review your case and reach out with an update within [timeframe].',
+	    },
+	    {
+	      title: 'Escalation Process',
+	      isFAQ: false,
+	      text: 'Hello [Customer Name],\n\nWe are escalating your issue to our specialist team who will investigate further and follow up with you soon.',
+	    },
+	    {
+	      title: 'Providing Additional Details',
+	      isFAQ: false,
+	      text: 'Hi [Customer Name],\n\nIf you have any more details or documents that could help us, please share them to speed up the resolution.',
+	    },
+	    {
+	      title: 'Expected Resolution Time',
+	      isFAQ: false,
+	      text: 'Hello [Customer Name],\n\nBased on initial assessment, we expect to resolve your issue within [timeframe]. We appreciate your patience.',
+	    },
+	    {
+	      title: 'How to Contact Support Again',
+	      isFAQ: false,
+	      text: 'Hi [Customer Name],\n\nIf you have any further questions or concerns, don’t hesitate to reach out to us anytime.',
+	    }
+	  ]
+	};
     const allContent = document.getElementById('allContent');
     const customBtnModal = document.getElementById('customBtnModal');
     const customBtnTitle = document.getElementById('customBtnTitle');
