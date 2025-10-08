@@ -199,33 +199,58 @@
   <script>
     // ------- The beginning section with your state variables and helpers --------
     let categories = ['Acknowledgement', 'Apology', 'NextSteps'];
-
+	
 	let buttons = {
 	  Acknowledgement: [
 	    {
 	      title: 'Request Received',
 	      isFAQ: true,
-	      text: 'Hi [Customer Name],\n\nThanks for reaching out! We have received your request and are reviewing it. We will update you soon.',
+	      text: 'Thanks for reaching out! We have received your request and are reviewing it. We will update you soon.',
 	    },
 	    {
 	      title: 'Ticket Logged',
 	      isFAQ: true,
-	      text: 'Hello [Customer Name],\n\nYour ticket #[Ticket Number] has been logged. Our team will get back to you as soon as possible.',
+	      text: 'Your ticket #[Ticket Number] has been logged. Our team will get back to you as soon as possible.',
 	    },
 	    {
 	      title: 'Need More Info',
 	      isFAQ: false,
-	      text: 'Hi [Customer Name],\n\nCould you please provide more details about the issue so we can assist you better?',
+	      text: 'Could you please provide more details about the issue so we can assist you better?',
 	    },
 	    {
 	      title: 'Request Under Review',
 	      isFAQ: false,
-	      text: 'Hello [Customer Name],\n\nWe’re currently reviewing your request and will keep you updated on progress.',
+	      text: 'We’re currently reviewing your request and will keep you updated on progress.',
 	    },
 	    {
 	      title: 'Follow-up Reminder',
 	      isFAQ: false,
-	      text: 'Hi [Customer Name],\n\nJust checking in to see if you still need assistance on your request. Please let us know.',
+	      text: 'Just checking in to see if you still need assistance on your request. Please let us know.',
+	    },
+	    {
+	      title: 'Order Confirmation',
+	      isFAQ: true,
+	      text: 'Your order has been confirmed. If you have any questions, feel free to ask.',
+	    },
+	    {
+	      title: 'General Inquiry Received',
+	      isFAQ: true,
+	      text: 'We have received your inquiry and will get back to you as soon as possible.',
+	    },
+	    {
+	      title: 'Support Scheduled',
+	      isFAQ: false,
+	      text: 'Your support session has been scheduled. Details will be sent to your email.',
+	    },
+	    {
+	      title: 'Information Sent',
+	      isFAQ: true,
+	      text: 'We have sent the requested information to your email. Please check and let us know if you need anything else.',
+	    },
+	    {
+	      title: 'Service Request Acknowledged',
+	      isFAQ: true,
+	      text: 'Your service request is acknowledged and being handled by our team.',
 	    }
 	  ],
 	
@@ -233,55 +258,105 @@
 	    {
 	      title: 'Apologize for Issue',
 	      isFAQ: true,
-	      text: 'Hi [Customer Name],\n\nWe’re sorry you encountered this issue. We’re working hard to fix it as soon as possible.',
+	      text: 'We’re sorry you encountered this issue. We’re working hard to fix it as soon as possible.',
 	    },
 	    {
 	      title: 'Delay Apology',
 	      isFAQ: false,
-	      text: 'Hello [Customer Name],\n\nApologies for the delay. We appreciate your patience and are doing our best to resolve this quickly.',
+	      text: 'Apologies for the delay. We appreciate your patience and are doing our best to resolve this quickly.',
 	    },
 	    {
 	      title: 'Wrong Item Sent',
 	      isFAQ: false,
-	      text: 'Dear [Customer Name],\n\nWe apologize for the mistake. We will send the correct item immediately.',
+	      text: 'We apologize for the mistake. We will send the correct item immediately.',
 	    },
 	    {
 	      title: 'Technical Issue Apology',
 	      isFAQ: false,
-	      text: 'Hi [Customer Name],\n\nSorry for the inconvenience caused by the technical issue. Our team is on it and will update you soon.',
+	      text: 'Sorry for the inconvenience caused by the technical issue. Our team is on it and will update you soon.',
 	    },
 	    {
 	      title: 'Compensation Offer',
 	      isFAQ: false,
-	      text: 'Hello [Customer Name],\n\nWe apologize for the trouble and would like to offer you [discount/credit] as a token of goodwill.',
+	      text: 'We apologize for the trouble and would like to offer you [discount/credit] as a token of goodwill.',
+	    },
+	    {
+	      title: 'Service Disruption Apology',
+	      isFAQ: false,
+	      text: 'We apologize for the service disruption you experienced and are working to restore full service quickly.',
+	    },
+	    {
+	      title: 'Billing Issue Apology',
+	      isFAQ: false,
+	      text: 'We’re sorry for any billing errors and are reviewing your account to correct this promptly.',
+	    },
+	    {
+	      title: 'Poor Experience Apology',
+	      isFAQ: true,
+	      text: 'We regret that your experience did not meet expectations and apologize for any inconvenience caused.',
+	    },
+	    {
+	      title: 'Refund Processed',
+	      isFAQ: true,
+	      text: 'Your refund has been processed and should reflect in your account shortly.',
+	    },
+	    {
+	      title: 'Order Cancellation Apology',
+	      isFAQ: false,
+	      text: 'We apologize for the cancellation of your order and appreciate your understanding.',
 	    }
 	  ],
 	
-	  NextSteps: [
+	  Next Steps: [
 	    {
 	      title: 'What to Expect Next',
 	      isFAQ: true,
-	      text: 'Hi [Customer Name],\n\nHere’s what you can expect next: our team will review your case and reach out with an update within [timeframe].',
+	      text: 'Our team will review your case and provide an update within [timeframe].',
 	    },
 	    {
 	      title: 'Escalation Process',
 	      isFAQ: false,
-	      text: 'Hello [Customer Name],\n\nWe are escalating your issue to our specialist team who will investigate further and follow up with you soon.',
+	      text: 'Your issue has been escalated to our specialist team for further investigation.',
 	    },
 	    {
 	      title: 'Providing Additional Details',
 	      isFAQ: false,
-	      text: 'Hi [Customer Name],\n\nIf you have any more details or documents that could help us, please share them to speed up the resolution.',
+	      text: 'If you have any additional information that could help, please share it with us.',
 	    },
 	    {
 	      title: 'Expected Resolution Time',
 	      isFAQ: false,
-	      text: 'Hello [Customer Name],\n\nBased on initial assessment, we expect to resolve your issue within [timeframe]. We appreciate your patience.',
+	      text: 'We expect to resolve your issue within [timeframe]. We appreciate your patience.',
 	    },
 	    {
 	      title: 'How to Contact Support Again',
 	      isFAQ: false,
-	      text: 'Hi [Customer Name],\n\nIf you have any further questions or concerns, don’t hesitate to reach out to us anytime.',
+	      text: 'If you need further assistance, feel free to reach out to our support team anytime.',
+	    },
+	    {
+	      title: 'Ticket Closure',
+	      isFAQ: true,
+	      text: 'We will close this ticket soon. If you have additional questions, please let us know before then.',
+	    },
+	    {
+	      title: 'Scheduling Follow-up',
+	      isFAQ: false,
+	      text: 'A follow-up session has been scheduled. Details will be shared shortly.',
+	    },
+	    {
+	      title: 'Next Steps Confirmation',
+	      isFAQ: true,
+	      text: 'Confirming next steps as discussed. Please reply if you need any changes.',
+	    },
+	    {
+	      title: 'Troubleshooting Instructions',
+	      isFAQ: false,
+	      text: 'Please try the following steps and let us know if the issue persists.',
+	    },
+	    {
+	      title: 'Resolution Confirmation',
+	      isFAQ: true,
+	      text: 'We believe the issue is resolved. Please confirm at your convenience.',
 	    }
 	  ]
 	};
