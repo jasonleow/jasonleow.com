@@ -198,165 +198,165 @@
   <!-- ======================= MAIN SCRIPT ======================= -->
   <script>
     // ------- The beginning section with your state variables and helpers --------
-    let categories = ['Acknowledgement', 'Apology', 'NextSteps'];
+    let categories = ["Acknowledgement", "Apology", "NextSteps"];
 	
 	let buttons = {
 	  Acknowledgement: [
 	    {
-	      title: 'Request Received',
+	      title: "Request Received",
 	      isFAQ: true,
-	      text: 'Thanks for reaching out! We have received your request and are reviewing it. We will update you soon.',
+	      text: "Thanks for reaching out! We have received your request and are reviewing it. We will update you soon.",
 	    },
 	    {
-	      title: 'Ticket Logged',
+	      title: "Ticket Logged",
 	      isFAQ: true,
-	      text: 'Your ticket #[Ticket Number] has been logged. Our team will get back to you as soon as possible.',
+	      text: "Your ticket #[Ticket Number] has been logged. Our team will get back to you as soon as possible.",
 	    },
 	    {
-	      title: 'Need More Info',
+	      title: "Need More Info",
 	      isFAQ: false,
-	      text: 'Could you please provide more details about the issue so we can assist you better?',
+	      text: "Could you please provide more details about the issue so we can assist you better?",
 	    },
 	    {
-	      title: 'Request Under Review',
+	      title: "Request Under Review",
 	      isFAQ: false,
-	      text: 'We’re currently reviewing your request and will keep you updated on progress.',
+	      text: "We’re currently reviewing your request and will keep you updated on progress.",
 	    },
 	    {
-	      title: 'Follow-up Reminder',
+	      title: "Follow-up Reminder",
 	      isFAQ: false,
-	      text: 'Just checking in to see if you still need assistance on your request. Please let us know.',
+	      text: "Just checking in to see if you still need assistance on your request. Please let us know.",
 	    },
 	    {
-	      title: 'Order Confirmation',
+	      title: "Order Confirmation",
 	      isFAQ: true,
-	      text: 'Your order has been confirmed. If you have any questions, feel free to ask.',
+	      text: "Your order has been confirmed. If you have any questions, feel free to ask.",
 	    },
 	    {
-	      title: 'General Inquiry Received',
+	      title: "General Inquiry Received",
 	      isFAQ: true,
-	      text: 'We have received your inquiry and will get back to you as soon as possible.',
+	      text: "We have received your inquiry and will get back to you as soon as possible.",
 	    },
 	    {
-	      title: 'Support Scheduled',
+	      title: "Support Scheduled",
 	      isFAQ: false,
-	      text: 'Your support session has been scheduled. Details will be sent to your email.',
+	      text: "Your support session has been scheduled. Details will be sent to your email.",
 	    },
 	    {
-	      title: 'Information Sent',
+	      title: "Information Sent",
 	      isFAQ: true,
-	      text: 'We have sent the requested information to your email. Please check and let us know if you need anything else.',
+	      text: "We have sent the requested information to your email. Please check and let us know if you need anything else.",
 	    },
 	    {
-	      title: 'Service Request Acknowledged',
+	      title: "Service Request Acknowledged",
 	      isFAQ: true,
-	      text: 'Your service request is acknowledged and being handled by our team.',
+	      text: "Your service request is acknowledged and being handled by our team.",
 	    }
 	  ],
 	
 	  Apology: [
 	    {
-	      title: 'Apologize for Issue',
+	      title: "Apologize for Issue",
 	      isFAQ: true,
-	      text: 'We’re sorry you encountered this issue. We’re working hard to fix it as soon as possible.',
+	      text: "We’re sorry you encountered this issue. We’re working hard to fix it as soon as possible.",
 	    },
 	    {
-	      title: 'Delay Apology',
+	      title: "Delay Apology",
 	      isFAQ: false,
-	      text: 'Apologies for the delay. We appreciate your patience and are doing our best to resolve this quickly.',
+	      text: "Apologies for the delay. We appreciate your patience and are doing our best to resolve this quickly.",
 	    },
 	    {
-	      title: 'Wrong Item Sent',
+	      title: "Wrong Item Sent",
 	      isFAQ: false,
-	      text: 'We apologize for the mistake. We will send the correct item immediately.',
+	      text: "We apologize for the mistake. We will send the correct item immediately.",
 	    },
 	    {
-	      title: 'Technical Issue Apology',
+	      title: "Technical Issue Apology",
 	      isFAQ: false,
-	      text: 'Sorry for the inconvenience caused by the technical issue. Our team is on it and will update you soon.',
+	      text: "Sorry for the inconvenience caused by the technical issue. Our team is on it and will update you soon.",
 	    },
 	    {
-	      title: 'Compensation Offer',
+	      title: "Compensation Offer",
 	      isFAQ: false,
-	      text: 'We apologize for the trouble and would like to offer you [discount/credit] as a token of goodwill.',
+	      text: "We apologize for the trouble and would like to offer you [discount/credit] as a token of goodwill.",
 	    },
 	    {
-	      title: 'Service Disruption Apology',
+	      title: "Service Disruption Apology",
 	      isFAQ: false,
-	      text: 'We apologize for the service disruption you experienced and are working to restore full service quickly.',
+	      text: "We apologize for the service disruption you experienced and are working to restore full service quickly.",
 	    },
 	    {
-	      title: 'Billing Issue Apology',
+	      title: "Billing Issue Apology",
 	      isFAQ: false,
-	      text: 'We’re sorry for any billing errors and are reviewing your account to correct this promptly.',
+	      text: "We’re sorry for any billing errors and are reviewing your account to correct this promptly.",
 	    },
 	    {
-	      title: 'Poor Experience Apology',
+	      title: "Poor Experience Apology",
 	      isFAQ: true,
-	      text: 'We regret that your experience did not meet expectations and apologize for any inconvenience caused.',
+	      text: "We regret that your experience did not meet expectations and apologize for any inconvenience caused.",
 	    },
 	    {
-	      title: 'Refund Processed',
+	      title: "Refund Processed",
 	      isFAQ: true,
-	      text: 'Your refund has been processed and should reflect in your account shortly.',
+	      text: "Your refund has been processed and should reflect in your account shortly.",
 	    },
 	    {
-	      title: 'Order Cancellation Apology',
+	      title: "Order Cancellation Apology",
 	      isFAQ: false,
-	      text: 'We apologize for the cancellation of your order and appreciate your understanding.',
+	      text: "We apologize for the cancellation of your order and appreciate your understanding.",
 	    }
 	  ],
 	
-	  Next Steps: [
+	  NextSteps: [
 	    {
-	      title: 'What to Expect Next',
+	      title: "What to Expect Next",
 	      isFAQ: true,
-	      text: 'Our team will review your case and provide an update within [timeframe].',
+	      text: "Our team will review your case and provide an update within [timeframe].",
 	    },
 	    {
-	      title: 'Escalation Process',
+	      title: "Escalation Process",
 	      isFAQ: false,
-	      text: 'Your issue has been escalated to our specialist team for further investigation.',
+	      text: "Your issue has been escalated to our specialist team for further investigation.",
 	    },
 	    {
-	      title: 'Providing Additional Details',
+	      title: "Providing Additional Details",
 	      isFAQ: false,
-	      text: 'If you have any additional information that could help, please share it with us.',
+	      text: "If you have any additional information that could help, please share it with us.",
 	    },
 	    {
-	      title: 'Expected Resolution Time',
+	      title: "Expected Resolution Time",
 	      isFAQ: false,
-	      text: 'We expect to resolve your issue within [timeframe]. We appreciate your patience.',
+	      text: "We expect to resolve your issue within [timeframe]. We appreciate your patience.",
 	    },
 	    {
-	      title: 'How to Contact Support Again',
+	      title: "How to Contact Support Again",
 	      isFAQ: false,
-	      text: 'If you need further assistance, feel free to reach out to our support team anytime.',
+	      text: "If you need further assistance, feel free to reach out to our support team anytime.",
 	    },
 	    {
-	      title: 'Ticket Closure',
+	      title: "Ticket Closure",
 	      isFAQ: true,
-	      text: 'We will close this ticket soon. If you have additional questions, please let us know before then.',
+	      text: "We will close this ticket soon. If you have additional questions, please let us know before then.",
 	    },
 	    {
-	      title: 'Scheduling Follow-up',
+	      title: "Scheduling Follow-up",
 	      isFAQ: false,
-	      text: 'A follow-up session has been scheduled. Details will be shared shortly.',
+	      text: "A follow-up session has been scheduled. Details will be shared shortly.",
 	    },
 	    {
-	      title: 'Next Steps Confirmation',
+	      title: "Next Steps Confirmation",
 	      isFAQ: true,
-	      text: 'Confirming next steps as discussed. Please reply if you need any changes.',
+	      text: "Confirming next steps as discussed. Please reply if you need any changes.",
 	    },
 	    {
-	      title: 'Troubleshooting Instructions',
+	      title: "Troubleshooting Instructions",
 	      isFAQ: false,
-	      text: 'Please try the following steps and let us know if the issue persists.',
+	      text: "Please try the following steps and let us know if the issue persists.",
 	    },
 	    {
-	      title: 'Resolution Confirmation',
+	      title: "Resolution Confirmation",
 	      isFAQ: true,
-	      text: 'We believe the issue is resolved. Please confirm at your convenience.',
+	      text: "We believe the issue is resolved. Please confirm at your convenience.",
 	    }
 	  ]
 	};
