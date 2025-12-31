@@ -1,0 +1,32 @@
+/*
+Theme Name: Meth Child Theme
+Theme URI: http://codestag.com/themes/meth
+Description: Child theme for customizing Meth.
+Version: 1.0
+Author: Codestag
+Author URI: http://codestag.com/
+Template: meth
+*/
+
+/* Import Stylesheets, don't remove these.
+-----------------------------------------------------------*/
+@import url('/wp-content/themes/meth/style.css');
+
+/* Required Wordpress Classes, don't remove these.
+-----------------------------------------------------------*/
+.aligncenter {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+.alignleft { float: left; }
+.alignright { float: right; }
+
+/* Make all custom CSS changes BELOW this line
+-----------------------------------------------------------*/
+/* Example: Change the sidebar background to blue:
+#sidebar {
+	background: blue;
+}
+*/
+
