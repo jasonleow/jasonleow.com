@@ -9,8 +9,8 @@
 
 <channel>
 	<title>Outsprint</title>
-	<atom:link href="/feed/" rel="self" type="application/rss+xml" />
-	<link>/</link>
+	<atom:link href="/outsprint/feed/" rel="self" type="application/rss+xml" />
+	<link>/outsprint/</link>
 	<description>The fastest way to innovate public policy &#38; social services.</description>
 	<lastBuildDate>Tue, 10 Mar 2015 10:17:07 +0000</lastBuildDate>
 	<language>en-US</language>
@@ -21,15 +21,15 @@
 	
 
 <image>
-	<url>/wp-content/uploads/2020/05/cropped-logo-square-rounded-corner-e1517212607710-32x32.png</url>
+	<url>/outsprint/wp-content/uploads/2020/05/cropped-logo-square-rounded-corner-e1517212607710-32x32.png</url>
 	<title>Outsprint</title>
-	<link>/</link>
+	<link>/outsprint/</link>
 	<width>32</width>
 	<height>32</height>
 </image> 
 	<item>
 		<title>The ideal grant experience</title>
-		<link>/425/the-ideal-grant-experience/</link>
+		<link>/outsprint/425/the-ideal-grant-experience/</link>
 		
 		<dc:creator><![CDATA[jason]]></dc:creator>
 		<pubDate>Tue, 10 Mar 2015 01:52:00 +0000</pubDate>
@@ -41,12 +41,12 @@
 		<category><![CDATA[grant experience]]></category>
 		<category><![CDATA[grant-making]]></category>
 		<category><![CDATA[philanthropy]]></category>
-		<guid isPermaLink="false">/?p=425</guid>
+		<guid isPermaLink="false">/outsprint/?p=425</guid>
 
 					<description><![CDATA[<p>Applicant profiles: looking beyond the average applicant From the synthesis of our findings, we had a hunch that there were 3 hypothetical groups of grant applicants. These fictional profiles are useful by showing us how one size does not fit all when it comes to managing the grant. Through these 3 profiles, we can envision [&#8230;]</p>
-<p>The post <a rel="nofollow" href="/425/the-ideal-grant-experience/">The ideal grant experience</a> appeared first on <a rel="nofollow" href="/">Outsprint</a>.</p>
+<p>The post <a rel="nofollow" href="/outsprint/425/the-ideal-grant-experience/">The ideal grant experience</a> appeared first on <a rel="nofollow" href="/outsprint/">Outsprint</a>.</p>
 ]]></description>
-										<content:encoded><![CDATA[<section class="stag-section stag-intro-text"><p>Designing a new end-to-end grant experience with SG Enable, from ground up, from outside in. This is part 3 of a 3-part series. Read parts <a title="Designing an end-to-end experience for grants | Outsprint blog" href="/4/designing-an-end-to-end-experience-for-grants/">1</a> and <a title="8 human insights into the grant experience | Outsprint blog" href="/420/8-human-insights-into-the-grant-experience">2</a>.</p>
+										<content:encoded><![CDATA[<section class="stag-section stag-intro-text"><p>Designing a new end-to-end grant experience with SG Enable, from ground up, from outside in. This is part 3 of a 3-part series. Read parts <a title="Designing an end-to-end experience for grants | Outsprint blog" href="/outsprint/4/designing-an-end-to-end-experience-for-grants/">1</a> and <a title="8 human insights into the grant experience | Outsprint blog" href="/outsprint/420/8-human-insights-into-the-grant-experience">2</a>.</p>
 </section>
 <h3>Applicant profiles: looking beyond the average applicant</h3>
 <p>From the synthesis of our findings, we had a hunch that there were 3 hypothetical groups of grant applicants. These fictional profiles are useful by showing us how one size does not fit all when it comes to managing the grant. Through these 3 profiles, we can envision different ways of support and resourcing for groups of organizations in a more nuanced and targeted way that meet their needs based on its growth phase in the life cycle of their organization or service.</p>
@@ -94,8 +94,8 @@ Scaling up for broad institutionalization on local or regional scale. <em>&#8220
 <p>This design sprint project captured a qualitative understanding of what kind of grant experience the community wanted. The project team also learned lots of new tools and methods from the design thinking process. The one-week sprint had been instructive, to quickly learn about a problem, point out new questions to ask and turn up blind spots. But we only had one week. Now that we have a rough sense of what people need, how do we develop some of the ideas further? What makes sense to implement? How do we continue to iterate and refine the ideas towards the launch of the grant? So, think of this as a set of learning points and ideas to bring forward for further study and exploration as the grant progresses, or as inspiration to deepen understanding of what truly matters to your partners and stakeholders. This report is <i>generative</i>, not restrictive. This report is intended as a vigilant backlog of the experiential learnings received over the week, and therefore becomes a resource to be <i>built upon</i> for anyone new coming on board to run the new Tote Board Enabling Live Initiative Grant. Most importantly, keep iterating and refining, while keeping in mind the needs of the people we learned here.</p>
 <p><strong><i>The human stories end here, but here is where you can start creating new and better experiences under the Tote Board Enabling Lives Initiative Grant. Keep on designing.</i></strong></p>
 <hr class="stag-section stag-divider stag-divider--plain">
-<p>To learn more about the grant experience design project, including all about the design sprint process during the project and its final design recommendations, download the project deliverable <a title="Download report here" href="https://outsprint.typeform.com/to/N5MBFc" target="_blank">here</a>. This is part 3 of a 3-part series. Read parts <a title="Designing an end-to-end experience for grants | Outsprint blog" href="/4/designing-an-end-to-end-experience-for-grants/">1</a> and <a title="8 human insights into the grant experience | Outsprint blog" href="/420/8-human-insights-into-the-grant-experience">2</a>.</p>
-<p>The post <a rel="nofollow" href="/425/the-ideal-grant-experience/">The ideal grant experience</a> appeared first on <a rel="nofollow" href="/">Outsprint</a>.</p>
+<p>To learn more about the grant experience design project, including all about the design sprint process during the project and its final design recommendations, download the project deliverable <a title="Download report here" href="https://outsprint.typeform.com/to/N5MBFc" target="_blank">here</a>. This is part 3 of a 3-part series. Read parts <a title="Designing an end-to-end experience for grants | Outsprint blog" href="/outsprint/4/designing-an-end-to-end-experience-for-grants/">1</a> and <a title="8 human insights into the grant experience | Outsprint blog" href="/outsprint/420/8-human-insights-into-the-grant-experience">2</a>.</p>
+<p>The post <a rel="nofollow" href="/outsprint/425/the-ideal-grant-experience/">The ideal grant experience</a> appeared first on <a rel="nofollow" href="/outsprint/">Outsprint</a>.</p>
 ]]></content:encoded>
 					
 		
@@ -103,7 +103,7 @@ Scaling up for broad institutionalization on local or regional scale. <em>&#8220
 			</item>
 		<item>
 		<title>8 human insights into the grant experience</title>
-		<link>/420/8-human-insights-into-the-grant-experience/</link>
+		<link>/outsprint/420/8-human-insights-into-the-grant-experience/</link>
 		
 		<dc:creator><![CDATA[jason]]></dc:creator>
 		<pubDate>Tue, 10 Mar 2015 01:51:44 +0000</pubDate>
@@ -115,12 +115,12 @@ Scaling up for broad institutionalization on local or regional scale. <em>&#8220
 		<category><![CDATA[grant experience]]></category>
 		<category><![CDATA[grant-making]]></category>
 		<category><![CDATA[philanthropy]]></category>
-		<guid isPermaLink="false">/?p=420</guid>
+		<guid isPermaLink="false">/outsprint/?p=420</guid>
 
 					<description><![CDATA[<p>People we met We met a total of 11 participants over 6 in-depth conversations and 1 co-design feedback session. They were from different parts of the ecosystem &#8211; grant makers, grant applicants, VWOs, public officers, and incubators. Meeting experienced grant applicants allowed us to dive deep into their real needs and pain-points with the current grant-making ecosystem. [&#8230;]</p>
-<p>The post <a rel="nofollow" href="/420/8-human-insights-into-the-grant-experience/">8 human insights into the grant experience</a> appeared first on <a rel="nofollow" href="/">Outsprint</a>.</p>
+<p>The post <a rel="nofollow" href="/outsprint/420/8-human-insights-into-the-grant-experience/">8 human insights into the grant experience</a> appeared first on <a rel="nofollow" href="/outsprint/">Outsprint</a>.</p>
 ]]></description>
-										<content:encoded><![CDATA[<section class="stag-section stag-intro-text"><p>Designing a new end-to-end grant experience with SG Enable, from ground up, from outside in. This is part 2 of a 3-part series. Read parts <a title="Designing an end-to-end experience for grants | Outsprint blog" href="/4/designing-an-end-to-end-experience-for-grants/">1</a> and <a title="The ideal grant experience | Outsprint blog" href="/425/the-ideal-grant-experience/">3</a>.</p>
+										<content:encoded><![CDATA[<section class="stag-section stag-intro-text"><p>Designing a new end-to-end grant experience with SG Enable, from ground up, from outside in. This is part 2 of a 3-part series. Read parts <a title="Designing an end-to-end experience for grants | Outsprint blog" href="/outsprint/4/designing-an-end-to-end-experience-for-grants/">1</a> and <a title="The ideal grant experience | Outsprint blog" href="/outsprint/425/the-ideal-grant-experience/">3</a>.</p>
 </section>
 <h3>People we met</h3>
 <p>We met a total of 11 participants over 6 in-depth conversations and 1 co-design feedback session. They were from different parts of the ecosystem &#8211; grant makers, grant applicants, VWOs, public officers, and incubators. Meeting experienced grant applicants allowed us to dive deep into their real needs and pain-points with the current grant-making ecosystem. As the grant team was new to grant-making, we found it super educational too to speak to grant-makers who had administered and closed grants before. We learned vital success factors from them and also blind spots to watch out for as grant-makers. On agreement of confidentiality, their faces are not shown and names are changed.</p>
@@ -172,8 +172,8 @@ Scaling up for broad institutionalization on local or regional scale. <em>&#8220
 <p>Innovating always comes with risk. But with public/donor funds always comes the procurement mindset and a need to demonstrate transparency, fairness and value-for-money. This usually means a low appetite for risk, and a correspondingly high need for control, especially if the project looks like its not meeting outcomes! However, Ying highlights how KPIs don&#8217;t tell the full story &#8211; sometimes the project must be given time to generate results. VWO partners typically want to ensure quality and integrity of service delivery but a grant manager&#8217;s anxiety over public accountability, failure and KPI micromanaging might cause frustration and drive the wrong sorts of behaviour that compromises service integrity. Are there ways to create a process, where so long as accountability is in place and due diligence done, failing can be rationalised?</p>
 <p><strong><i>How might we create a process for accounting for failure where due diligence had been done? How does other public service agencies account for investment losses? How might we make reporting/evaluation more meaningful and useful for partners?</i></strong></p>
 <hr class="stag-section stag-divider stag-divider--plain">
-<p>In our next blog post, we&#8217;ll be sharing the ideas and solutions we brainstormed to address the insights we learnt. Read on to see our vision for an ideal grant experience! Read parts <a title="Designing an end-to-end experience for grants | Outsprint blog" href="/4/designing-an-end-to-end-experience-for-grants/">1</a> and <a title="The ideal grant experience | Outsprint blog" href="/425/the-ideal-grant-experience/">3</a>.</p>
-<p>The post <a rel="nofollow" href="/420/8-human-insights-into-the-grant-experience/">8 human insights into the grant experience</a> appeared first on <a rel="nofollow" href="/">Outsprint</a>.</p>
+<p>In our next blog post, we&#8217;ll be sharing the ideas and solutions we brainstormed to address the insights we learnt. Read on to see our vision for an ideal grant experience! Read parts <a title="Designing an end-to-end experience for grants | Outsprint blog" href="/outsprint/4/designing-an-end-to-end-experience-for-grants/">1</a> and <a title="The ideal grant experience | Outsprint blog" href="/outsprint/425/the-ideal-grant-experience/">3</a>.</p>
+<p>The post <a rel="nofollow" href="/outsprint/420/8-human-insights-into-the-grant-experience/">8 human insights into the grant experience</a> appeared first on <a rel="nofollow" href="/outsprint/">Outsprint</a>.</p>
 ]]></content:encoded>
 					
 		
@@ -181,7 +181,7 @@ Scaling up for broad institutionalization on local or regional scale. <em>&#8220
 			</item>
 		<item>
 		<title>Designing an end-to-end experience for grants</title>
-		<link>/4/designing-an-end-to-end-experience-for-grants/</link>
+		<link>/outsprint/4/designing-an-end-to-end-experience-for-grants/</link>
 		
 		<dc:creator><![CDATA[jason]]></dc:creator>
 		<pubDate>Tue, 10 Mar 2015 01:50:16 +0000</pubDate>
@@ -193,12 +193,12 @@ Scaling up for broad institutionalization on local or regional scale. <em>&#8220
 		<category><![CDATA[grant experience]]></category>
 		<category><![CDATA[grant-making]]></category>
 		<category><![CDATA[philanthropy]]></category>
-		<guid isPermaLink="false">/?p=4</guid>
+		<guid isPermaLink="false">/outsprint/?p=4</guid>
 
 					<description><![CDATA[<p>How might human-centered design help create a better experience for grant-makers and grantees alike? The Tote Board Enabling Lives Initiative (TB-ELI) Grant is a new grant that aims to create meaningful social impact for persons with disabilities and their caregivers. The grant is open to Voluntary Welfare Organizations (VWOs), non-profit organizations, social enterprises, and private [&#8230;]</p>
-<p>The post <a rel="nofollow" href="/4/designing-an-end-to-end-experience-for-grants/">Designing an end-to-end experience for grants</a> appeared first on <a rel="nofollow" href="/">Outsprint</a>.</p>
+<p>The post <a rel="nofollow" href="/outsprint/4/designing-an-end-to-end-experience-for-grants/">Designing an end-to-end experience for grants</a> appeared first on <a rel="nofollow" href="/outsprint/">Outsprint</a>.</p>
 ]]></description>
-										<content:encoded><![CDATA[<section class="stag-section stag-intro-text"><p>Designing a new end-to-end grant experience with SG Enable, from ground up, from outside in. This is part 1 of a 3-part series. Read parts <a title="8 human insights into the grant experience | Outsprint blog" href="/420/8-human-insights-into-the-grant-experience">2</a> and <a title="The ideal grant experience | Outsprint blog" href="/425/the-ideal-grant-experience/">3</a>.</p>
+										<content:encoded><![CDATA[<section class="stag-section stag-intro-text"><p>Designing a new end-to-end grant experience with SG Enable, from ground up, from outside in. This is part 1 of a 3-part series. Read parts <a title="8 human insights into the grant experience | Outsprint blog" href="/outsprint/420/8-human-insights-into-the-grant-experience">2</a> and <a title="The ideal grant experience | Outsprint blog" href="/outsprint/425/the-ideal-grant-experience/">3</a>.</p>
 </section>
 <h3>How might human-centered design help create a better experience for grant-makers and grantees alike?</h3>
 <p>The Tote Board Enabling Lives Initiative (TB-ELI) Grant is a new grant that aims to create meaningful social impact for persons with disabilities and their caregivers. The grant is open to Voluntary Welfare Organizations (VWOs), non-profit organizations, social enterprises, and private corporations with a social mission. Besides pilot projects, the grant will also fund existing programmes that need resources to scale up.</p>
@@ -236,8 +236,8 @@ Scaling up for broad institutionalization on local or regional scale. <em>&#8220
 <h4>Reflecting on next steps</h4>
 <p>The team spent the last hour of the design sprint reflecting on the new tools and techniques they learnt, as well as planning the next steps and design iterations to follow up on.</p>
 <hr class="stag-section stag-divider stag-divider--plain">
-<p>In our next blog post, we&#8217;ll be sharing the insights we learnt from speaking to grant applicants and grant makers. Read parts <a title="8 human insights into the grant experience | Outsprint blog" href="/420/8-human-insights-into-the-grant-experience">2</a> and <a title="The ideal grant experience | Outsprint blog" href="/425/the-ideal-grant-experience/">3</a> to see how a human-centered grant experience can look like!</p>
-<p>The post <a rel="nofollow" href="/4/designing-an-end-to-end-experience-for-grants/">Designing an end-to-end experience for grants</a> appeared first on <a rel="nofollow" href="/">Outsprint</a>.</p>
+<p>In our next blog post, we&#8217;ll be sharing the insights we learnt from speaking to grant applicants and grant makers. Read parts <a title="8 human insights into the grant experience | Outsprint blog" href="/outsprint/420/8-human-insights-into-the-grant-experience">2</a> and <a title="The ideal grant experience | Outsprint blog" href="/outsprint/425/the-ideal-grant-experience/">3</a> to see how a human-centered grant experience can look like!</p>
+<p>The post <a rel="nofollow" href="/outsprint/4/designing-an-end-to-end-experience-for-grants/">Designing an end-to-end experience for grants</a> appeared first on <a rel="nofollow" href="/outsprint/">Outsprint</a>.</p>
 ]]></content:encoded>
 					
 		
@@ -245,7 +245,7 @@ Scaling up for broad institutionalization on local or regional scale. <em>&#8220
 			</item>
 		<item>
 		<title>First, an introduction</title>
-		<link>/266/intro/</link>
+		<link>/outsprint/266/intro/</link>
 		
 		<dc:creator><![CDATA[jason]]></dc:creator>
 		<pubDate>Tue, 24 Feb 2015 18:04:40 +0000</pubDate>
@@ -253,16 +253,16 @@ Scaling up for broad institutionalization on local or regional scale. <em>&#8220
 		<category><![CDATA[Biography]]></category>
 		<category><![CDATA[Credentials]]></category>
 		<category><![CDATA[Team]]></category>
-		<guid isPermaLink="false">/?p=266</guid>
+		<guid isPermaLink="false">/outsprint/?p=266</guid>
 
 					<description><![CDATA[<p>Jason’s first forays in design was helping businesses build online brands through user-centered web design, as well as applying design thinking to developing his freelance business. Before starting out as a designer, he was previously with the National Council of Social Service where he helped develop new social services and championed ground-up collaboration between government [&#8230;]</p>
-<p>The post <a rel="nofollow" href="/266/intro/">First, an introduction</a> appeared first on <a rel="nofollow" href="/">Outsprint</a>.</p>
+<p>The post <a rel="nofollow" href="/outsprint/266/intro/">First, an introduction</a> appeared first on <a rel="nofollow" href="/outsprint/">Outsprint</a>.</p>
 ]]></description>
 										<content:encoded><![CDATA[<p>Jason’s first forays in design was helping businesses build online brands through user-centered web design, as well as applying design thinking to developing his freelance business. Before starting out as a designer, he was previously with the <a title="National Council of Social Service" href="http://www.ncss.gov.sg/" target="_blank">National Council of Social Service</a> where he helped develop new social services and championed ground-up collaboration between government agencies, voluntary welfare organisations and the grassroots.</p>
 <p>At <a title="The He(Art) Of Designing Policies | Challenge magazine" href="http://www.challenge.gov.sg/print/feature/the-he%28art%29-of-designing-policies" target="_blank">The Human Experience Lab</a> in the <a title="Public Service Diviion, Prime Minister's Office" href="http://www.psd.gov.sg/" target="_blank">Public Service Division</a>, Jason had the opportunity to bring his passions for human-centered design, social innovation and entrepreneurship into government to create public good. He spent 2 months working as part of the design consultancy team at the globally renowned innovation firm <a title="IDEO" href="http://www.ideo.com/" target="_blank">IDEO</a>, on a project commissioned by the housing authorities and PSD to look into the future narrative of public housing in Singapore. He led 7 multi-agency projects, interviewing more than 70 people (in one-to-one or group settings) on wide variety of public and social issues such as public housing, neighbourliness, career aspirations, life aspirations, financial literacy, employment for persons with disabilities, and community inclusiveness. The job also required teaching and facilitating some 15 training workshops on design thinking, as well as guiding the artistic and editorial style, copywriting and visual communication for project collateral such as videos, print reports, and posters. The Ministries and Statutory Boards he had worked with and consulted for includes SG Enable, MSF, NCSS, MOE, MTI, MND, MOF, HDB, PA, CSCDC, PSD, NHGP, EMA, STB, HPB, CSC and even public officers from the <a title="CAPAM conference" href="http://www.newsarawaktribune.com/news/13782/CAPAM-Meeting-and-Forum-to-be-held-in-Kuching/" target="_blank">Commonwealth</a> countries such as Malaysia.</p>
-<p>He is now running <a title="Design sprints for public good &amp; social impact." href="/" target="_blank">Outsprint</a>, a social enterprise as public innovation design consultancy, creating products and services that deliver public good and social impact. He recently helped <a title="SG Enable" href="https://www.sgenable.sg/" target="_blank">SG Enable</a>, an agency dedicated to enabling persons with disability, design a new end-to-end grant experience through a one-week design sprint.</p>
+<p>He is now running <a title="Design sprints for public good &amp; social impact." href="/outsprint/" target="_blank">Outsprint</a>, a social enterprise as public innovation design consultancy, creating products and services that deliver public good and social impact. He recently helped <a title="SG Enable" href="https://www.sgenable.sg/" target="_blank">SG Enable</a>, an agency dedicated to enabling persons with disability, design a new end-to-end grant experience through a one-week design sprint.</p>
 <p>His voracious reading and passion for sharing online articles had now found some popularity and practical use, in the <a title="Design For Public Good Flipboard magazine" href="http://flip.it/CAG40" target="_blank">Design For Public Good Flipboard magazine</a>, with over 11,000 followers.</p>
-<p>The post <a rel="nofollow" href="/266/intro/">First, an introduction</a> appeared first on <a rel="nofollow" href="/">Outsprint</a>.</p>
+<p>The post <a rel="nofollow" href="/outsprint/266/intro/">First, an introduction</a> appeared first on <a rel="nofollow" href="/outsprint/">Outsprint</a>.</p>
 ]]></content:encoded>
 					
 		

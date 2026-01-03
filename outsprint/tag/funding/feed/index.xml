@@ -9,8 +9,8 @@
 
 <channel>
 	<title>funding &#8211; Outsprint</title>
-	<atom:link href="/tag/funding/feed/" rel="self" type="application/rss+xml" />
-	<link>/</link>
+	<atom:link href="/outsprint/tag/funding/feed/" rel="self" type="application/rss+xml" />
+	<link>/outsprint/</link>
 	<description>The fastest way to innovate public policy &#38; social services.</description>
 	<lastBuildDate>Tue, 10 Mar 2015 10:17:07 +0000</lastBuildDate>
 	<language>en-US</language>
@@ -21,15 +21,15 @@
 	
 
 <image>
-	<url>/wp-content/uploads/2020/05/cropped-logo-square-rounded-corner-e1517212607710-32x32.png</url>
+	<url>/outsprint/wp-content/uploads/2020/05/cropped-logo-square-rounded-corner-e1517212607710-32x32.png</url>
 	<title>funding &#8211; Outsprint</title>
-	<link>/</link>
+	<link>/outsprint/</link>
 	<width>32</width>
 	<height>32</height>
 </image> 
 	<item>
 		<title>The ideal grant experience</title>
-		<link>/425/the-ideal-grant-experience/</link>
+		<link>/outsprint/425/the-ideal-grant-experience/</link>
 		
 		<dc:creator><![CDATA[jason]]></dc:creator>
 		<pubDate>Tue, 10 Mar 2015 01:52:00 +0000</pubDate>
@@ -103,7 +103,7 @@ Scaling up for broad institutionalization on local or regional scale. <em>&#8220
 			</item>
 		<item>
 		<title>8 human insights into the grant experience</title>
-		<link>/420/8-human-insights-into-the-grant-experience/</link>
+		<link>/outsprint/420/8-human-insights-into-the-grant-experience/</link>
 		
 		<dc:creator><![CDATA[jason]]></dc:creator>
 		<pubDate>Tue, 10 Mar 2015 01:51:44 +0000</pubDate>
@@ -181,7 +181,7 @@ Scaling up for broad institutionalization on local or regional scale. <em>&#8220
 			</item>
 		<item>
 		<title>Designing an end-to-end experience for grants</title>
-		<link>/4/designing-an-end-to-end-experience-for-grants/</link>
+		<link>/outsprint/4/designing-an-end-to-end-experience-for-grants/</link>
 		
 		<dc:creator><![CDATA[jason]]></dc:creator>
 		<pubDate>Tue, 10 Mar 2015 01:50:16 +0000</pubDate>

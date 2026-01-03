@@ -9,8 +9,8 @@
 
 <channel>
 	<title>Design strategy &#8211; Outsprint</title>
-	<atom:link href="/skill/design-strategy/feed/" rel="self" type="application/rss+xml" />
-	<link>/</link>
+	<atom:link href="/outsprint/skill/design-strategy/feed/" rel="self" type="application/rss+xml" />
+	<link>/outsprint/</link>
 	<description>The fastest way to innovate public policy &#38; social services.</description>
 	<lastBuildDate>Fri, 03 Jul 2015 22:32:22 +0000</lastBuildDate>
 	<language>en-US</language>
@@ -21,15 +21,15 @@
 	
 
 <image>
-	<url>/wp-content/uploads/2020/05/cropped-logo-square-rounded-corner-e1517212607710-32x32.png</url>
+	<url>/outsprint/wp-content/uploads/2020/05/cropped-logo-square-rounded-corner-e1517212607710-32x32.png</url>
 	<title>Design strategy &#8211; Outsprint</title>
-	<link>/</link>
+	<link>/outsprint/</link>
 	<width>32</width>
 	<height>32</height>
 </image> 
 	<item>
 		<title>Innovating grant-making with SG Enable</title>
-		<link>/portfolio/grant-experience-design-sg-enable/</link>
+		<link>/outsprint/portfolio/grant-experience-design-sg-enable/</link>
 		
 		<dc:creator><![CDATA[jason]]></dc:creator>
 		<pubDate>Mon, 09 Mar 2015 23:36:50 +0000</pubDate>

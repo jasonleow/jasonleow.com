@@ -9,8 +9,8 @@
 
 <channel>
 	<title>Social impact &#8211; Outsprint</title>
-	<atom:link href="/skill/social-impact/feed/" rel="self" type="application/rss+xml" />
-	<link>/</link>
+	<atom:link href="/outsprint/skill/social-impact/feed/" rel="self" type="application/rss+xml" />
+	<link>/outsprint/</link>
 	<description>The fastest way to innovate public policy &#38; social services.</description>
 	<lastBuildDate>Sun, 11 Mar 2018 08:28:35 +0000</lastBuildDate>
 	<language>en-US</language>
@@ -21,15 +21,15 @@
 	
 
 <image>
-	<url>/wp-content/uploads/2020/05/cropped-logo-square-rounded-corner-e1517212607710-32x32.png</url>
+	<url>/outsprint/wp-content/uploads/2020/05/cropped-logo-square-rounded-corner-e1517212607710-32x32.png</url>
 	<title>Social impact &#8211; Outsprint</title>
-	<link>/</link>
+	<link>/outsprint/</link>
 	<width>32</width>
 	<height>32</height>
 </image> 
 	<item>
 		<title>Outsprint Store: Design tools for public good</title>
-		<link>/portfolio/outsprint-store/</link>
+		<link>/outsprint/portfolio/outsprint-store/</link>
 		
 		<dc:creator><![CDATA[jason]]></dc:creator>
 		<pubDate>Sun, 11 Mar 2018 16:23:28 +0000</pubDate>
@@ -49,7 +49,7 @@
 			</item>
 		<item>
 		<title>Innovating grant-making with SG Enable</title>
-		<link>/portfolio/grant-experience-design-sg-enable/</link>
+		<link>/outsprint/portfolio/grant-experience-design-sg-enable/</link>
 		
 		<dc:creator><![CDATA[jason]]></dc:creator>
 		<pubDate>Mon, 09 Mar 2015 23:36:50 +0000</pubDate>

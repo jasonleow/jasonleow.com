@@ -9,8 +9,8 @@
 
 <channel>
 	<title>Random &#8211; Outsprint</title>
-	<atom:link href="/category/random/feed/" rel="self" type="application/rss+xml" />
-	<link>/</link>
+	<atom:link href="/outsprint/category/random/feed/" rel="self" type="application/rss+xml" />
+	<link>/outsprint/</link>
 	<description>The fastest way to innovate public policy &#38; social services.</description>
 	<lastBuildDate>Mon, 09 Mar 2015 16:21:21 +0000</lastBuildDate>
 	<language>en-US</language>
@@ -21,15 +21,15 @@
 	
 
 <image>
-	<url>/wp-content/uploads/2020/05/cropped-logo-square-rounded-corner-e1517212607710-32x32.png</url>
+	<url>/outsprint/wp-content/uploads/2020/05/cropped-logo-square-rounded-corner-e1517212607710-32x32.png</url>
 	<title>Random &#8211; Outsprint</title>
-	<link>/</link>
+	<link>/outsprint/</link>
 	<width>32</width>
 	<height>32</height>
 </image> 
 	<item>
 		<title>First, an introduction</title>
-		<link>/266/intro/</link>
+		<link>/outsprint/266/intro/</link>
 		
 		<dc:creator><![CDATA[jason]]></dc:creator>
 		<pubDate>Tue, 24 Feb 2015 18:04:40 +0000</pubDate>
@@ -37,7 +37,7 @@
 		<category><![CDATA[Biography]]></category>
 		<category><![CDATA[Credentials]]></category>
 		<category><![CDATA[Team]]></category>
-		<guid isPermaLink="false">/?p=266</guid>
+		<guid isPermaLink="false">/outsprint/?p=266</guid>
 
 					<description><![CDATA[<p>Jason’s first forays in design was helping businesses build online brands through user-centered web design, as well as applying design thinking to developing his freelance business. Before starting out as a designer, he was previously with the National Council of Social Service where he helped develop new social services and championed ground-up collaboration between government [&#8230;]</p>
 <p>The post <a rel="nofollow" href="/266/intro/">First, an introduction</a> appeared first on <a rel="nofollow" href="/">Outsprint</a>.</p>
