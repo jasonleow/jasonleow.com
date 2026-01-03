@@ -16,6 +16,12 @@
   status = 301
   force = true
 
+[[redirects]]
+  from = "/outsprint"
+  to = "https://outsprint.netlify.app"
+  status = 301
+  force = true
+
 [build]
   publish = "/"  # Serves files from the root directory
   functions = "netlify/functions"  # Matches your functions directory setting
