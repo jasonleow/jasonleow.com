@@ -76,40 +76,42 @@ img.emoji {
 <link rel='shortlink' href='https://wp.me/P5GwjS-j' />
 <link rel="alternate" type="application/json+oembed" href="/outsprint/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2F" />
 <link rel="alternate" type="text/xml+oembed" href="/outsprint/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2F&#038;format=xml" />
+<!-- Wordfence script disabled for static site -->
 <script type="text/javascript">
-(function(url){
-	if(/(?:Chrome\/26\.0\.1410\.63 Safari\/537\.31|WordfenceTestMonBot)/.test(navigator.userAgent)){ return; }
-	var addEvent = function(evt, handler) {
-		if (window.addEventListener) {
-			document.addEventListener(evt, handler, false);
-		} else if (window.attachEvent) {
-			document.attachEvent('on' + evt, handler);
-		}
-	};
-	var removeEvent = function(evt, handler) {
-		if (window.removeEventListener) {
-			document.removeEventListener(evt, handler, false);
-		} else if (window.detachEvent) {
-			document.detachEvent('on' + evt, handler);
-		}
-	};
-	var evts = 'contextmenu dblclick drag dragend dragenter dragleave dragover dragstart drop keydown keypress keyup mousedown mousemove mouseout mouseover mouseup mousewheel scroll'.split(' ');
-	var logHuman = function() {
-		if (window.wfLogHumanRan) { return; }
-		window.wfLogHumanRan = true;
-		var wfscr = document.createElement('script');
-		wfscr.type = 'text/javascript';
-		wfscr.async = true;
-		wfscr.src = url + '&r=' + Math.random();
-		(document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(wfscr);
-		for (var i = 0; i < evts.length; i++) {
-			removeEvent(evts[i], logHuman);
-		}
-	};
-	for (var i = 0; i < evts.length; i++) {
-		addEvent(evts[i], logHuman);
-	}
-})('https://jasonleow.com/outsprint/?wordfence_lh=1&hid=0CCF8DE3ECDBCE70AF694783F853433B');
+// Wordfence security script disabled - not needed for static HTML site
+// (function(url){
+// 	if(/(?:Chrome\/26\.0\.1410\.63 Safari\/537\.31|WordfenceTestMonBot)/.test(navigator.userAgent)){ return; }
+// 	var addEvent = function(evt, handler) {
+// 		if (window.addEventListener) {
+// 			document.addEventListener(evt, handler, false);
+// 		} else if (window.attachEvent) {
+// 			document.attachEvent('on' + evt, handler);
+// 		}
+// 	};
+// 	var removeEvent = function(evt, handler) {
+// 		if (window.removeEventListener) {
+// 			document.removeEventListener(evt, handler, false);
+// 		} else if (window.detachEvent) {
+// 			document.detachEvent('on' + evt, handler);
+// 		}
+// 	};
+// 	var evts = 'contextmenu dblclick drag dragend dragenter dragleave dragover dragstart drop keydown keypress keyup mousedown mousemove mouseout mouseover mouseup mousewheel scroll'.split(' ');
+// 	var logHuman = function() {
+// 		if (window.wfLogHumanRan) { return; }
+// 		window.wfLogHumanRan = true;
+// 		var wfscr = document.createElement('script');
+// 		wfscr.type = 'text/javascript';
+// 		wfscr.async = true;
+// 		wfscr.src = url + '&r=' + Math.random();
+// 		(document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(wfscr);
+// 		for (var i = 0; i < evts.length; i++) {
+// 			removeEvent(evts[i], logHuman);
+// 		}
+// 	};
+// 	for (var i = 0; i < evts.length; i++) {
+// 		addEvent(evts[i], logHuman);
+// 	}
+// })('https://jasonleow.com/outsprint/?wordfence_lh=1&hid=0CCF8DE3ECDBCE70AF694783F853433B');
 </script><meta name="generator" content="Meth 1.2">
 <meta name="generator" content="StagFramework 2.0.1.3">
 <link rel="shortcut icon" href="/outsprint/wp-content/uploads/2020/05/favicon.png" type="image/x-icon" /><link rel="icon" href="/outsprint/wp-content/uploads/2020/05/cropped-logo-square-rounded-corner-e1517212607710-32x32.png" sizes="32x32" />
