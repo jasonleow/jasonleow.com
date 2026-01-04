@@ -364,19 +364,19 @@ img.emoji {
 <p><a class="stag-icon-link"  href="https://linkedin.com/in/jasonleowsg" target="_blank"><i class="fa fa-linkedin-square"  style="font-size:50px;line-height:50px"></i></a>     <a href="https://www.facebook.com/outsprintdesign" onclick="__gaTracker('send', 'event', 'outbound-article', 'https://www.facebook.com/outsprintdesign', '');" class="stag-icon-link"   target="_blank"><i class="fa fa-facebook-square"  style="font-size:50px;line-height:50px"></i></a>     <a href="https://twitter.com/outsprintdesign" onclick="__gaTracker('send', 'event', 'outbound-article', 'https://twitter.com/outsprintdesign', '');" class="stag-icon-link"   target="_blank"><i class="fa fa-twitter-square"  style="font-size:50px;line-height:50px"></i></a>     <a href="https://www.instagram.com/outsprintdesign" onclick="__gaTracker('send', 'event', 'outbound-article', 'https://www.instagram.com/outsprintdesign', '');" class="stag-icon-link"   target="_blank"><i class="fa fa-instagram-square"  style="font-size:50px;line-height:50px"></i></a><a href="https://www.youtube.com/channel/UC8vFrdTOxZk7JRfXcJNj12w" onclick="__gaTracker('send', 'event', 'outbound-article', 'https://www.youtube.com/channel/UC8vFrdTOxZk7JRfXcJNj12w', '');" class="stag-icon-link"   target="_blank"><i class="fa fa-youtube-square"  style="font-size:50px;line-height:50px"></i></a>     <a href="https://vimeo.com/outsprint" onclick="__gaTracker('send', 'event', 'outbound-article', 'https://vimeo.com/outsprint', '');" class="stag-icon-link"   target="_blank"><i class="fa fa-vimeo-square"  style="font-size:50px;line-height:50px"></i></a></p>
 				</div>
 				<div class="unit one-of-two entry-content">
-					<form action="/outsprint/" method="post" id="contactForm" class="contact-form" name="contact" data-netlify="true" netlify-honeypot="bot-field">
+					<form action="/outsprint/" method="post" id="contactForm" class="contact-form" name="contact">
 						<h3>Send us a direct message</h3>
 
 						<p class="form-row">
-							<input type="text" name="contact_name" id="contact_name" required>
+							<input disabled type="text" name="contact_name" id="contact_name" required>
 							<label for="contact_name">Your Name (required)</label>
 						</p>
 						<p class="form-row">
-							<input type="email" name="contact_email" id="contact_email" required>
+							<input disabled type="email" name="contact_email" id="contact_email" required>
 							<label for="contact_email">Your Email (required)</label>
 						</p>
 						<p class="form-row">
-							<textarea rows="4" name="contact_description" id="contact_description" required></textarea>
+							<textarea disabled rows="4" name="contact_description" id="contact_description" required></textarea>
 							<label for="contact_description">Enter your message here (required)</label>
 						</p>
 						<p hidden>
@@ -385,7 +385,7 @@ img.emoji {
 							</label>
 		  				</p>
 						<p class="form-row">
-							<input type="submit" value="Send Message" name="contact_submit" id="contact_submit" class="form-submit" onclick="clearForm()">
+							<input disabled type="submit" value="Send Message" name="contact_submit" id="contact_submit" class="form-submit" onclick="clearForm()">
 							<!--<input type="hidden" id="_wpnonce" name="_wpnonce" value="23a84c46c7" /><input type="hidden" name="_wp_http_referer" value="/" />-->						</p>
 					</form>
 				</div>
